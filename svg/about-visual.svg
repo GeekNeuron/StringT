@@ -1,1 +1,5 @@
-
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="40" r="25" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" opacity="0.2"/>
+    <path d="M35,60 Q50,75 65,60" stroke="var(--svg-stroke-light)" stroke-width="3" fill="none" class="svg-dynamic-stroke"/>
+    <text x="50" y="50" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="10px" data-translation-key="aboutVisualStringT">StringT</text>
+</svg>
