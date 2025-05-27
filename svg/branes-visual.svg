@@ -1,1 +1,16 @@
-
+<svg viewBox="0 0 260 100" xmlns="http://www.w3.org/2000/svg">
+    <style> .brane-labelV11 { font-size: 6px; text-anchor: middle; font-family: inherit; } </style>
+    <circle cx="30" cy="50" r="3" class="svg-point-fill"/>
+    <text x="30" y="65" class="svg-text brane-labelV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="branes0Brane">0-Brane (Particle)</text>
+    <line x1="70" y1="50" x2="110" y2="50" class="svg-line" stroke-width="2"/>
+    <text x="90" y="65" class="svg-text brane-labelV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="branes1Brane">1-Brane (String)</text>
+    <rect x="130" y="40" width="40" height="20" class="svg-path" rx="2" ry="2" transform="skewX(-15)"/>
+    <text x="150" y="75" class="svg-text brane-labelV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="branes2Brane">2-Brane (Membrane)</text>
+    <g transform="translate(210, 50)">
+        <path d="M0,-15 L15,-22 L15,2 L0,9 Z" class="svg-path" stroke-linejoin="round"/>
+        <path d="M0,-15 L-15,-22 L-15,2 L0,9 Z" class="svg-path" stroke-linejoin="round" style="fill-opacity:0.7;"/>
+        <path d="M0,-15 L15,-22 L0,-29 L-15,-22 Z" class="svg-path" stroke-linejoin="round" style="fill-opacity:0.5;"/>
+    </g>
+    <text x="210" y="75" class="svg-text brane-labelV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="branes3Brane">3-Brane (Volume)</text>
+    <text x="130" y="15" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="branesVisualTitle">p-Branes: Objects of Different Dimensions</text>
+</svg>
