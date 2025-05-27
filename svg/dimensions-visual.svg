@@ -1,1 +1,12 @@
-
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+    <line x1="10" y1="50" x2="190" y2="50" class="svg-line" stroke-dasharray="5,5" />
+    <text x="100" y="40" class="svg-text" data-translation-key="dimensionsVisualOurSpace">Our 3D Space</text>
+    <circle cx="70" cy="50" r="3" class="svg-point-fill"/>
+    <text x="70" y="65" class="svg-text" data-translation-key="dimensionsVisualPoint">Point in space</text>
+    <g transform="translate(70, 50) scale(0.2)">
+        <path d="M50,0 C100,0 100,100 50,100 C0,100 0,0 50,0 Z
+                 M50,10 C80,10 80,90 50,90 C20,90 20,10 50,10 Z
+                 M50,20 Q70,50 50,80 Q30,50 50,20 Z" class="svg-path"/>
+    </g>
+    <text x="130" y="75" class="svg-text" data-translation-key="dimensionsVisualTiny">Tiny extra dimensions at each point</text>
+</svg>
