@@ -23,6 +23,7 @@
     --timeline-details-bg-light: #f0f4f8; 
     --glossary-dt-bg-light: #e9ecef;
     --glossary-dd-border-light: #007bff;
+    --glossary-dd-bg-light: #f8f9fa;
     --focus-ring-color-light: rgba(0, 123, 255, 0.4);
 
 
@@ -48,6 +49,7 @@
     --timeline-details-bg-dark: #2a2a30; 
     --glossary-dt-bg-dark: #333333;
     --glossary-dd-border-dark: #00a1ff;
+    --glossary-dd-bg-dark: #272727;
     --focus-ring-color-dark: rgba(0, 161, 255, 0.5);
 }
 
@@ -234,22 +236,17 @@ main#interactive-content {
 .content-section.exiting { 
     opacity: 0;
     transform: translateY(-15px);
-    /* Keep display:block during exit animation, JS will set to none after transition */
-    position: absolute; /* Take out of flow only when exiting */
+    position: absolute; 
     top: 0;
     left: 0;
+    /* JS will set display:none after transition */
 }
 
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
 #interactive-content > .content-section:last-of-type {
-    /* This will remove border from the last section in HTML, which should be fine if it's the last displayed */
-    /* border-bottom: none; /* Re-evaluating this, as nav controls have top border */
-}
-/* Ensure the currently active section that is also the last one before nav has no border */
-.content-section.active:is(:last-child, :nth-last-child(2):not(#interactive-lab ~ #interactive-lab + *)) { /* More complex selector might be needed depending on final structure */
-   /* border-bottom: none; */
+    /* border-bottom: none; /* Removed to ensure consistent spacing before nav */
 }
 
 
@@ -390,39 +387,32 @@ body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
 .timeline-milestone-dot { position: absolute; left: -28px; top: 18px; width: 14px; height: 14px; background-color: var(--timeline-dot-bg-light); border: 2px solid var(--timeline-dot-border-light); border-radius: 50%; z-index: 1; }
 body.dark-mode .timeline-milestone-dot { background-color: var(--timeline-dot-bg-dark); border: 2px solid var(--timeline-dot-border-dark); }
 body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; }
-
-/* LAYOUT_FIX: Timeline Date Positioning */
-.timeline-date {
-    position: absolute;
-    /* Align right edge of date text slightly to the right of the timeline line */
-    left: -25px; /* (Dot is at -28px, Line is at -30px relative to event start if line is 20px and event margin 50px) */
-                  /* Let's assume dot center is our reference for the line. Dot center is -28px from event start. */
-                  /* We want the right edge of date text to be +5px from dot center. */
-    transform: translateX(-100%); /* This makes 'left' property refer to the right edge of the text box */
-    top: -8px; 
-    font-size: 0.8rem; 
-    font-weight: bold; 
-    color: var(--secondary-accent-light); 
-    background-color: var(--bg-color-light); 
-    padding: 2px 5px; 
-    border-radius: 4px; 
-    white-space: nowrap; 
-    z-index: 2; 
-}
-body.dark-mode .timeline-date { 
-    color: var(--secondary-accent-dark); 
-    background-color: var(--bg-color-dark); 
-}
-body[dir="rtl"] .timeline-date { 
-    left: auto;
-    right: -25px; /* Align left edge of date text slightly to the left of the timeline line */
-    transform: translateX(100%); /* This makes 'right' property refer to the left edge of the text box */
-}
-
+.timeline-date { position: absolute; left: -25px; top: -8px; transform: translateX(-100%); font-size: 0.8rem; font-weight: bold; color: var(--secondary-accent-light); background-color: var(--bg-color-light); padding: 2px 5px; border-radius: 4px; white-space: nowrap; z-index: 2; }
+body.dark-mode .timeline-date { color: var(--secondary-accent-dark); background-color: var(--bg-color-dark); }
+body[dir="rtl"] .timeline-date { left: auto; right: -25px; transform: translateX(100%); }
 .timeline-content h3 { margin-top: 0; font-size: 1.15rem; margin-bottom: 6px; }
 .timeline-content p { font-size: 0.9rem; margin-bottom: 6px; }
-.timeline-details { max-height: 0; overflow: hidden; margin-top: 8px; padding-left: 10px; padding-right: 10px; background-color: var(--timeline-details-bg-light); border-radius: 4px; font-size: 0.85rem; border-left: 2px solid var(--timeline-dot-border-light); transition: max-height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), padding-top 0.35s ease-out, padding-bottom 0.35s ease-out, opacity 0.35s ease-out; opacity: 0; }
-.timeline-details.expanded { max-height: 400px; padding-top: 8px; padding-bottom: 8px; opacity: 1; }
+.timeline-details { 
+    max-height: 0; 
+    overflow: hidden; 
+    margin-top: 8px; 
+    padding: 0 10px; /* Initial padding for transition */
+    background-color: var(--timeline-details-bg-light); 
+    border-radius: 4px; 
+    font-size: 0.85rem; 
+    border-left: 2px solid var(--timeline-dot-border-light); 
+    transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                padding-top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                padding-bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                opacity 0.3s ease-out 0.1s; /* Delay opacity for smoother feel */
+    opacity: 0; 
+}
+.timeline-details.expanded { 
+    max-height: 400px; /* Adjust as needed */
+    padding-top: 8px; 
+    padding-bottom: 8px; 
+    opacity: 1; 
+}
 body.dark-mode .timeline-details { background-color: var(--timeline-details-bg-dark); border-left-color: var(--timeline-dot-border-dark); }
 body[dir="rtl"] .timeline-details { border-left: none; border-right: 2px solid var(--timeline-dot-border-light); }
 body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline-dot-border-dark); }
@@ -430,14 +420,89 @@ body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline
 /* Glossary Styles */
 .glossary-list { margin-top: 18px; }
 .glossary-entry { margin-bottom: 18px; }
-.glossary-list dt { font-weight: bold; font-size: 1.1rem; color: var(--secondary-accent-light); background-color: var(--glossary-dt-bg-light); padding: 8px 12px; border-radius: 5px 5px 0 0; border: 1px solid var(--border-color-light); border-bottom: none; cursor: default; }
-.glossary-list dt:focus-visible { outline: 2px solid var(--focus-ring-color-light); outline-offset: 1px; }
-body.dark-mode .glossary-list dt { color: var(--secondary-accent-dark); background-color: var(--glossary-dt-bg-dark); border-color: var(--border-color-dark); }
-body.dark-mode .glossary-list dt:focus-visible { outline-color: var(--focus-ring-color-dark); }
-.glossary-list dd { margin-left: 0; padding: 12px; margin-bottom: 0; border: 1px solid var(--border-color-light); border-top: 2px solid var(--glossary-dd-border-light); border-radius: 0 0 5px 5px; font-size: 0.95rem; line-height: 1.6; background-color: var(--container-bg-light); }
-body.dark-mode .glossary-list dd { border-color: var(--border-color-dark); border-top-color: var(--glossary-dd-border-dark); background-color: var(--container-bg-dark); }
-body[dir="rtl"] .glossary-list dd { border-left:none; border-right: 2px solid var(--glossary-dd-border-light); }
-body[dir="rtl"].dark-mode .glossary-list dd { border-right-color: var(--glossary-dd-border-dark); }
+.glossary-list dt { 
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    color: var(--secondary-accent-light); 
+    background-color: var(--glossary-dt-bg-light); 
+    padding: 10px 15px; /* Increased padding */
+    border-radius: 6px; /* Rounded all corners */
+    border: 1px solid var(--border-color-light); 
+    cursor: pointer; 
+    position: relative; /* For ::after arrow */
+    transition: background-color 0.2s ease;
+}
+.glossary-list dt::after { /* Arrow indicator */
+    content: '▼';
+    font-size: 0.7em;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform 0.3s ease-out;
+}
+body[dir="rtl"] .glossary-list dt::after {
+    right: auto;
+    left: 15px;
+    content: '◀'; /* Adjust arrow for RTL */
+}
+.glossary-list dt[aria-expanded="true"]::after {
+    transform: translateY(-50%) rotate(-180deg);
+}
+body[dir="rtl"] .glossary-list dt[aria-expanded="true"]::after {
+    transform: translateY(-50%) rotate(180deg); /* Adjust arrow for RTL expanded */
+}
+
+.glossary-list dt:hover, .glossary-list dt:focus-visible { 
+    background-color: var(--primary-accent-light);
+    color: #fff;
+    border-color: var(--primary-accent-light);
+    outline: 2px solid var(--focus-ring-color-light); 
+    outline-offset: 1px; 
+}
+body.dark-mode .glossary-list dt { 
+    color: var(--secondary-accent-dark); 
+    background-color: var(--glossary-dt-bg-dark); 
+    border-color: var(--border-color-dark); 
+}
+body.dark-mode .glossary-list dt:hover, body.dark-mode .glossary-list dt:focus-visible { 
+    background-color: var(--primary-accent-dark);
+    color: var(--container-bg-dark);
+    border-color: var(--primary-accent-dark);
+    outline-color: var(--focus-ring-color-dark); 
+}
+.glossary-list dd { 
+    margin-left: 0; 
+    padding: 0 15px; /* Initial padding for transition */
+    margin-bottom: 0; 
+    border: 1px solid var(--border-color-light); 
+    border-top: none; /* Top border removed, dt has bottom border */
+    border-radius: 0 0 6px 6px; 
+    font-size: 0.95rem; 
+    line-height: 1.6; 
+    background-color: var(--glossary-dd-bg-light);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                padding-top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                padding-bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                opacity 0.3s ease-out 0.1s;
+}
+.glossary-list dd.expanded {
+    max-height: 500px; /* Adjust as needed */
+    padding-top: 15px;
+    padding-bottom: 15px;
+    opacity: 1;
+    border-top: 1px dashed var(--glossary-dd-border-light); /* Add separator when expanded */
+}
+body.dark-mode .glossary-list dd { 
+    border-color: var(--border-color-dark); 
+    background-color: var(--glossary-dd-bg-dark);
+}
+body.dark-mode .glossary-list dd.expanded {
+    border-top-color: var(--glossary-dd-border-dark);
+}
 
 
 #string-animation-placeholder .string-mode1 { animation: vibrate1 2s infinite ease-in-out; }
@@ -567,11 +632,9 @@ body[dir="rtl"] .content-section.exiting { transform: translateX(20px) scale(0.9
 body[dir="rtl"] .timeline-container::before { left: auto; right: 18px; }
 body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
 body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; } 
-body[dir="rtl"] .timeline-date { 
-    left: auto; 
-    right: -25px; /* Corresponds to left: -25px for LTR */
-    transform: translateX(100%); /* Aligns left edge of date text */
-}
+body[dir="rtl"] .timeline-date { left: auto; right: -25px; transform: translateX(100%); }
+body[dir="rtl"] .glossary-list dt::after { right: auto; left: 15px; content: '◀'; }
+body[dir="rtl"] .glossary-list dt[aria-expanded="true"]::after { transform: translateY(-50%) rotate(180deg); }
 body[dir="rtl"] .glossary-list dd { border-left:none; border-right: 2px solid var(--glossary-dd-border-light); } 
 body[dir="rtl"].dark-mode .glossary-list dd { border-right-color: var(--glossary-dd-border-dark); }
 
@@ -598,17 +661,8 @@ body[dir="rtl"].dark-mode .glossary-list dd { border-right-color: var(--glossary
     body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 30px; }
     .timeline-milestone-dot { left: -22px; width: 12px; height: 12px; border-width: 2px;} 
     body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -22px; }
-    .timeline-date { 
-        left: -20px; /* Adjust for smaller screens */
-        transform: translateX(-100%); 
-        font-size: 0.75rem; 
-        top: -20px; 
-    }
-    body[dir="rtl"] .timeline-date { 
-        left: auto; 
-        right: -20px; 
-        transform: translateX(100%); 
-    }
+    .timeline-date { left: -20px; transform: translateX(-100%); font-size: 0.75rem; top: -20px; }
+    body[dir="rtl"] .timeline-date { left: auto; right: -20px; transform: translateX(100%); }
 }
 
 @media (max-width: 480px) {
