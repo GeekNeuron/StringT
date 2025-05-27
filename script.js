@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let preferredLang = localStorage.getItem('preferredLang') || (navigator.language.startsWith('fa') ? 'fa' : 'en');
     let currentLang = preferredLang;
     let p5Instance = null; 
-    const sectionTransitionDuration = 500; // ms, should match CSS var(--section-transition-duration)
+    const sectionTransitionDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--section-transition-duration').replace('s', '')) * 1000 || 450;
 
     // --- Functions ---
 
@@ -25,83 +25,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentActiveSection && currentActiveSection !== newActiveSection) {
             currentActiveSection.classList.add('exiting');
-            currentActiveSection.classList.remove('active');
-            // Wait for exit animation to complete before making the new one active
-            // This can be tricky with CSS transitions alone for visibility.
-            // A simple timeout can work, or more complex event listeners.
-            setTimeout(() => {
-                currentActiveSection.classList.remove('exiting');
-            }, sectionTransitionDuration);
+            currentActiveSection.addEventListener('transitionend', function handler() {
+                this.classList.remove('active');
+                this.classList.remove('exiting');
+                this.removeEventListener('transitionend', handler);
+            }, { once: true });
         }
         
-        newActiveSection.classList.remove('exiting'); // Ensure it's not stuck in exiting state
+        newActiveSection.classList.remove('exiting'); 
         newActiveSection.classList.add('active');
 
-        // Manage p5.js lab loop
         sections.forEach((section, index) => {
             if (section.id === 'interactive-lab' && p5Instance) {
                 if (index === currentSectionIndex) {
-                    if (!p5Instance.isLooping()) p5Instance.loop();
-                    if (typeof p5Instance.onSectionActive === 'function') {
-                        p5Instance.onSectionActive();
-                    }
+                    if (typeof p5Instance.isLooping === 'function' && !p5Instance.isLooping()) p5Instance.loop();
+                    if (typeof p5Instance.onSectionActive === 'function') p5Instance.onSectionActive();
                 } else {
-                    if (p5Instance.isLooping()) p5Instance.noLoop();
+                    if (typeof p5Instance.isLooping === 'function' && p5Instance.isLooping()) p5Instance.noLoop();
                 }
             }
         });
 
-        // Set focus to the new section's heading for accessibility
-        const newHeading = newActiveSection.querySelector('h2, h3'); // Try h2 first, then h3
+        const newHeading = newActiveSection.querySelector('h2, h3'); 
         if (newHeading) {
-            newHeading.focus();
+            setTimeout(() => {
+                newActiveSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+                setTimeout(() => newHeading.focus({ preventScroll: true }), 150); // Focus after scroll
+            }, 50); 
         }
-
 
         prevBtn.disabled = currentSectionIndex === 0;
         nextBtn.disabled = currentSectionIndex === sections.length - 1;
         prevBtn.setAttribute('aria-disabled', prevBtn.disabled.toString());
         nextBtn.setAttribute('aria-disabled', nextBtn.disabled.toString());
-
-        // Static string animation placeholder (if used)
-        const stringMode1 = document.querySelector('#string-animation-placeholder .string-mode1');
-        const stringMode2 = document.querySelector('#string-animation-placeholder .string-mode2');
-        if (stringMode1 && stringMode2) {
-            if (newActiveSection.id === 'big-idea') {
-                stringMode1.style.display = 'block'; 
-                stringMode2.style.display = 'none';
-            }
-        }
     }
     
     function updateSvgColors() {
         const isDarkMode = bodyElement.classList.contains('dark-mode');
         const svgs = document.querySelectorAll('.svg-container svg');
-
         svgs.forEach(svg => {
             const dynamicFills = svg.querySelectorAll('[data-light-fill][data-dark-fill]');
-            dynamicFills.forEach(el => {
-                el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill);
-            });
+            dynamicFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
             const dynamicTextFills = svg.querySelectorAll('text[data-light-fill][data-dark-fill]');
-             dynamicTextFills.forEach(el => {
-                el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill);
-            });
+            dynamicTextFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
         });
     }
 
     function switchLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('preferredLang', lang); 
-
         htmlElement.lang = lang;
         htmlElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
-
-        if (lang === 'fa') {
-            bodyElement.style.fontFamily = "'Vazirmatn', 'Roboto', sans-serif";
-        } else {
-            bodyElement.style.fontFamily = "'Roboto', 'Vazirmatn', sans-serif";
-        }
+        bodyElement.style.fontFamily = lang === 'fa' ? "'Vazirmatn', 'Roboto', sans-serif" : "'Roboto', 'Vazirmatn', sans-serif";
         
         langEnBtn.classList.toggle('active-lang', lang === 'en');
         langFaBtn.classList.toggle('active-lang', lang === 'fa');
@@ -117,10 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
                      el.textContent = text;
                 } else if (el.tagName === 'text' && el.closest('svg')) {
                     el.textContent = text;
-                } else if (el.tagName === 'TITLE' || el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'P' || el.tagName === 'BUTTON' || el.classList.contains('visual-placeholder') || el.classList.contains('dark-mode-hint') || el.tagName === 'LI' || el.tagName === 'I' || el.tagName === 'SPAN' && el.closest('.visual-placeholder')) {
+                } else if (el.id === 'string-type-toggle') { 
+                    const isOpen = el.getAttribute('aria-pressed') === 'true';
+                    const openText = el.getAttribute(`data-${lang}-open`);
+                    const closedText = el.getAttribute(`data-${lang}-closed`);
+                    el.textContent = isOpen ? (openText || text) : (closedText || text);
+                }
+                else if (el.tagName === 'TITLE' || el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'P' || el.tagName === 'BUTTON' || el.classList.contains('visual-placeholder') || el.classList.contains('dark-mode-hint') || el.tagName === 'LI' || el.tagName === 'I' || el.tagName === 'SPAN' && (el.closest('.visual-placeholder') || el.closest('.timeline-date') || el.closest('.timeline-content')) || el.tagName === 'DT' || el.tagName === 'DD') {
                      if (el.tagName === 'LI' && el.querySelector('i') && el.getAttribute(textKey).startsWith('<i>')) {
                         el.innerHTML = text;
-                    } else if(el.tagName === 'I' || (el.tagName === 'SPAN' && el.closest('.visual-placeholder'))){
+                    } else if(el.tagName === 'I' || (el.tagName === 'SPAN' && (el.closest('.visual-placeholder') || el.closest('.timeline-date')))){
                          el.textContent = text;
                     }
                     else {
@@ -130,9 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         const titleElement = document.querySelector('title');
-        if (titleElement) {
-            titleElement.textContent = titleElement.getAttribute(`data-${lang}`);
-        }
+        if (titleElement) titleElement.textContent = titleElement.getAttribute(`data-${lang}`);
         updateSvgColors(); 
     }
 
@@ -142,118 +121,85 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
         mainTitle.setAttribute('aria-pressed', isDarkModeEnabled.toString());
         updateSvgColors(); 
-        if (p5Instance && typeof p5Instance.redraw === 'function') { 
-            p5Instance.redraw(); // Redraw p5 sketch if it's currently looping or needs an update
-        }
+        if (p5Instance && typeof p5Instance.redraw === 'function' && p5Instance.isLooping()) p5Instance.redraw();
     }
 
     function applySavedDarkMode() {
         const savedDarkMode = localStorage.getItem('darkMode');
         const isDarkModeEnabled = savedDarkMode === 'enabled';
-        if (isDarkModeEnabled) {
-            bodyElement.classList.add('dark-mode');
-        } else {
-            bodyElement.classList.remove('dark-mode');
-        }
+        if (isDarkModeEnabled) bodyElement.classList.add('dark-mode');
+        else bodyElement.classList.remove('dark-mode');
         mainTitle.setAttribute('aria-pressed', isDarkModeEnabled.toString());
     }
 
+    // --- Timeline Interaction ---
+    const timelineEvents = document.querySelectorAll('.timeline-event');
+    timelineEvents.forEach(event => {
+        const details = event.querySelector('.timeline-details');
+        if (!details) return; // Skip if no details div
+
+        event.addEventListener('click', () => {
+            const isExpanded = details.classList.toggle('expanded');
+            event.setAttribute('aria-expanded', isExpanded.toString());
+            details.setAttribute('aria-hidden', (!isExpanded).toString());
+        });
+        event.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault(); event.click();
+            }
+        });
+    });
+
+
     // --- Event Listeners ---
-    prevBtn.addEventListener('click', () => {
-        if (currentSectionIndex > 0) {
-            currentSectionIndex--;
-            updateSectionDisplay();
-            // window.scrollTo(0, 0); // Scroll handled by focus on heading
-        }
-    });
-
-    nextBtn.addEventListener('click', () => {
-        if (currentSectionIndex < sections.length - 1) {
-            currentSectionIndex++;
-            updateSectionDisplay();
-            // window.scrollTo(0, 0); // Scroll handled by focus on heading
-        }
-    });
-
+    prevBtn.addEventListener('click', () => { if (currentSectionIndex > 0) { currentSectionIndex--; updateSectionDisplay(); }});
+    nextBtn.addEventListener('click', () => { if (currentSectionIndex < sections.length - 1) { currentSectionIndex++; updateSectionDisplay(); }});
     langEnBtn.addEventListener('click', () => { if (currentLang !== 'en') switchLanguage('en'); });
     langFaBtn.addEventListener('click', () => { if (currentLang !== 'fa') switchLanguage('fa'); });
     mainTitle.addEventListener('click', toggleDarkMode);
-    mainTitle.addEventListener('keydown', (e) => { // Allow toggle with Enter/Space
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggleDarkMode();
-        }
-    });
+    mainTitle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDarkMode(); }});
 
 
     // --- p5.js Interactive String Lab Sketch (Instance Mode) ---
     const stringLabSketch = (p) => {
-        let currentVibrationMode = 1;
-        let currentAmplitude = 50;
-        let currentFrequencyFactor = 3; 
-        let baseFrequency = 0.01; 
-        let phase = 0;
-        let isStringTypeOpen = false; // false for closed loop, true for open string
-        
+        let currentVibrationMode = 1; let currentAmplitude = 50; let currentFrequencyFactor = 3; 
+        let baseFrequency = 0.01; let phase = 0; let isStringTypeOpen = false; 
         let modeSlider, amplitudeSlider, frequencySlider, stringTypeToggleBtn;
         let modeValueDisplay, amplitudeValueDisplay, frequencyValueDisplay;
-
         let stringColor, glowColor; 
-        let lastAmplitude = 50; 
-        let lastMode = 1;
-        let flashDuration = 0; 
-        const flashMaxDuration = 20; // Increased duration for more noticeable flash
-        let tempStringColor = null; // For flash color change
+        let lastAmplitude = 50; let lastMode = 1;
+        let flashDuration = 0; const flashMaxDuration = 20; 
+        let tempStringColor = null;
+        let pluckPoints = []; const numStringSegments = 100; 
+        let pluckDecay = 0.96; let pluckWaveSpeed = 0.2; // Increased speed
+        let p5CanvasContainer;
+        let instructionOpacity = 255; // For pluck instruction text
 
         p.setup = () => {
-            const canvasContainer = document.getElementById('p5-canvas-container');
-            if (!canvasContainer) { console.error("p5 canvas container not found"); return; }
-
-            let canvasWidth = canvasContainer.offsetWidth > 20 ? canvasContainer.offsetWidth - 20 : 300;
-            canvasWidth = Math.min(canvasWidth, 600);
-            let canvasHeight = 300;
-
+            p5CanvasContainer = document.getElementById('p5-canvas-container');
+            if (!p5CanvasContainer) { console.error("p5 canvas container not found"); return; }
+            let canvasWidth = p5CanvasContainer.offsetWidth > 20 ? p5CanvasContainer.offsetWidth - 20 : 300;
+            canvasWidth = Math.min(canvasWidth, 600); let canvasHeight = 300;
             const canvas = p.createCanvas(canvasWidth, canvasHeight);
             canvas.parent('p5-canvas-container');
-            p.pixelDensity(1); 
+            p.pixelDensity(p.displayDensity()); 
+
+            for (let i = 0; i <= numStringSegments; i++) pluckPoints[i] = { y: 0, vy: 0 };
 
             modeSlider = document.getElementById('mode-slider');
             amplitudeSlider = document.getElementById('amplitude-slider');
             frequencySlider = document.getElementById('frequency-slider');
             stringTypeToggleBtn = document.getElementById('string-type-toggle');
-
             modeValueDisplay = document.getElementById('mode-value');
             amplitudeValueDisplay = document.getElementById('amplitude-value');
             frequencyValueDisplay = document.getElementById('frequency-value');
             
             const updateValuesAndFlash = (paramChanged = null) => {
-                let modeChanged = false;
-                let amplitudeChanged = false;
-
-                const newMode = parseInt(modeSlider.value);
-                if (newMode !== lastMode) {
-                    modeChanged = true;
-                    lastMode = newMode;
-                }
-                currentVibrationMode = newMode;
-
-                const newAmplitude = parseInt(amplitudeSlider.value);
-                 if (newAmplitude !== lastAmplitude) {
-                    amplitudeChanged = true;
-                    lastAmplitude = newAmplitude;
-                }
-                currentAmplitude = newAmplitude;
-                
-                currentFrequencyFactor = parseInt(frequencySlider.value);
-
-                if (modeValueDisplay) modeValueDisplay.textContent = currentVibrationMode;
-                if (amplitudeValueDisplay) amplitudeValueDisplay.textContent = currentAmplitude;
-                if (frequencyValueDisplay) frequencyValueDisplay.textContent = (baseFrequency * currentFrequencyFactor).toFixed(3);
-                
-                if (paramChanged === 'mode' || paramChanged === 'amplitude' || modeChanged || amplitudeChanged) {
-                    flashDuration = flashMaxDuration; 
-                    tempStringColor = bodyElement.classList.contains('dark-mode') ? '#FFFFFF' : '#000000'; // Flash white/black
-                }
+                let modeChanged = false, amplitudeChanged = false;
+                if (modeSlider) { const newMode = parseInt(modeSlider.value); if (newMode !== lastMode) { modeChanged = true; lastMode = newMode; } currentVibrationMode = newMode; if (modeValueDisplay) modeValueDisplay.textContent = currentVibrationMode; }
+                if (amplitudeSlider) { const newAmplitude = parseInt(amplitudeSlider.value); if (newAmplitude !== lastAmplitude) { amplitudeChanged = true; lastAmplitude = newAmplitude; } currentAmplitude = newAmplitude; if (amplitudeValueDisplay) amplitudeValueDisplay.textContent = currentAmplitude; }
+                if (frequencySlider) { currentFrequencyFactor = parseInt(frequencySlider.value); if (frequencyValueDisplay) frequencyValueDisplay.textContent = (baseFrequency * currentFrequencyFactor).toFixed(3); }
+                if (paramChanged === 'mode' || paramChanged === 'amplitude' || modeChanged || amplitudeChanged) { flashDuration = flashMaxDuration; tempStringColor = bodyElement.classList.contains('dark-mode') ? p.color(255, 255, 255, 230) : p.color(0, 0, 0, 230); }
                 if (!p.isLooping()) p.loop(); 
             };
 
@@ -265,149 +211,152 @@ document.addEventListener('DOMContentLoaded', () => {
                 stringTypeToggleBtn.addEventListener('click', () => {
                     isStringTypeOpen = !isStringTypeOpen;
                     stringTypeToggleBtn.setAttribute('aria-pressed', isStringTypeOpen.toString());
-                    // Update button text based on new state and current language
                     const lang = htmlElement.lang || 'en';
-                    const openText = stringTypeToggleBtn.dataset[lang === 'en' ? 'enOpen' : 'faOpen'] || (lang === 'en' ? "Switch to Closed Loop" : "تغییر به حلقه بسته");
-                    const closedText = stringTypeToggleBtn.dataset[lang === 'en' ? 'enClosed' : 'faClosed'] || (lang === 'en' ? "Switch to Open String" : "تغییر به ریسمان باز");
-                    stringTypeToggleBtn.textContent = isStringTypeOpen ? openText : closedText;
-                    
-                    // Add data attributes to the button in HTML for these texts:
-                    // data-en-open="Switch to Closed Loop" data-fa-open="تغییر به حلقه بسته"
-                    // data-en-closed="Switch to Open String" data-fa-closed="تغییر به ریسمان باز"
-                    // And update switchLanguage to handle these too.
-                    // For now, simple text update:
-                    if (lang === 'en') {
-                        stringTypeToggleBtn.textContent = isStringTypeOpen ? "Switch to Closed Loop" : "Switch to Open String";
-                    } else {
-                        stringTypeToggleBtn.textContent = isStringTypeOpen ? "تغییر به حلقه بسته" : "تغییر به ریسمان باز";
-                    }
-                    // Update data-en/data-fa on the button itself if you want the main lang switcher to handle it.
-                    // For now, this direct update is simpler.
-                    if (p5Instance && !p.isLooping()) p.loop(); // Redraw if paused
+                    const openText = stringTypeToggleBtn.getAttribute(`data-${lang}-open`);
+                    const closedText = stringTypeToggleBtn.getAttribute(`data-${lang}-closed`);
+                    stringTypeToggleBtn.textContent = isStringTypeOpen ? (openText || "Switch to Closed Loop") : (closedText || "Switch to Open String");
+                    if (p5Instance && !p.isLooping()) p.loop();
                 });
             }
+
+            const initiatePluck = (mouseX, mouseY) => {
+                if (mouseY > p.height * 0.15 && mouseY < p.height * 0.85) {
+                    const pluckPosNormalized = p.constrain(mouseX / p.width, 0.01, 0.99);
+                    const pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 2, currentAmplitude * 2);
+                    for (let i = 0; i <= numStringSegments; i++) {
+                        const xNorm = i / numStringSegments; const dist = p.abs(xNorm - pluckPosNormalized);
+                        const influence = p.exp(-dist * dist * (isStringTypeOpen ? 180 : 150) ); // Sharper for open string ends
+                        pluckPoints[i].y = pluckStrengthVal * influence; pluckPoints[i].vy = 0; 
+                    }
+                    p5CanvasContainer.classList.add('grabbing');
+                    flashDuration = flashMaxDuration / 1.5; 
+                    tempStringColor = bodyElement.classList.contains('dark-mode') ? p.color(220,220,255, 200) : p.color(80,80,0, 200); 
+                    instructionOpacity = 0; // Hide instruction after first pluck
+                    if (!p.isLooping()) p.loop();
+                }
+            };
+            canvas.mousePressed(() => initiatePluck(p.mouseX, p.mouseY));
+            canvas.mouseReleased(() => p5CanvasContainer.classList.remove('grabbing'));
+            canvas.touchStarted(() => { if (p.touches.length > 0) { initiatePluck(p.touches[0].x, p.touches[0].y); return false; } });
+            canvas.touchEnded(() => { p5CanvasContainer.classList.remove('grabbing'); return false; });
             updateValuesAndFlash(); 
         };
         
         p.onSectionActive = () => {
-            const canvasContainer = document.getElementById('p5-canvas-container');
-            if (canvasContainer) {
-                 let canvasWidth = canvasContainer.offsetWidth > 20 ? canvasContainer.offsetWidth - 20 : 300;
+            if (p5CanvasContainer) {
+                 let canvasWidth = p5CanvasContainer.offsetWidth > 20 ? p5CanvasContainer.offsetWidth - 20 : 300;
                  canvasWidth = Math.min(canvasWidth, 600);
-                 // p.resizeCanvas(canvasWidth, 300); // Resizing can be complex if aspect ratio changes
+                 // p.resizeCanvas(canvasWidth, 300); 
             }
+            instructionOpacity = 255; // Reset instruction visibility
         };
 
         p.draw = () => {
             p.clear(); 
             const isDarkMode = bodyElement.classList.contains('dark-mode');
             const rootStyles = getComputedStyle(document.documentElement);
-            
             let finalStringColor;
             if (flashDuration > 0) {
-                // Interpolate color towards a bright flash color (e.g., white in dark mode, dark in light mode)
-                const flashProgress = 1 - (flashDuration / flashMaxDuration); // 0 to 1
+                const flashProgress = 1 - (flashDuration / flashMaxDuration); 
                 const baseColor = p.color(isDarkMode ? rootStyles.getPropertyValue('--primary-accent-dark').trim() : rootStyles.getPropertyValue('--primary-accent-light').trim());
-                const flashEffectColor = p.color(isDarkMode ? 255 : 0); // Flash white or black
-                finalStringColor = p.lerpColor(flashEffectColor, baseColor, flashProgress);
+                finalStringColor = p.lerpColor(tempStringColor || baseColor, baseColor, flashProgress); 
                 flashDuration--;
             } else {
                 finalStringColor = p.color(isDarkMode ? rootStyles.getPropertyValue('--primary-accent-dark').trim() : rootStyles.getPropertyValue('--primary-accent-light').trim());
             }
-            glowColor = p.color(isDarkMode ? hexToRgba(rootStyles.getPropertyValue('--primary-accent-dark').trim(), 0.4) : hexToRgba(rootStyles.getPropertyValue('--primary-accent-light').trim(), 0.4));
+            glowColor = p.color(isDarkMode ? hexToRgba(rootStyles.getPropertyValue('--primary-accent-dark').trim(), 0.3) : hexToRgba(rootStyles.getPropertyValue('--primary-accent-light').trim(), 0.3));
+            let currentStrokeWeight = 3 + (flashDuration > 0 ? 2.5 * (flashDuration / flashMaxDuration) : 0) ;
+
+            // Update pluck wave physics
+            let newPluckPoints = pluckPoints.map(pt => ({ ...pt })); // Deep copy for modification
+
+            for (let iter = 0; iter < 2; iter++) { // Multiple iterations for stability/speed
+                for (let i = 1; i < numStringSegments; i++) {
+                    let prevY = pluckPoints[i-1].y; let currentY = pluckPoints[i].y; let nextY = pluckPoints[i+1].y;
+                    let acceleration = (prevY + nextY - 2 * currentY) * pluckWaveSpeed * pluckWaveSpeed;
+                    newPluckPoints[i].vy += acceleration;
+                }
+                for (let i = 1; i < numStringSegments; i++) {
+                     newPluckPoints[i].vy *= pluckDecay; 
+                     newPluckPoints[i].y += newPluckPoints[i].vy;
+                }
+                if (isStringTypeOpen) { 
+                    newPluckPoints[0].y = 0; newPluckPoints[0].vy = 0;
+                    newPluckPoints[numStringSegments].y = 0; newPluckPoints[numStringSegments].vy = 0;
+                } else { 
+                    let accFirst = (pluckPoints[numStringSegments-1].y + pluckPoints[1].y - 2 * pluckPoints[0].y) * pluckWaveSpeed * pluckWaveSpeed; // Use numStringSegments-1 for loop back
+                    newPluckPoints[0].vy += accFirst; newPluckPoints[0].vy *= pluckDecay;
+                    newPluckPoints[0].y += newPluckPoints[0].vy;
+                    newPluckPoints[numStringSegments] = {y: newPluckPoints[0].y, vy: newPluckPoints[0].vy}; // Loop back last point
+                }
+                pluckPoints = newPluckPoints.map(pt => ({ ...pt })); // Update main array
+            }
             
-            let currentStrokeWeight = 3 + (flashDuration > 0 ? 2 * (flashDuration / flashMaxDuration) : 0) ;
-
-
             p.push(); 
-            p.drawingContext.shadowBlur = 10 + (flashDuration > 0 ? 10 * (flashDuration / flashMaxDuration) : 0);
-            p.drawingContext.shadowColor = glowColor.toString(); // p5 color to string
-            
-            p.stroke(finalStringColor);
-            p.strokeWeight(currentStrokeWeight);
-            p.noFill();
+            p.drawingContext.shadowBlur = 8 + (flashDuration > 0 ? 12 * (flashDuration / flashMaxDuration) : 0);
+            p.drawingContext.shadowColor = glowColor.toString(); 
+            p.stroke(finalStringColor); p.strokeWeight(currentStrokeWeight); p.noFill();
 
             p.beginShape();
-            let startX = isStringTypeOpen ? p.width * 0.1 : 0; // Start further in for open string
-            let endX = isStringTypeOpen ? p.width * 0.9 : p.width;   // End sooner for open string
+            let startX = isStringTypeOpen ? p.width * 0.05 : 0; let endX = isStringTypeOpen ? p.width * 0.95 : p.width;   
             let effectiveWidth = endX - startX;
 
-            for (let x = 0; x <= effectiveWidth; x += 5) {
-                let yOffset = 0;
-                let effectiveAmplitude = currentAmplitude;
-                
+            for (let i = 0; i <= numStringSegments; i++) {
+                let x_norm_segment = i / numStringSegments; 
+                let x_abs = startX + x_norm_segment * effectiveWidth;
+                let yOffset_mode = 0; let effectiveAmplitude = currentAmplitude;
                 if (currentVibrationMode > 2) effectiveAmplitude *= (1 - (currentVibrationMode - 2) * 0.15);
                 effectiveAmplitude = Math.max(5, effectiveAmplitude);
-
-                // For open strings, ends should be (relatively) fixed or have less amplitude
-                let boundaryFactor = 1.0;
-                if (isStringTypeOpen) {
-                    const distFromEnd = Math.min(x, effectiveWidth - x);
-                    boundaryFactor = p.map(distFromEnd, 0, effectiveWidth * 0.1, 0.1, 1, true); // Dampen near ends
-                }
-                
-                yOffset = (effectiveAmplitude * boundaryFactor) * p.sin(phase + p.map(x, 0, effectiveWidth, 0, currentVibrationMode * p.PI));
-                p.vertex(startX + x, p.height / 2 + yOffset);
+                let boundaryFactor = isStringTypeOpen ? p.sin(x_norm_segment * p.PI) : 1.0;
+                yOffset_mode = (effectiveAmplitude * boundaryFactor) * p.sin(phase + currentVibrationMode * p.PI * x_norm_segment);
+                let yOffset_pluck = pluckPoints[i].y;
+                p.vertex(x_abs, p.height / 2 + yOffset_mode + yOffset_pluck);
             }
-            if (!isStringTypeOpen) { // Close the loop for closed string
-                // This is a simple visual connection, not a true loop projection
-                let firstX = 0;
-                let firstYOffset = effectiveAmplitude * p.sin(phase + p.map(firstX, 0, p.width, 0, currentVibrationMode * p.PI));
-                p.vertex(firstX, p.height / 2 + firstYOffset);
-            }
-            p.endShape(isStringTypeOpen ? null : p.CLOSE); // Use p.CLOSE for closed string, otherwise default (open)
+            p.endShape(isStringTypeOpen ? null : undefined); // Use undefined for open, p.CLOSE handled by connecting last to first for closed.
             
             p.pop(); 
-
             phase += (baseFrequency * currentFrequencyFactor);
+            
+            // Draw pluck instruction
+            if (instructionOpacity > 0) {
+                p.fill(isDarkMode ? 200 : 100, instructionOpacity);
+                p.noStroke();
+                p.textAlign(p.CENTER, p.CENTER);
+                p.textSize(12);
+                const instructionText = htmlElement.lang === 'fa' ? "برای «کندن» کلیک و درگ کنید" : "Click & Drag to 'Pluck'";
+                p.text(instructionText, p.width / 2, p.height - 20);
+                instructionOpacity -= 1.5; // Fade out
+            }
         };
         
         function hexToRgba(hex, alpha) {
             let r = 0, g = 0, b = 0;
-            if (!hex || typeof hex !== 'string') return `rgba(128,128,128,${alpha})`; // Default grey
-            if (hex.length == 4) { 
-                r = parseInt(hex[1] + hex[1], 16); g = parseInt(hex[2] + hex[2], 16); b = parseInt(hex[3] + hex[3], 16);
-            } else if (hex.length == 7) { 
-                r = parseInt(hex[1] + hex[2], 16); g = parseInt(hex[3] + hex[4], 16); b = parseInt(hex[5] + hex[6], 16);
-            }
+            if (!hex || typeof hex !== 'string') return `rgba(128,128,128,${alpha})`; 
+            if (hex.length == 4) { r = parseInt(hex[1] + hex[1], 16); g = parseInt(hex[2] + hex[2], 16); b = parseInt(hex[3] + hex[3], 16); } 
+            else if (hex.length == 7) { r = parseInt(hex[1] + hex[2], 16); g = parseInt(hex[3] + hex[4], 16); b = parseInt(hex[5] + hex[6], 16); }
             return `rgba(${r},${g},${b},${alpha})`;
         }
     };
 
     // --- Initialization ---
     applySavedDarkMode(); 
-    
-    if (document.getElementById('interactive-lab')) {
-        p5Instance = new p5(stringLabSketch);
-    }
-    
+    if (document.getElementById('interactive-lab')) p5Instance = new p5(stringLabSketch);
     updateSectionDisplay(); 
     switchLanguage(currentLang); 
 
     const sliderLabels = document.querySelectorAll('.slider-control label');
     sliderLabels.forEach(label => {
         const textKey = `data-${currentLang}`;
-        if (label.hasAttribute(textKey)) {
-            label.textContent = label.getAttribute(textKey);
-        }
+        if (label.hasAttribute(textKey)) label.textContent = label.getAttribute(textKey);
         const slider = label.nextElementSibling;
-        if (slider && slider.tagName === 'INPUT' && slider.type === 'range') {
-            // label.id = slider.id + '-label'; // Already set in HTML
-            slider.setAttribute('aria-labelledby', label.id);
-        }
+        if (slider && slider.tagName === 'INPUT' && slider.type === 'range') slider.setAttribute('aria-labelledby', label.id);
     });
-     // Initialize string type toggle button text
     const stringTypeToggleBtn = document.getElementById('string-type-toggle');
-    if (stringTypeToggleBtn) {
+    if (stringTypeToggleBtn) { // Initialize button text
         const lang = htmlElement.lang || 'en';
-        // Add these data attributes to the button in HTML for proper translation by switchLanguage:
-        // data-en-closed="Switch to Open String" data-fa-closed="تغییر به ریسمان باز"
-        // data-en-open="Switch to Closed Loop" data-fa-open="تغییر به حلقه بسته"
-        // For now, setting initial text directly:
-        if (lang === 'en') {
-            stringTypeToggleBtn.textContent = "Switch to Open String";
-        } else {
-            stringTypeToggleBtn.textContent = "تغییر به ریسمان باز";
-        }
+        const isOpen = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true';
+        const openText = stringTypeToggleBtn.getAttribute(`data-${lang}-open`);
+        const closedText = stringTypeToggleBtn.getAttribute(`data-${lang}-closed`);
+        stringTypeToggleBtn.textContent = isOpen ? (openText || "Switch to Closed Loop") : (closedText || "Switch to Open String");
     }
 });
