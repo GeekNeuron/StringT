@@ -246,7 +246,7 @@ body.dark-mode .content-section {
     border-bottom: 1px solid var(--border-color-dark); 
 }
 #interactive-content > .content-section:last-of-type {
-    /* border-bottom: none; /* Removed to ensure consistent spacing before nav */
+    /* border-bottom: none; /* Rely on nav's top border */
 }
 
 
@@ -387,16 +387,39 @@ body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
 .timeline-milestone-dot { position: absolute; left: -28px; top: 18px; width: 14px; height: 14px; background-color: var(--timeline-dot-bg-light); border: 2px solid var(--timeline-dot-border-light); border-radius: 50%; z-index: 1; }
 body.dark-mode .timeline-milestone-dot { background-color: var(--timeline-dot-bg-dark); border: 2px solid var(--timeline-dot-border-dark); }
 body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; }
-.timeline-date { position: absolute; left: -25px; top: -8px; transform: translateX(-100%); font-size: 0.8rem; font-weight: bold; color: var(--secondary-accent-light); background-color: var(--bg-color-light); padding: 2px 5px; border-radius: 4px; white-space: nowrap; z-index: 2; }
-body.dark-mode .timeline-date { color: var(--secondary-accent-dark); background-color: var(--bg-color-dark); }
-body[dir="rtl"] .timeline-date { left: auto; right: -25px; transform: translateX(100%); }
+
+/* LAYOUT_FIX: Timeline Date Positioning (Desktop) */
+.timeline-date {
+    position: absolute;
+    left: -20px; /* Adjusted from -25px to bring it 5px more "inside" */
+    transform: translateX(-100%); /* Aligns right edge of date text to the 'left' value */
+    top: -8px; 
+    font-size: 0.8rem; 
+    font-weight: bold; 
+    color: var(--secondary-accent-light); 
+    background-color: var(--bg-color-light); 
+    padding: 2px 5px; 
+    border-radius: 4px; 
+    white-space: nowrap; 
+    z-index: 2; 
+}
+body.dark-mode .timeline-date { 
+    color: var(--secondary-accent-dark); 
+    background-color: var(--bg-color-dark); 
+}
+body[dir="rtl"] .timeline-date { 
+    left: auto; 
+    right: -20px; /* Adjusted for RTL */
+    transform: translateX(100%); /* Aligns left edge of date text to the 'right' value */
+}
+
 .timeline-content h3 { margin-top: 0; font-size: 1.15rem; margin-bottom: 6px; }
 .timeline-content p { font-size: 0.9rem; margin-bottom: 6px; }
 .timeline-details { 
     max-height: 0; 
     overflow: hidden; 
     margin-top: 8px; 
-    padding: 0 10px; /* Initial padding for transition */
+    padding: 0 10px; 
     background-color: var(--timeline-details-bg-light); 
     border-radius: 4px; 
     font-size: 0.85rem; 
@@ -404,11 +427,11 @@ body[dir="rtl"] .timeline-date { left: auto; right: -25px; transform: translateX
     transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 padding-top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 padding-bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                opacity 0.3s ease-out 0.1s; /* Delay opacity for smoother feel */
+                opacity 0.3s ease-out 0.1s; 
     opacity: 0; 
 }
 .timeline-details.expanded { 
-    max-height: 400px; /* Adjust as needed */
+    max-height: 400px; 
     padding-top: 8px; 
     padding-bottom: 8px; 
     opacity: 1; 
@@ -425,14 +448,15 @@ body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline
     font-size: 1.1rem; 
     color: var(--secondary-accent-light); 
     background-color: var(--glossary-dt-bg-light); 
-    padding: 10px 15px; /* Increased padding */
-    border-radius: 6px; /* Rounded all corners */
+    padding: 10px 15px; 
+    border-radius: 6px; /* Rounded all corners for clickable feel */
     border: 1px solid var(--border-color-light); 
+    /* border-bottom: none; /* Removed, will be handled by expanded state */
     cursor: pointer; 
-    position: relative; /* For ::after arrow */
+    position: relative; 
     transition: background-color 0.2s ease;
 }
-.glossary-list dt::after { /* Arrow indicator */
+.glossary-list dt::after { 
     content: '▼';
     font-size: 0.7em;
     position: absolute;
@@ -444,13 +468,17 @@ body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline
 body[dir="rtl"] .glossary-list dt::after {
     right: auto;
     left: 15px;
-    content: '◀'; /* Adjust arrow for RTL */
+    content: '◀'; 
 }
 .glossary-list dt[aria-expanded="true"]::after {
     transform: translateY(-50%) rotate(-180deg);
 }
 body[dir="rtl"] .glossary-list dt[aria-expanded="true"]::after {
-    transform: translateY(-50%) rotate(180deg); /* Adjust arrow for RTL expanded */
+    transform: translateY(-50%) rotate(180deg); 
+}
+.glossary-list dt[aria-expanded="true"] {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .glossary-list dt:hover, .glossary-list dt:focus-visible { 
@@ -473,10 +501,10 @@ body.dark-mode .glossary-list dt:hover, body.dark-mode .glossary-list dt:focus-v
 }
 .glossary-list dd { 
     margin-left: 0; 
-    padding: 0 15px; /* Initial padding for transition */
+    padding: 0 15px; 
     margin-bottom: 0; 
     border: 1px solid var(--border-color-light); 
-    border-top: none; /* Top border removed, dt has bottom border */
+    border-top: none; 
     border-radius: 0 0 6px 6px; 
     font-size: 0.95rem; 
     line-height: 1.6; 
@@ -490,11 +518,11 @@ body.dark-mode .glossary-list dt:hover, body.dark-mode .glossary-list dt:focus-v
                 opacity 0.3s ease-out 0.1s;
 }
 .glossary-list dd.expanded {
-    max-height: 500px; /* Adjust as needed */
+    max-height: 500px; 
     padding-top: 15px;
     padding-bottom: 15px;
     opacity: 1;
-    border-top: 1px dashed var(--glossary-dd-border-light); /* Add separator when expanded */
+    border-top: 1px dashed var(--glossary-dd-border-light); 
 }
 body.dark-mode .glossary-list dd { 
     border-color: var(--border-color-dark); 
@@ -632,7 +660,11 @@ body[dir="rtl"] .content-section.exiting { transform: translateX(20px) scale(0.9
 body[dir="rtl"] .timeline-container::before { left: auto; right: 18px; }
 body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
 body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; } 
-body[dir="rtl"] .timeline-date { left: auto; right: -25px; transform: translateX(100%); }
+body[dir="rtl"] .timeline-date { 
+    left: auto; 
+    right: -20px; /* Adjusted from -25px */
+    transform: translateX(100%); 
+}
 body[dir="rtl"] .glossary-list dt::after { right: auto; left: 15px; content: '◀'; }
 body[dir="rtl"] .glossary-list dt[aria-expanded="true"]::after { transform: translateY(-50%) rotate(180deg); }
 body[dir="rtl"] .glossary-list dd { border-left:none; border-right: 2px solid var(--glossary-dd-border-light); } 
@@ -661,8 +693,17 @@ body[dir="rtl"].dark-mode .glossary-list dd { border-right-color: var(--glossary
     body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 30px; }
     .timeline-milestone-dot { left: -22px; width: 12px; height: 12px; border-width: 2px;} 
     body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -22px; }
-    .timeline-date { left: -20px; transform: translateX(-100%); font-size: 0.75rem; top: -20px; }
-    body[dir="rtl"] .timeline-date { left: auto; right: -20px; transform: translateX(100%); }
+    .timeline-date { 
+        left: -20px; /* Consistent with desktop adjustment if needed, or specific for tablet */
+        transform: translateX(-100%); 
+        font-size: 0.75rem; 
+        top: -20px; 
+    }
+    body[dir="rtl"] .timeline-date { 
+        left: auto; 
+        right: -20px; 
+        transform: translateX(100%); 
+    }
 }
 
 @media (max-width: 480px) {
