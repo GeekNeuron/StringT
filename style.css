@@ -9,7 +9,7 @@
     --border-color-light: #e1e5e8;
     --button-bg-light: #e9ecef;
     --button-text-light: #333a45;
-    --placeholder-bg-light: #e9ecef;
+    --placeholder-bg-light: #f0f2f5; /* Slightly different for SVG placeholders */
     --placeholder-text-light: #6c757d;
     --svg-stroke-light: #007bff;
     --svg-fill-light: rgba(0, 123, 255, 0.1);
@@ -35,7 +35,7 @@
     --border-color-dark: #333333;
     --button-bg-dark: #333333;
     --button-text-dark: #e0e0e0;
-    --placeholder-bg-dark: #2c2c2c;
+    --placeholder-bg-dark: #2a2e33; /* Slightly different for SVG placeholders */
     --placeholder-text-dark: #888888;
     --svg-stroke-dark: #00a1ff;
     --svg-fill-dark: rgba(0, 161, 255, 0.15);
@@ -51,36 +51,16 @@
     --focus-ring-color-dark: rgba(0, 161, 255, 0.5);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, fill 0.3s ease, stroke 0.3s ease, box-shadow 0.2s ease, outline-color 0.2s ease; } /* Added box-shadow and outline-color to transition */
+* { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, fill 0.3s ease, stroke 0.3s ease, box-shadow 0.2s ease, outline-color 0.2s ease; }
+html { scroll-behavior: smooth; } /* Smooth scroll for skip link and focus management */
 body { font-family: 'Roboto', 'Vazirmatn', sans-serif; line-height: 1.7; background-color: var(--bg-color-light); color: var(--text-color-light); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; overflow-x: hidden; }
 body.dark-mode { background-color: var(--bg-color-dark); color: var(--text-color-dark); }
 
 /* Skip Link */
-.skip-link {
-    position: absolute;
-    top: -40px; /* Initially hidden off-screen */
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--primary-accent-light);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 0 0 5px 5px;
-    z-index: 9999;
-    text-decoration: none;
-    font-weight: bold;
-    transition: top 0.3s ease-in-out;
-}
-.skip-link:focus {
-    top: 0; /* Bring into view on focus */
-    outline: 2px solid var(--secondary-accent-light);
-    outline-offset: 2px;
-}
-body.dark-mode .skip-link {
-    background-color: var(--primary-accent-dark);
-}
-body.dark-mode .skip-link:focus {
-    outline-color: var(--secondary-accent-dark);
-}
+.skip-link { position: absolute; top: -100px; /* Further off-screen */ left: 50%; transform: translateX(-50%); background-color: var(--primary-accent-light); color: white; padding: 10px 20px; border-radius: 0 0 8px 8px; z-index: 9999; text-decoration: none; font-weight: bold; transition: top 0.3s ease-in-out; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.skip-link:focus { top: 0; outline: 3px solid var(--secondary-accent-light); outline-offset: 2px; }
+body.dark-mode .skip-link { background-color: var(--primary-accent-dark); }
+body.dark-mode .skip-link:focus { outline-color: var(--secondary-accent-dark); }
 
 
 .container { width: 100%; max-width: 900px; background-color: var(--container-bg-light); padding: 30px 40px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); border: 1px solid var(--border-color-light); }
@@ -121,9 +101,35 @@ body.dark-mode .deeper-study { background-color: rgba(0,161,255,0.07); border-le
 body.dark-mode .deeper-study strong { color: var(--secondary-accent-dark); }
 .deeper-study p { font-size: 0.95rem; margin-bottom: 0; }
 
-.visual-placeholder { width: 100%; min-height: 150px; padding: 20px; background-color: var(--placeholder-bg-light); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-style: italic; color: var(--placeholder-text-light); margin-top: 25px; text-align: center; border: 1px dashed #ccc; overflow: hidden; }
-body.dark-mode .visual-placeholder { background-color: var(--placeholder-bg-dark); color: var(--placeholder-text-dark); border: 1px dashed #444; }
-.svg-container svg { max-width: 100%; max-height: 250px; display: block; margin: auto; }
+/* SVG Placeholder and general SVG styles */
+.svg-placeholder-container {
+    width: 100%;
+    min-height: 150px; /* Default min height for placeholders */
+    padding: 10px; /* Reduced padding for tighter fit */
+    background-color: var(--placeholder-bg-light);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    border: 1px dashed var(--border-color-light);
+    overflow: hidden;
+}
+body.dark-mode .svg-placeholder-container {
+    background-color: var(--placeholder-bg-dark);
+    border-color: var(--border-color-dark);
+}
+.svg-placeholder-container.visual-placeholder:empty::before { /* Show text if SVG fails to load or is empty */
+    content: attr(aria-label) " (Loading...)"; /* Use aria-label as fallback text */
+    font-style: italic;
+    color: var(--placeholder-text-light);
+    text-align: center;
+}
+body.dark-mode .svg-placeholder-container.visual-placeholder:empty::before {
+    color: var(--placeholder-text-dark);
+}
+
+.svg-placeholder-container svg { max-width: 100%; max-height: 250px; display: block; margin: auto; }
 .svg-line { stroke: var(--svg-stroke-light); stroke-width: 1.5; fill: none; }
 body.dark-mode .svg-line { stroke: var(--svg-stroke-dark); }
 .svg-dynamic-stroke { stroke: var(--svg-stroke-light); }
