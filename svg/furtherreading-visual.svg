@@ -1,1 +1,14 @@
-
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .book-coverV11 { stroke-width: 2; } /* Renamed class */
+        .book-pagesV11 { stroke: #bbb; stroke-width: 1.5; stroke-linecap: round; } /* Renamed class */
+        body.dark-mode .book-pagesV11 { stroke: #555; }
+    </style>
+    <path d="M20,80 L20,20 Q20,10 30,10 L70,10 Q80,10 80,20 L80,80 Q80,90 70,90 L30,90 Q20,90 20,80 Z" class="svg-path book-coverV11"/>
+    <line x1="23" y1="25" x2="77" y2="25" class="book-pagesV11"/>
+    <line x1="23" y1="30" x2="77" y2="30" class="book-pagesV11"/>
+    <line x1="23" y1="35" x2="65" y2="35" class="book-pagesV11"/>
+    <line x1="23" y1="40" x2="70" y2="40" class="book-pagesV11"/>
+    <line x1="20" y1="15" x2="80" y2="15" class="svg-line" stroke-width="3"/>
+     <text x="50" y="60" class="svg-text svg-dynamic-text" font-size="8px" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="furtherReadingVisualText">Read More</text>
+</svg>
