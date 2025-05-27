@@ -1,17 +1,16 @@
-// js/script.js
-
 // Main application namespace
 window.stringTheoryApp = {};
 
-console.log("script.js: File loaded.");
+console.log("DEBUG: script.js: File execution started.");
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOMContentLoaded event fired.");
+    console.log("DEBUG: DOMContentLoaded event fired.");
 
     // --- DOM Element Selection ---
     let sectionsContainer, sections = [], prevBtn, nextBtn, langEnBtn, langFaBtn, mainTitleElement, bodyElement, htmlElement, skipLink;
 
     try {
+        console.log("DEBUG: Attempting to select DOM elements...");
         sectionsContainer = document.getElementById('interactive-content');
         sections = Array.from(document.querySelectorAll('.content-section'));
         prevBtn = document.getElementById('prev-btn');
@@ -22,17 +21,25 @@ document.addEventListener('DOMContentLoaded', () => {
         bodyElement = document.body;
         htmlElement = document.documentElement;
         skipLink = document.querySelector('.skip-link');
-        console.log("DOM elements selected successfully.");
-        if (!sectionsContainer || sections.length === 0 || !prevBtn || !nextBtn || !langEnBtn || !langFaBtn || !mainTitleElement) {
-            console.error("CRITICAL: One or more essential DOM elements not found. Check HTML IDs.");
-            throw new Error("Essential DOM elements missing.");
-        }
-    } catch (e) {
-        console.error("Error selecting DOM elements:", e);
-        document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12).</p>`;
-        return; // Stop execution if essential elements are missing
-    }
+        
+        if (!sectionsContainer) console.error("DEBUG: sectionsContainer NOT FOUND!");
+        if (sections.length === 0) console.warn("DEBUG: No elements with class .content-section found!");
+        if (!prevBtn) console.error("DEBUG: prevBtn NOT FOUND!");
+        if (!nextBtn) console.error("DEBUG: nextBtn NOT FOUND!");
+        if (!langEnBtn) console.error("DEBUG: langEnBtn NOT FOUND!");
+        if (!langFaBtn) console.error("DEBUG: langFaBtn NOT FOUND!");
+        if (!mainTitleElement) console.error("DEBUG: mainTitleElement NOT FOUND!");
 
+        if (!sectionsContainer || sections.length === 0 || !prevBtn || !nextBtn || !langEnBtn || !langFaBtn || !mainTitleElement) {
+            console.error("CRITICAL DEBUG: One or more essential DOM elements not found. Check HTML IDs and structure.");
+            throw new Error("Essential DOM elements missing. Cannot proceed.");
+        }
+        console.log("DEBUG: DOM elements selected successfully.");
+    } catch (e) {
+        console.error("CRITICAL DEBUG: Error selecting DOM elements:", e);
+        document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details like missing element IDs.</p>`;
+        return; 
+    }
 
     // --- State Variables ---
     let currentSectionIndex = 0;
@@ -44,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.stringTheoryApp.getTranslation = (key, fallbackText = '') => {
         const translated = translations[key];
         if (translated === undefined) {
-            // console.warn(`Translation key missing for p5: '${key}'`);
+            // console.warn(`DEBUG: Translation key missing for p5: '${key}'`);
             return fallbackText || key;
         }
         return translated;
@@ -52,14 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadSvg(placeholderElement, filePath) {
         if (!placeholderElement) {
-            console.warn(`SVG placeholder element not found for path: ${filePath}`);
+            console.warn(`DEBUG: SVG placeholder element not found for path: ${filePath}`);
             return { status: 'placeholder_not_found', path: filePath };
         }
-        // console.log(`Attempting to load SVG: ${filePath} into placeholder:`, placeholderElement.id);
+        // console.log(`DEBUG: Attempting to load SVG: ${filePath} into placeholder:`, placeholderElement.id);
         try {
-            const response = await fetch(filePath + `?v=${new Date().getTime()}`); // Cache busting
+            const response = await fetch(filePath + `?v=${new Date().getTime()}`);
             if (!response.ok) {
-                console.error(`Failed to load SVG: ${filePath}, Status: ${response.status} ${response.statusText}`);
+                console.error(`DEBUG: Failed to load SVG: ${filePath}, Status: ${response.status} ${response.statusText}`);
                 placeholderElement.innerHTML = `<p class="error-message">Error loading: ${filePath.split('/').pop()} (${response.status})</p>`;
                 return { status: 'fetch_error', path: filePath, code: response.status };
             }
@@ -68,12 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const svgElement = placeholderElement.querySelector('svg');
             if (svgElement) {
                 applyDynamicSvgStyles(svgElement, bodyElement.classList.contains('dark-mode'));
-                applySvgTextTranslations(svgElement);
+                applySvgTextTranslations(svgElement); // Translate text within newly loaded SVG
             }
-            // console.log(`Successfully loaded SVG: ${filePath}`);
+            // console.log(`DEBUG: Successfully loaded SVG: ${filePath}`);
             return { status: 'success', path: filePath };
         } catch (error) {
-            console.error(`Network error fetching SVG ${filePath}:`, error);
+            console.error(`DEBUG: Network error fetching SVG ${filePath}:`, error);
             placeholderElement.innerHTML = `<p class="error-message">Network error loading SVG: ${filePath.split('/').pop()}</p>`;
             return { status: 'network_error', path: filePath, error: error.message };
         }
@@ -97,24 +104,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchTranslations(lang) {
-        console.log(`Fetching translations for: ${lang} from lang/${lang}.json`);
+        console.log(`DEBUG: Fetching translations for: ${lang} from lang/${lang}.json`);
         try {
             const response = await fetch(`lang/${lang}.json?v=${new Date().getTime()}`);
+            console.log(`DEBUG: Fetch response for lang/${lang}.json status: ${response.status}`);
             if (!response.ok) {
-                console.error(`Could not load ${lang}.json. Status: ${response.status} ${response.statusText}`);
+                console.error(`DEBUG: Could not load ${lang}.json. Status: ${response.status} ${response.statusText}`);
                 if (lang !== 'en') {
-                    console.warn(`Falling back to English translations.`);
+                    console.warn(`DEBUG: Falling back to English translations.`);
                     return fetchTranslations('en');
                 }
                 return {};
             }
             const data = await response.json();
-            console.log(`Successfully fetched translations for ${lang}. Number of keys: ${Object.keys(data).length}`);
+            console.log(`DEBUG: Successfully fetched and parsed translations for ${lang}. Number of keys: ${Object.keys(data).length}`);
             return data;
         } catch (error) {
-            console.error(`Error fetching or parsing translations for ${lang}:`, error);
+            console.error(`DEBUG: Error fetching or parsing translations for ${lang}:`, error);
             if (lang !== 'en') {
-                console.warn(`Falling back to English translations due to error.`);
+                console.warn(`DEBUG: Falling back to English translations due to error.`);
                 return fetchTranslations('en');
             }
             return {};
@@ -123,10 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyTranslationsToPage() {
         if (!translations || Object.keys(translations).length === 0) {
-            console.warn("Translations not loaded or empty. Page text might not update correctly.");
+            console.warn("DEBUG: Translations not loaded or empty. Page text might not update correctly.");
             return;
         }
-        console.log("Applying translations to page...");
+        console.log("DEBUG: Applying translations to page...");
         const docTitleKey = "docTitle";
         if (translations[docTitleKey] !== undefined) document.title = translations[docTitleKey];
 
@@ -145,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (p5LabInstance && typeof p5LabInstance.redraw === 'function' && p5LabInstance.isLooping()) {
              p5LabInstance.redraw();
         }
-        console.log("Translations applied.");
+        console.log("DEBUG: Translations applied.");
     }
 
     async function switchLanguage(lang) {
@@ -195,14 +203,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSectionDisplay() {
         if (sections.length === 0) {
-            console.warn("No sections found to display.");
+            console.warn("DEBUG: No sections found to display.");
             return;
         }
         const currentActiveSection = sectionsContainer.querySelector('.content-section.active');
         const newActiveSection = sections[currentSectionIndex];
 
         if (!newActiveSection) {
-            console.error(`New active section at index ${currentSectionIndex} is undefined.`);
+            console.error(`DEBUG: New active section at index ${currentSectionIndex} is undefined.`);
             return;
         }
 
@@ -273,12 +281,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function initializeP5Lab() {
-        console.log("Attempting to initialize p5 Lab...");
+        console.log("DEBUG: Attempting to initialize p5 Lab...");
         if (typeof stringLabSketch === 'function' && document.getElementById('interactive-lab')) {
-            console.log("stringLabSketch function found and interactive-lab element exists.");
+            console.log("DEBUG: stringLabSketch function found and interactive-lab element exists.");
             try {
                 p5LabInstance = new p5(stringLabSketch); 
-                console.log("p5 instance created.");
+                console.log("DEBUG: p5 instance created.");
 
                 const modeSlider = document.getElementById('mode-slider');
                 const amplitudeSlider = document.getElementById('amplitude-slider');
@@ -293,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isOpen = stringTypeToggleBtn ? stringTypeToggleBtn.getAttribute('aria-pressed') === 'true' : false;
                         p5LabInstance.updateP5Controls(mode, amp, freqFactor, isOpen);
                     } else {
-                        console.warn("p5LabInstance or updateP5Controls not available.");
+                        console.warn("DEBUG: p5LabInstance or updateP5Controls not available.");
                     }
                 }
                 if (modeSlider) modeSlider.addEventListener('input', updateP5SketchFromControls);
@@ -309,25 +317,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         updateP5SketchFromControls(); 
                     });
                 }
-                console.log("p5 Lab controls initialized.");
+                console.log("DEBUG: p5 Lab controls initialized.");
             } catch (e) {
-                console.error("Error initializing p5 sketch instance:", e);
+                console.error("DEBUG: Error initializing p5 sketch instance:", e);
             }
         } else {
             if (typeof stringLabSketch !== 'function') {
-                console.error("CRITICAL: stringLabSketch is not defined. Ensure p5_sketch.js is loaded correctly and defines this function globally.");
+                console.error("CRITICAL DEBUG: stringLabSketch is not defined. Ensure p5_sketch.js is loaded BEFORE script.js and defines this function in the global scope.");
             }
             if(!document.getElementById('interactive-lab')){
-                console.warn("Interactive lab section ('interactive-lab') not found in HTML.");
+                console.warn("DEBUG: Interactive lab section ('interactive-lab') not found in HTML.");
             }
         }
     }
 
     async function initializeApp() {
-        console.log("Starting application initialization (initializeApp)...");
+        console.log("DEBUG: Starting application initialization (initializeApp)...");
         applySavedDarkMode(); 
         
-        console.log("Loading SVGs...");
+        console.log("DEBUG: Loading SVGs...");
         const svgPlaceholdersMap = {
             'intro-svg': 'svg/intro-visual.svg',
             'problem-svg': 'svg/problem-visual.svg',
@@ -349,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (element) {
                 svgLoadPromises.push(loadSvg(element, svgPlaceholdersMap[id]));
             } else {
-                console.warn(`SVG placeholder div with ID '${id}' not found in HTML during initializeApp.`);
+                console.warn(`DEBUG: SVG placeholder div with ID '${id}' not found in HTML during initializeApp.`);
             }
         }
         
@@ -357,21 +365,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const svgLoadResults = await Promise.all(svgLoadPromises);
             let allSvgsLoadedSuccessfully = true;
             svgLoadResults.forEach(result => {
-                if (result && result.status !== 'success') {
+                if (result && result.status !== 'success') { // Check if result is defined
                     allSvgsLoadedSuccessfully = false;
-                    console.warn(`SVG loading issue: ${result.status} for ${result.path}${result.code ? ' (Code: ' + result.code + ')' : ''}${result.error ? ' Error: ' + result.error : ''}`);
+                    console.warn(`DEBUG: SVG loading issue: ${result.status} for ${result.path}${result.code ? ' (Code: ' + result.code + ')' : ''}${result.error ? ' Error: ' + result.error : ''}`);
                 }
             });
-            if(allSvgsLoadedSuccessfully) console.log("All SVGs loaded successfully (or placeholders not found).");
-            else console.warn("Some SVGs failed to load. Check previous logs.");
+            if(allSvgsLoadedSuccessfully) console.log("DEBUG: All SVGs loaded successfully (or placeholders not found).");
+            else console.warn("DEBUG: Some SVGs failed to load. Check previous logs.");
 
         } catch (e) {
-            console.error("Error during Promise.all for SVG loading:", e);
+            console.error("DEBUG: Error during Promise.all for SVG loading:", e);
+            // This catch might not be reached if loadSvg always resolves.
         }
+        console.log("DEBUG: SVG loading process completed (or attempted).");
+
+        console.log("DEBUG: Loading initial language:", currentLang);
+        await switchLanguage(currentLang); // This also calls applyTranslationsToPage
         
-        console.log("Loading initial language:", currentLang);
-        await switchLanguage(currentLang); 
-        
+        console.log("DEBUG: Initializing UI components...");
         updateSectionDisplay(); 
         initializeTimelineInteraction();
         initializeGlossaryInteraction();
@@ -403,27 +414,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        console.log("Application initialized successfully.");
+        console.log("DEBUG: Application initialized successfully.");
     }
     
     // Check for p5_sketch.js and stringLabSketch definition
     if (typeof stringLabSketch === 'undefined') {
-         console.error("CRITICAL: stringLabSketch is not defined. Ensure p5_sketch.js is loaded BEFORE script.js and defines this function in the global scope if using p5 global mode, or is correctly passed if using instance mode.");
-         // Display a more specific error if p5 sketch is missing, as it's a core interactive part.
+         console.error("CRITICAL DEBUG: stringLabSketch is not defined. Ensure p5_sketch.js is loaded BEFORE script.js and defines this function in the global scope if using p5 global mode, or is correctly passed if using instance mode.");
          const p5Container = document.getElementById('p5-canvas-container');
          if (p5Container) {
             p5Container.innerHTML = `<p class="error-message">Interactive lab could not be loaded. (stringLabSketch not found)</p>`;
          }
+         // Decide if you want to stop the app entirely here or let other parts try to initialize
+         // For now, initializeApp will still be called.
     }
 
     initializeApp().catch(err => {
-        console.error("CRITICAL: Failed to initialize the application:", err);
+        console.error("CRITICAL DEBUG: Failed to initialize the application:", err);
         if (!document.querySelector('body > p.critical-error-message')) {
             const errorMsgElement = document.createElement('p');
             errorMsgElement.className = 'critical-error-message';
             errorMsgElement.style.color = 'red'; errorMsgElement.style.textAlign = 'center';
             errorMsgElement.style.padding = '50px'; errorMsgElement.style.fontSize = '1.2em';
-            errorMsgElement.textContent = 'An error occurred while loading the application. Please try refreshing the page. Check the console (F12) for more details.';
+            errorMsgElement.textContent = 'An error occurred while loading the application. Please try refreshing the page. Check the console (F12) for more details. Ensure you are running this on a local server if viewing locally.';
             document.body.innerHTML = ''; 
             document.body.appendChild(errorMsgElement);
         }
