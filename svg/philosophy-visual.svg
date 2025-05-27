@@ -1,0 +1,13 @@
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <filter id="thoughtBlurV11" x="-30%" y="-30%" width="160%" height="160%"> <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" /> </filter>
+        <radialGradient id="centerGlowLightV11" cx="50%" cy="50%" r="60%"> <stop offset="0%" stop-color="var(--primary-accent-light)" stop-opacity="0.5"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0"/> </radialGradient>
+        <radialGradient id="centerGlowDarkV11" cx="50%" cy="50%" r="60%"> <stop offset="0%" stop-color="var(--primary-accent-dark)" stop-opacity="0.5"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0"/> </radialGradient>
+    </defs>
+    <circle cx="100" cy="50" r="10" class="svg-dynamic-fill" data-light-fill="url(#centerGlowLightV11)" data-dark-fill="url(#centerGlowDarkV11)" filter="url(#thoughtBlurV11)"/>
+    <path d="M100,50 C80,40 70,20 50,25 C30,30 20,50 40,65 C60,80 80,70 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.4" stroke-width="1.5" transform="rotate(15, 100, 50)"/>
+    <path d="M100,50 C120,60 130,80 150,75 C170,70 180,50 160,35 C140,20 120,30 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.4" stroke-width="1.5" transform="rotate(-25, 100, 50)"/>
+    <path d="M100,50 C90,70 70,80 55,85 S20,70 35,50 S50,20 75,25 S90,30 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.3" stroke-width="1" transform="rotate(45, 100, 50)"/>
+    <text x="100" y="55" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="16px" data-translation-key="philosophyVisualQuestion">?</text>
+    <text x="100" y="85" class="svg-text svg-dynamic-text" font-size="6px" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-translation-key="philosophyVisualSubtext">Philosophical Questions</text>
+</svg>
