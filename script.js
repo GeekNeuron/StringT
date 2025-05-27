@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainTitle = document.getElementById('main-title');
     const bodyElement = document.body;
     const htmlElement = document.documentElement;
+    const skipLink = document.querySelector('.skip-link');
 
     // --- State Variables ---
     let currentSectionIndex = 0;
@@ -25,12 +26,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentActiveSection && currentActiveSection !== newActiveSection) {
             currentActiveSection.classList.add('exiting');
-            currentActiveSection.addEventListener('transitionend', function handler() {
-                this.classList.remove('active');
-                this.classList.remove('exiting');
-                this.removeEventListener('transitionend', handler);
-            }, { once: true });
+            currentActiveSection.addEventListener('transitionend', function handler(event) {
+                if (event.propertyName === 'opacity' && !this.classList.contains('active')) { 
+                    this.classList.remove('exiting');
+                    // Note: 'active' is removed from the old section when the new one becomes fully active.
+                    // This ensures the old section is still part of the layout during transition.
+                }
+                this.removeEventListener('transitionend', handler); // Clean up listener
+            }, { once: true }); // Use once true if one property is enough to signal end
         }
+        
+        // Remove 'active' from all sections first to handle quick navigation
+        sections.forEach(s => { if (s !== newActiveSection) s.classList.remove('active');});
         
         newActiveSection.classList.remove('exiting'); 
         newActiveSection.classList.add('active');
@@ -46,11 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        const newHeading = newActiveSection.querySelector('h2, h3'); 
+        const newHeading = newActiveSection.querySelector('h2'); 
         if (newHeading) {
             setTimeout(() => {
                 newActiveSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-                setTimeout(() => newHeading.focus({ preventScroll: true }), 150); // Focus after scroll
+                setTimeout(() => newHeading.focus({ preventScroll: false }), sectionTransitionDuration + 50); 
             }, 50); 
         }
 
@@ -98,10 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const closedText = el.getAttribute(`data-${lang}-closed`);
                     el.textContent = isOpen ? (openText || text) : (closedText || text);
                 }
-                else if (el.tagName === 'TITLE' || el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'P' || el.tagName === 'BUTTON' || el.classList.contains('visual-placeholder') || el.classList.contains('dark-mode-hint') || el.tagName === 'LI' || el.tagName === 'I' || el.tagName === 'SPAN' && (el.closest('.visual-placeholder') || el.closest('.timeline-date') || el.closest('.timeline-content')) || el.tagName === 'DT' || el.tagName === 'DD') {
+                else if (el.tagName === 'TITLE' || el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'P' || el.tagName === 'BUTTON' || el.classList.contains('visual-placeholder') || el.classList.contains('dark-mode-hint') || el.tagName === 'LI' || el.tagName === 'I' || el.tagName === 'SPAN' && (el.closest('.visual-placeholder') || el.closest('.timeline-date') || el.closest('.timeline-content')) || el.tagName === 'DT' || el.tagName === 'DD' || el.classList.contains('skip-link')) {
                      if (el.tagName === 'LI' && el.querySelector('i') && el.getAttribute(textKey).startsWith('<i>')) {
                         el.innerHTML = text;
-                    } else if(el.tagName === 'I' || (el.tagName === 'SPAN' && (el.closest('.visual-placeholder') || el.closest('.timeline-date')))){
+                    } else if(el.tagName === 'I' || (el.tagName === 'SPAN' && (el.closest('.visual-placeholder') || el.closest('.timeline-date'))) || el.classList.contains('skip-link')){
                          el.textContent = text;
                     }
                     else {
@@ -136,18 +143,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const timelineEvents = document.querySelectorAll('.timeline-event');
     timelineEvents.forEach(event => {
         const details = event.querySelector('.timeline-details');
-        if (!details) return; // Skip if no details div
-
+        if (!details) return; 
         event.addEventListener('click', () => {
             const isExpanded = details.classList.toggle('expanded');
             event.setAttribute('aria-expanded', isExpanded.toString());
             details.setAttribute('aria-hidden', (!isExpanded).toString());
         });
-        event.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault(); event.click();
-            }
-        });
+        event.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); event.click(); }});
+    });
+
+    // --- Glossary Interaction (Placeholder for future, e.g., click to highlight or show more) ---
+    const glossaryTerms = document.querySelectorAll('.glossary-list dt');
+    glossaryTerms.forEach(term => {
+        term.addEventListener('focus', () => term.classList.add('focused'));
+        term.addEventListener('blur', () => term.classList.remove('focused'));
+        // Add click listener here if terms become expandable like timeline events
     });
 
 
@@ -159,6 +169,20 @@ document.addEventListener('DOMContentLoaded', () => {
     mainTitle.addEventListener('click', toggleDarkMode);
     mainTitle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDarkMode(); }});
 
+    if(skipLink) {
+        skipLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const mainContent = document.getElementById('interactive-content');
+            const firstFocusableElement = mainContent.querySelector('h2, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (firstFocusableElement) {
+                firstFocusableElement.focus();
+            } else {
+                mainContent.setAttribute('tabindex', '-1'); // Make it focusable if no interactive elements
+                mainContent.focus();
+            }
+        });
+    }
+
 
     // --- p5.js Interactive String Lab Sketch (Instance Mode) ---
     const stringLabSketch = (p) => {
@@ -166,14 +190,15 @@ document.addEventListener('DOMContentLoaded', () => {
         let baseFrequency = 0.01; let phase = 0; let isStringTypeOpen = false; 
         let modeSlider, amplitudeSlider, frequencySlider, stringTypeToggleBtn;
         let modeValueDisplay, amplitudeValueDisplay, frequencyValueDisplay;
-        let stringColor, glowColor; 
+        let stringColor, glowColor, openEndCapColor; 
         let lastAmplitude = 50; let lastMode = 1;
         let flashDuration = 0; const flashMaxDuration = 20; 
         let tempStringColor = null;
         let pluckPoints = []; const numStringSegments = 100; 
-        let pluckDecay = 0.96; let pluckWaveSpeed = 0.2; // Increased speed
+        let pluckDecay = 0.965; let pluckWaveSpeed = 0.28; // Fine-tuned speed
         let p5CanvasContainer;
-        let instructionOpacity = 255; // For pluck instruction text
+        let instructionOpacity = 255; let hasPluckedOnce = false;
+        const openStringEndCapRadius = 4; // For visualising open string ends
 
         p.setup = () => {
             p5CanvasContainer = document.getElementById('p5-canvas-container');
@@ -215,23 +240,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     const openText = stringTypeToggleBtn.getAttribute(`data-${lang}-open`);
                     const closedText = stringTypeToggleBtn.getAttribute(`data-${lang}-closed`);
                     stringTypeToggleBtn.textContent = isStringTypeOpen ? (openText || "Switch to Closed Loop") : (closedText || "Switch to Open String");
+                    for (let i = 0; i <= numStringSegments; i++) { pluckPoints[i] = { y: 0, vy: 0 };} // Reset pluck on type change
                     if (p5Instance && !p.isLooping()) p.loop();
                 });
             }
 
             const initiatePluck = (mouseX, mouseY) => {
-                if (mouseY > p.height * 0.15 && mouseY < p.height * 0.85) {
+                if (mouseY > p.height * 0.1 && mouseY < p.height * 0.9) { // Wider pluck area
                     const pluckPosNormalized = p.constrain(mouseX / p.width, 0.01, 0.99);
-                    const pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 2, currentAmplitude * 2);
+                    const pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 2.2, currentAmplitude * 2.2); 
                     for (let i = 0; i <= numStringSegments; i++) {
                         const xNorm = i / numStringSegments; const dist = p.abs(xNorm - pluckPosNormalized);
-                        const influence = p.exp(-dist * dist * (isStringTypeOpen ? 180 : 150) ); // Sharper for open string ends
-                        pluckPoints[i].y = pluckStrengthVal * influence; pluckPoints[i].vy = 0; 
+                        const influenceWidth = isStringTypeOpen ? 0.08 : 0.12; // Narrower pluck for open string
+                        const influence = p.exp(-dist * dist / (2 * influenceWidth * influenceWidth) ); 
+                        pluckPoints[i].y += pluckStrengthVal * influence; // Add to existing displacement
+                        pluckPoints[i].vy = 0; 
                     }
                     p5CanvasContainer.classList.add('grabbing');
                     flashDuration = flashMaxDuration / 1.5; 
-                    tempStringColor = bodyElement.classList.contains('dark-mode') ? p.color(220,220,255, 200) : p.color(80,80,0, 200); 
-                    instructionOpacity = 0; // Hide instruction after first pluck
+                    tempStringColor = bodyElement.classList.contains('dark-mode') ? p.color(200,220,255, 210) : p.color(100,50,0, 210); 
+                    if(!hasPluckedOnce) hasPluckedOnce = true;
                     if (!p.isLooping()) p.loop();
                 }
             };
@@ -246,9 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p5CanvasContainer) {
                  let canvasWidth = p5CanvasContainer.offsetWidth > 20 ? p5CanvasContainer.offsetWidth - 20 : 300;
                  canvasWidth = Math.min(canvasWidth, 600);
-                 // p.resizeCanvas(canvasWidth, 300); 
             }
-            instructionOpacity = 255; // Reset instruction visibility
+            if(!hasPluckedOnce) instructionOpacity = 255; 
         };
 
         p.draw = () => {
@@ -265,12 +292,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 finalStringColor = p.color(isDarkMode ? rootStyles.getPropertyValue('--primary-accent-dark').trim() : rootStyles.getPropertyValue('--primary-accent-light').trim());
             }
             glowColor = p.color(isDarkMode ? hexToRgba(rootStyles.getPropertyValue('--primary-accent-dark').trim(), 0.3) : hexToRgba(rootStyles.getPropertyValue('--primary-accent-light').trim(), 0.3));
+            openEndCapColor = p.color(isDarkMode ? hexToRgba(rootStyles.getPropertyValue('--secondary-accent-dark').trim(), 0.8) : hexToRgba(rootStyles.getPropertyValue('--secondary-accent-light').trim(), 0.8));
             let currentStrokeWeight = 3 + (flashDuration > 0 ? 2.5 * (flashDuration / flashMaxDuration) : 0) ;
 
-            // Update pluck wave physics
-            let newPluckPoints = pluckPoints.map(pt => ({ ...pt })); // Deep copy for modification
-
-            for (let iter = 0; iter < 2; iter++) { // Multiple iterations for stability/speed
+            let newPluckPoints = pluckPoints.map(pt => ({ ...pt })); 
+            for (let iter = 0; iter < 3; iter++) { 
                 for (let i = 1; i < numStringSegments; i++) {
                     let prevY = pluckPoints[i-1].y; let currentY = pluckPoints[i].y; let nextY = pluckPoints[i+1].y;
                     let acceleration = (prevY + nextY - 2 * currentY) * pluckWaveSpeed * pluckWaveSpeed;
@@ -281,15 +307,15 @@ document.addEventListener('DOMContentLoaded', () => {
                      newPluckPoints[i].y += newPluckPoints[i].vy;
                 }
                 if (isStringTypeOpen) { 
-                    newPluckPoints[0].y = 0; newPluckPoints[0].vy = 0;
+                    newPluckPoints[0].y = 0; newPluckPoints[0].vy = 0; 
                     newPluckPoints[numStringSegments].y = 0; newPluckPoints[numStringSegments].vy = 0;
                 } else { 
-                    let accFirst = (pluckPoints[numStringSegments-1].y + pluckPoints[1].y - 2 * pluckPoints[0].y) * pluckWaveSpeed * pluckWaveSpeed; // Use numStringSegments-1 for loop back
+                    let accFirst = (pluckPoints[numStringSegments-1].y + pluckPoints[1].y - 2 * pluckPoints[0].y) * pluckWaveSpeed * pluckWaveSpeed; 
                     newPluckPoints[0].vy += accFirst; newPluckPoints[0].vy *= pluckDecay;
                     newPluckPoints[0].y += newPluckPoints[0].vy;
-                    newPluckPoints[numStringSegments] = {y: newPluckPoints[0].y, vy: newPluckPoints[0].vy}; // Loop back last point
+                    newPluckPoints[numStringSegments] = {y: newPluckPoints[0].y, vy: newPluckPoints[0].vy}; 
                 }
-                pluckPoints = newPluckPoints.map(pt => ({ ...pt })); // Update main array
+                pluckPoints = newPluckPoints.map(pt => ({ ...pt })); 
             }
             
             p.push(); 
@@ -307,25 +333,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 let yOffset_mode = 0; let effectiveAmplitude = currentAmplitude;
                 if (currentVibrationMode > 2) effectiveAmplitude *= (1 - (currentVibrationMode - 2) * 0.15);
                 effectiveAmplitude = Math.max(5, effectiveAmplitude);
-                let boundaryFactor = isStringTypeOpen ? p.sin(x_norm_segment * p.PI) : 1.0;
+                let boundaryFactor = isStringTypeOpen ? p.sin(x_norm_segment * p.PI) : 1.0; // Ensures ends are zero for open string modes
                 yOffset_mode = (effectiveAmplitude * boundaryFactor) * p.sin(phase + currentVibrationMode * p.PI * x_norm_segment);
                 let yOffset_pluck = pluckPoints[i].y;
                 p.vertex(x_abs, p.height / 2 + yOffset_mode + yOffset_pluck);
             }
-            p.endShape(isStringTypeOpen ? null : undefined); // Use undefined for open, p.CLOSE handled by connecting last to first for closed.
+            p.endShape(isStringTypeOpen ? undefined : p.CLOSE); 
             
+            if (isStringTypeOpen) { // Draw end caps for open string
+                p.noStroke();
+                p.fill(openEndCapColor);
+                let firstPointY = p.height / 2 + pluckPoints[0].y + (effectiveAmplitude * p.sin(0) * p.sin(phase)); // Mode y at start
+                let lastPointY = p.height / 2 + pluckPoints[numStringSegments].y + (effectiveAmplitude * p.sin(0) * p.sin(phase + currentVibrationMode * p.PI)); // Mode y at end
+                p.ellipse(startX, firstPointY, openStringEndCapRadius * 2, openStringEndCapRadius * 2);
+                p.ellipse(endX, lastPointY, openStringEndCapRadius * 2, openStringEndCapRadius * 2);
+            }
             p.pop(); 
             phase += (baseFrequency * currentFrequencyFactor);
             
-            // Draw pluck instruction
+            if (hasPluckedOnce && instructionOpacity > 0) instructionOpacity -= 2.5; 
             if (instructionOpacity > 0) {
                 p.fill(isDarkMode ? 200 : 100, instructionOpacity);
-                p.noStroke();
-                p.textAlign(p.CENTER, p.CENTER);
-                p.textSize(12);
+                p.noStroke(); p.textAlign(p.CENTER, p.CENTER); p.textSize(12);
                 const instructionText = htmlElement.lang === 'fa' ? "برای «کندن» کلیک و درگ کنید" : "Click & Drag to 'Pluck'";
                 p.text(instructionText, p.width / 2, p.height - 20);
-                instructionOpacity -= 1.5; // Fade out
             }
         };
         
@@ -352,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (slider && slider.tagName === 'INPUT' && slider.type === 'range') slider.setAttribute('aria-labelledby', label.id);
     });
     const stringTypeToggleBtn = document.getElementById('string-type-toggle');
-    if (stringTypeToggleBtn) { // Initialize button text
+    if (stringTypeToggleBtn) { 
         const lang = htmlElement.lang || 'en';
         const isOpen = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true';
         const openText = stringTypeToggleBtn.getAttribute(`data-${lang}-open`);
