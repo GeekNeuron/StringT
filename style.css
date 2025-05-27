@@ -209,44 +209,60 @@ body.dark-mode .dark-mode-hint {
 #interactive-content { 
     position: relative; 
     overflow: hidden; 
-    min-height: auto; /* Allow content to dictate height */
+    /* min-height: auto; /* LAYOUT FIX: Allow content to dictate height */
+    /* Instead of auto, let's try ensuring it has some content flow */
+    display: flex; /* LAYOUT FIX: Use flex to manage children */
+    flex-direction: column; /* LAYOUT FIX: Stack sections vertically */
 }
 .content-section { 
-    position: absolute; 
+    /* position: absolute; /* LAYOUT FIX: Remove absolute positioning for simpler flow */
     width: 100%; 
     opacity: 0; 
     visibility: hidden; 
     transform: translateX(20px) scale(0.98); 
     transition: opacity var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1), 
                 transform var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
-                visibility 0s var(--section-transition-duration); 
-    padding-bottom: 25px; /* Space at the bottom of each section's content */
-    /* border-bottom: 1px solid var(--border-color-light); REMOVED - will be added by JS if not last */
+                visibility 0s var(--section-transition-duration),
+                max-height 0s var(--section-transition-duration); /* LAYOUT FIX: Transition max-height */
+    padding-bottom: 20px; /* LAYOUT FIX: Reduced padding */
+    border-bottom: 1px solid var(--border-color-light); 
+    max-height: 0; /* LAYOUT FIX: Start with zero max-height */
+    overflow: hidden; /* LAYOUT FIX: Clip content when max-height is 0 */
 }
-/* body.dark-mode .content-section { 
-    border-bottom: 1px solid var(--border-color-dark); 
-} */
-/* .content-section:last-of-type { 
-    border-bottom: none; 
-} */
+
 .content-section.active { 
     opacity: 1; 
     visibility: visible; 
     transform: translateX(0) scale(1); 
-    transition-delay: 0s, 0s, 0s; 
-    position: relative; 
+    transition-delay: 0s, 0s, 0s, 0s; /* Apply active transition immediately */
+    /* position: relative; /* LAYOUT FIX: Not needed if not absolute */
+    max-height: 1000vh; /* LAYOUT FIX: Allow to expand to content height (large value) */
+    transition: opacity var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1), 
+                transform var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+                max-height var(--section-transition-duration) ease-in-out; /* Animate max-height */
 }
+
 .content-section.exiting { 
     transform: translateX(-20px) scale(0.98); 
     opacity: 0; 
     visibility: hidden; 
     transition-delay: 0s, 0s, var(--section-transition-duration); 
+    max-height: 0 !important; /* LAYOUT FIX: Force collapse when exiting */
+    position: absolute; /* LAYOUT FIX: Take out of flow when exiting to prevent jump */
 }
+
+body.dark-mode .content-section { 
+    border-bottom: 1px solid var(--border-color-dark); 
+}
+.content-section:last-of-type { 
+    border-bottom: none; /* This will apply to the last section in the HTML order */
+}
+
 .content-section h2 { 
     font-size: 1.8rem; 
     font-weight: 700; 
     color: var(--text-color-light); 
-    margin-top: 0; /* Ensure no extra top margin */
+    margin-top: 0; 
     margin-bottom: 18px; 
 }
 .content-section h2:focus-visible { 
@@ -278,7 +294,7 @@ body.dark-mode .content-section h3 {
 
 .deeper-study { 
     margin-top: 18px; 
-    margin-bottom: 18px; /* Added bottom margin */
+    margin-bottom: 18px; 
     padding: 12px 15px; 
     background-color: rgba(0,123,255,0.04); 
     border-left: 3px solid var(--primary-accent-light); 
@@ -306,7 +322,7 @@ body.dark-mode .deeper-study strong {
 /* SVG Placeholder and general SVG styles */
 .svg-placeholder-container {
     width: 100%;
-    min-height: 120px; 
+    min-height: 100px; /* LAYOUT FIX: Reduced default min-height */
     padding: 10px; 
     background-color: var(--placeholder-bg-light);
     border-radius: 8px;
@@ -314,7 +330,7 @@ body.dark-mode .deeper-study strong {
     justify-content: center;
     align-items: center;
     margin-top: 20px; 
-    margin-bottom: 10px; /* Added to control space below SVGs */
+    margin-bottom: 10px; 
     border: 1px dashed var(--border-color-light);
     overflow: hidden;
 }
@@ -347,7 +363,7 @@ body.dark-mode .svg-placeholder-container p.error-message {
     background-color: rgba(240, 128, 128, 0.1);
 }
 
-.svg-placeholder-container svg { max-width: 100%; max-height: 220px; display: block; margin: auto; } 
+.svg-placeholder-container svg { max-width: 100%; max-height: 200px; display: block; margin: auto; } /* LAYOUT FIX: Adjusted max-height */
 .svg-line { stroke: var(--svg-stroke-light); stroke-width: 1.5; fill: none; }
 body.dark-mode .svg-line { stroke: var(--svg-stroke-dark); }
 .svg-dynamic-stroke { stroke: var(--svg-stroke-light); }
@@ -442,9 +458,9 @@ body.dark-mode #further-reading li i { color: #aaa; }
 .navigation-controls { 
     display: flex; 
     justify-content: space-between; 
-    margin-top: 25px; /* Reduced margin */
-    padding-top: 15px; /* Added padding for consistent spacing above */
-    border-top: 1px solid var(--border-color-light); /* Add a separator line */
+    margin-top: 20px; /* LAYOUT FIX: Reduced margin */
+    padding-top: 15px; 
+    border-top: 1px solid var(--border-color-light); 
 }
 body.dark-mode .navigation-controls {
     border-top-color: var(--border-color-dark);
@@ -497,8 +513,8 @@ body.dark-mode .navigation-controls button:disabled {
 /* --- Footer --- */
 footer { 
     text-align: center; 
-    margin-top: 30px; /* Adjusted margin */
-    padding-top: 15px; /* Adjusted padding */
+    margin-top: 30px; 
+    padding-top: 15px; 
     border-top: 1px solid var(--border-color-light); 
     font-size: 0.85rem; 
     color: #777; 
