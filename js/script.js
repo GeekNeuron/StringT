@@ -6,12 +6,12 @@ window.stringTheoryApp = {};
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Element Selection ---
     const sectionsContainer = document.getElementById('interactive-content');
-    const sections = document.querySelectorAll('.content-section');
+    const sections = Array.from(document.querySelectorAll('.content-section')); // Convert NodeList to Array
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const langEnBtn = document.getElementById('lang-en');
     const langFaBtn = document.getElementById('lang-fa');
-    const mainTitleElement = document.getElementById('main-title'); // Renamed to avoid conflict
+    const mainTitleElement = document.getElementById('main-title');
     const bodyElement = document.body;
     const htmlElement = document.documentElement;
     const skipLink = document.querySelector('.skip-link');
@@ -19,56 +19,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State Variables ---
     let currentSectionIndex = 0;
     let currentLang = localStorage.getItem('preferredLang') || (navigator.language.startsWith('fa') ? 'fa' : 'en');
-    let translations = {}; // To store loaded language strings
-    let p5LabInstance = null; // To hold the p5 instance for the lab
+    let translations = {};
+    let p5LabInstance = null;
     const sectionTransitionDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--section-transition-duration').replace('s', '')) * 1000 || 450;
 
-    // --- Translation Key for p5 sketch ---
-    // This allows p5 sketch to request translations
     window.stringTheoryApp.getTranslation = (key, fallbackText = '') => {
         return translations[key] || fallbackText || key;
     };
 
-    // --- SVG Loading Function ---
-    async function loadSvg(elementId, filePath) {
+    async function loadSvg(placeholderElement, filePath) {
+        if (!placeholderElement) {
+            // console.warn(`SVG placeholder not found for path: ${filePath}`);
+            return;
+        }
         try {
             const response = await fetch(filePath);
             if (!response.ok) {
                 console.error(`Failed to load SVG: ${filePath}, Status: ${response.status}`);
-                const placeholderDiv = document.getElementById(elementId);
-                if(placeholderDiv) placeholderDiv.innerHTML = `<p style="color:red;">Error loading: ${filePath.split('/').pop()}</p>`;
+                placeholderElement.innerHTML = `<p class="error-message">Error loading: ${filePath.split('/').pop()}</p>`;
                 return;
             }
             const svgText = await response.text();
-            const placeholderDiv = document.getElementById(elementId);
-            if (placeholderDiv) {
-                placeholderDiv.innerHTML = svgText;
-                // Re-apply dynamic fills/strokes if SVG is loaded after initial dark mode check
-                const isDarkMode = bodyElement.classList.contains('dark-mode');
-                const svgElement = placeholderDiv.querySelector('svg');
-                if (svgElement) {
-                    applyDynamicSvgStyles(svgElement, isDarkMode);
-                    applySvgTextTranslations(svgElement); // Translate text within newly loaded SVG
-                }
+            placeholderElement.innerHTML = svgText;
+            const svgElement = placeholderElement.querySelector('svg');
+            if (svgElement) {
+                applyDynamicSvgStyles(svgElement, bodyElement.classList.contains('dark-mode'));
+                applySvgTextTranslations(svgElement);
             }
         } catch (error) {
             console.error(`Error fetching SVG ${filePath}:`, error);
-            const placeholderDiv = document.getElementById(elementId);
-            if(placeholderDiv) placeholderDiv.innerHTML = `<p style="color:red;">Error loading SVG.</p>`;
+            placeholderElement.innerHTML = `<p class="error-message">Error loading SVG.</p>`;
         }
     }
 
     function applyDynamicSvgStyles(svgElement, isDarkMode) {
         const dynamicFills = svgElement.querySelectorAll('[data-light-fill][data-dark-fill]');
-        dynamicFills.forEach(el => {
-            el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill);
-        });
+        dynamicFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
         const dynamicTextFills = svgElement.querySelectorAll('text[data-light-fill][data-dark-fill]');
-        dynamicTextFills.forEach(el => {
-            el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill);
-        });
-         // Handle elements that might only change stroke based on CSS variables (if direct manipulation is needed)
-        // For now, relying on CSS variables for .svg-dynamic-stroke, .svg-line, .svg-path etc.
+        dynamicTextFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
     }
     
     function applySvgTextTranslations(svgElement) {
@@ -81,62 +69,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
-    // --- Language and Translation Functions ---
     async function fetchTranslations(lang) {
         try {
-            const response = await fetch(`lang/${lang}.json`);
+            const response = await fetch(`lang/${lang}.json?v=${new Date().getTime()}`); // Cache busting
             if (!response.ok) {
                 console.error(`Could not load ${lang}.json. Status: ${response.status}`);
-                // Fallback to English if current lang fails, or handle error appropriately
-                if (lang !== 'en') {
-                    return fetchTranslations('en'); // Attempt to load English as a fallback
-                }
-                return {}; // Return empty if English also fails
+                if (lang !== 'en') return fetchTranslations('en');
+                return {};
             }
             return await response.json();
         } catch (error) {
             console.error(`Error fetching translations for ${lang}:`, error);
-            if (lang !== 'en') {
-                return fetchTranslations('en');
-            }
+            if (lang !== 'en') return fetchTranslations('en');
             return {};
         }
     }
 
-    function applyTranslations() {
-        if (!translations) return;
-
-        // Translate document title
-        const docTitleKey = "docTitle";
-        if (translations[docTitleKey]) {
-            document.title = translations[docTitleKey];
+    function applyTranslationsToPage() {
+        if (!translations || Object.keys(translations).length === 0) {
+            console.warn("Translations not loaded or empty.");
+            return;
         }
+        const docTitleKey = "docTitle";
+        if (translations[docTitleKey]) document.title = translations[docTitleKey];
 
-        // Translate all elements with data-translation-key
         const elements = document.querySelectorAll('[data-translation-key]');
         elements.forEach(el => {
             const key = el.getAttribute('data-translation-key');
             if (translations[key]) {
-                // Handle special cases like list items with <i> tags
                 if (el.tagName === 'LI' && el.querySelector('i') && translations[key].startsWith('<i>')) {
                     el.innerHTML = translations[key];
                 } else {
                     el.textContent = translations[key];
                 }
-            } else {
-                // console.warn(`Translation key not found: ${key}`);
             }
         });
-
-        // Translate SVG text elements after SVGs are loaded
-        document.querySelectorAll('.svg-placeholder-container svg').forEach(svg => {
-            applySvgTextTranslations(svg);
-        });
-        
-        // Update p5 sketch instruction text if it's visible and p5 instance exists
+        document.querySelectorAll('.svg-placeholder-container svg').forEach(applySvgTextTranslations);
         if (p5LabInstance && typeof p5LabInstance.redraw === 'function' && p5LabInstance.isLooping()) {
-            p5LabInstance.redraw(); // Redraw to update text
+             p5LabInstance.redraw();
         }
     }
 
@@ -144,30 +114,25 @@ document.addEventListener('DOMContentLoaded', () => {
         currentLang = lang;
         localStorage.setItem('preferredLang', lang);
         translations = await fetchTranslations(lang);
-
         htmlElement.lang = lang;
         htmlElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
         bodyElement.style.fontFamily = lang === 'fa' ? "'Vazirmatn', 'Roboto', sans-serif" : "'Roboto', 'Vazirmatn', sans-serif";
-
         langEnBtn.classList.toggle('active-lang', lang === 'en');
         langFaBtn.classList.toggle('active-lang', lang === 'fa');
         langEnBtn.setAttribute('aria-pressed', (lang === 'en').toString());
         langFaBtn.setAttribute('aria-pressed', (lang === 'fa').toString());
+        applyTranslationsToPage();
+        updateSvgColors();
         
-        applyTranslations(); // Apply all text translations
-        updateSvgColors(); // Ensure SVG colors are correct for the theme
-        
-        // Update string type toggle button text specifically
         const stringTypeToggleBtn = document.getElementById('string-type-toggle');
         if (stringTypeToggleBtn) {
             const isOpen = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true';
-            const openKey = "labToggleOpenActive"; // Key for "Switch to Closed Loop"
-            const closedKey = "labToggleOpenDefault"; // Key for "Switch to Open String"
+            const openKey = "labToggleOpenActive"; 
+            const closedKey = "labToggleOpenDefault"; 
             stringTypeToggleBtn.textContent = isOpen ? (translations[openKey] || "Switch to Closed Loop") : (translations[closedKey] || "Switch to Open String");
         }
     }
 
-    // --- Dark Mode ---
     function toggleDarkMode() {
         bodyElement.classList.toggle('dark-mode');
         const isDarkModeEnabled = bodyElement.classList.contains('dark-mode');
@@ -187,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
         mainTitleElement.setAttribute('aria-pressed', isDarkModeEnabled.toString());
     }
 
-    // --- Navigation and Section Display ---
     function updateSectionDisplay() {
         const currentActiveSection = sectionsContainer.querySelector('.content-section.active');
         const newActiveSection = sections[currentSectionIndex];
@@ -195,14 +159,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentActiveSection && currentActiveSection !== newActiveSection) {
             currentActiveSection.classList.add('exiting');
             currentActiveSection.addEventListener('transitionend', function handler(event) {
-                if (event.propertyName === 'opacity' && !this.classList.contains('active')) {
+                if (event.target === this && event.propertyName === 'opacity') { 
+                    this.classList.remove('active'); // Only remove active after transition
                     this.classList.remove('exiting');
                 }
                 this.removeEventListener('transitionend', handler);
-            }, { once: true });
+            }, { once: false }); // Listen until opacity transition ends
         }
         
-        sections.forEach(s => { if (s !== newActiveSection) s.classList.remove('active');});
+        sections.forEach(s => { if (s !== newActiveSection && s !== currentActiveSection) s.classList.remove('active');}); // Clear others
+        
         newActiveSection.classList.remove('exiting'); 
         newActiveSection.classList.add('active');
 
@@ -212,7 +178,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (typeof p5LabInstance.isLooping === 'function' && !p5LabInstance.isLooping()) p5LabInstance.loop();
                     if (typeof p5LabInstance.onSectionActive === 'function') p5LabInstance.onSectionActive();
                 } else {
-                    if (typeof p5LabInstance.isLooping === 'function' && p5LabInstance.isLooping()) p5LabInstance.onSectionInactive ? p5LabInstance.onSectionInactive() : p5LabInstance.noLoop();
+                    if (typeof p5LabInstance.isLooping === 'function' && p5LabInstance.isLooping()) {
+                        if (typeof p5LabInstance.onSectionInactive === 'function') p5LabInstance.onSectionInactive();
+                        else p5LabInstance.noLoop();
+                    }
                 }
             }
         });
@@ -220,8 +189,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const newHeading = newActiveSection.querySelector('h2'); 
         if (newHeading) {
             setTimeout(() => {
-                newActiveSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-                setTimeout(() => newHeading.focus({ preventScroll: false }), sectionTransitionDuration + 50); 
+                // newActiveSection.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+                // Focusing should also scroll if the element is off-screen.
+                newHeading.focus(); // { preventScroll: false } is default
             }, 50); 
         }
 
@@ -231,22 +201,20 @@ document.addEventListener('DOMContentLoaded', () => {
         nextBtn.setAttribute('aria-disabled', nextBtn.disabled.toString());
     }
 
-    // --- Timeline Interaction ---
     function initializeTimelineInteraction() {
         const timelineEvents = document.querySelectorAll('.timeline-event');
         timelineEvents.forEach(event => {
             const details = event.querySelector('.timeline-details');
-            if (!details) return;
+            if (!details) return; 
             event.addEventListener('click', () => {
                 const isExpanded = details.classList.toggle('expanded');
                 event.setAttribute('aria-expanded', isExpanded.toString());
                 details.setAttribute('aria-hidden', (!isExpanded).toString());
             });
-            event.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); event.click(); } });
+            event.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); event.click(); }});
         });
     }
 
-    // --- Glossary Interaction ---
     function initializeGlossaryInteraction() {
         const glossaryTerms = document.querySelectorAll('.glossary-list dt');
         glossaryTerms.forEach(term => {
@@ -255,12 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // --- p5.js Lab Initialization and Control ---
     function initializeP5Lab() {
         if (typeof stringLabSketch !== 'undefined' && document.getElementById('interactive-lab')) {
-            p5LabInstance = new p5(stringLabSketch); // stringLabSketch is defined in p5_sketch.js
+            p5LabInstance = new p5(stringLabSketch); 
 
-            // Setup listeners for sliders and toggle button to update p5 sketch
             const modeSlider = document.getElementById('mode-slider');
             const amplitudeSlider = document.getElementById('amplitude-slider');
             const frequencySlider = document.getElementById('frequency-slider');
@@ -275,55 +241,60 @@ document.addEventListener('DOMContentLoaded', () => {
                     p5LabInstance.updateP5Controls(mode, amp, freqFactor, isOpen);
                 }
             }
-
             if (modeSlider) modeSlider.addEventListener('input', updateP5SketchFromControls);
             if (amplitudeSlider) amplitudeSlider.addEventListener('input', updateP5SketchFromControls);
             if (frequencySlider) frequencySlider.addEventListener('input', updateP5SketchFromControls);
             if (stringTypeToggleBtn) {
                 stringTypeToggleBtn.addEventListener('click', () => {
-                    // The p5 sketch itself handles its internal 'isStringTypeOpen' state
-                    // But we might need to call updateP5SketchFromControls if the button directly changes a p5 var
-                    // For now, assuming the p5 sketch handles its own toggle state internally based on the button's aria-pressed
-                    // and the main language switcher handles the button's text.
-                    // We just need to ensure p5 redraws.
-                    updateP5SketchFromControls(); // Call to sync and potentially trigger flash
+                    // The p5 sketch will use aria-pressed directly.
+                    // We need to update the button's text based on the new state and current language.
+                    const lang = htmlElement.lang || 'en';
+                    const isOpen = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true'; // This is after toggle
+                    const openText = translations[stringTypeToggleBtn.getAttribute('data-translation-key-open')] || "Switch to Closed Loop";
+                    const closedText = translations[stringTypeToggleBtn.getAttribute('data-translation-key-closed')] || "Switch to Open String";
+                    stringTypeToggleBtn.textContent = isOpen ? openText : closedText;
+                    updateP5SketchFromControls(); 
                 });
             }
         }
     }
 
-
-    // --- Initialization ---
     async function initializeApp() {
-        applySavedDarkMode(); // Apply dark mode first to avoid FOUC for SVGs
+        applySavedDarkMode(); 
         
-        // Load all SVGs
-        const svgPlaceholders = [
-            { id: 'intro-svg-placeholder', path: 'svg/intro-visual.svg' },
-            { id: 'problem-svg-placeholder', path: 'svg/problem-visual.svg' },
-            { id: 'bigidea-svg-placeholder', path: 'svg/bigidea-visual.svg' },
-            { id: 'dimensions-svg-placeholder', path: 'svg/dimensions-visual.svg' },
-            { id: 'types-svg-placeholder', path: 'svg/types-visual.svg' },
-            { id: 'mtheory-svg-placeholder', path: 'svg/mtheory-visual.svg' },
-            { id: 'branes-svg-placeholder', path: 'svg/branes-visual.svg' },
-            { id: 'landscape-svg-placeholder', path: 'svg/landscape-visual.svg' },
-            { id: 'philosophy-svg-placeholder', path: 'svg/philosophy-visual.svg' },
-            { id: 'about-svg-placeholder', path: 'svg/about-visual.svg' },
-            { id: 'conclusion-svg-placeholder', path: 'svg/conclusion-visual.svg' },
-            { id: 'furtherreading-svg-placeholder', path: 'svg/furtherreading-visual.svg' }
-        ];
-        // Filter out placeholders that might not exist if sections were removed
-        const existingPlaceholders = svgPlaceholders.filter(p => document.getElementById(p.id));
-        await Promise.all(existingPlaceholders.map(p => loadSvg(p.id, p.path)));
+        const svgPlaceholdersMap = {
+            'intro-svg': 'svg/intro-visual.svg',
+            'problem-svg': 'svg/problem-visual.svg',
+            'bigidea-svg': 'svg/bigidea-visual.svg',
+            'dimensions-svg': 'svg/dimensions-visual.svg',
+            'types-svg': 'svg/types-visual.svg',
+            'mtheory-svg': 'svg/mtheory-visual.svg',
+            'branes-svg': 'svg/branes-visual.svg',
+            'landscape-svg': 'svg/landscape-visual.svg',
+            'philosophy-svg': 'svg/philosophy-visual.svg',
+            'about-svg': 'svg/about-visual.svg',
+            'conclusion-svg': 'svg/conclusion-visual.svg',
+            'furtherreading-svg': 'svg/furtherreading-visual.svg'
+        };
 
-        await switchLanguage(currentLang); // Load initial language and apply translations (also updates SVGs)
+        const svgLoadPromises = [];
+        for (const id in svgPlaceholdersMap) {
+            const element = document.getElementById(id);
+            if (element) {
+                svgLoadPromises.push(loadSvg(element, svgPlaceholdersMap[id]));
+            } else {
+                // console.warn(`SVG placeholder with ID '${id}' not found in HTML.`);
+            }
+        }
+        await Promise.all(svgLoadPromises);
+
+        await switchLanguage(currentLang); 
         
-        updateSectionDisplay(); // Set initial active section
+        updateSectionDisplay(); 
         initializeTimelineInteraction();
         initializeGlossaryInteraction();
-        initializeP5Lab(); // Initialize p5 lab after translations and SVGs might be ready
+        initializeP5Lab(); 
 
-        // Event Listeners
         prevBtn.addEventListener('click', () => { if (currentSectionIndex > 0) { currentSectionIndex--; updateSectionDisplay(); }});
         nextBtn.addEventListener('click', () => { if (currentSectionIndex < sections.length - 1) { currentSectionIndex++; updateSectionDisplay(); }});
         langEnBtn.addEventListener('click', () => { if (currentLang !== 'en') switchLanguage('en'); });
@@ -335,19 +306,25 @@ document.addEventListener('DOMContentLoaded', () => {
             skipLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 const mainContent = document.getElementById('interactive-content');
-                const firstFocusableElement = mainContent.querySelector('.active h2, .active h3, .active button, .active [href], .active input, .active select, .active textarea, .active [tabindex]:not([tabindex="-1"])');
+                const activeSection = mainContent.querySelector('.content-section.active');
+                let firstFocusableElement = activeSection ? activeSection.querySelector('h2, h3, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])') : null;
+                
                 if (firstFocusableElement) {
                     firstFocusableElement.focus();
-                } else { // Fallback to the section itself
-                    const activeSection = mainContent.querySelector('.content-section.active');
-                    if (activeSection) {
-                        activeSection.setAttribute('tabindex', '-1');
-                        activeSection.focus();
-                    }
+                } else if (activeSection) { // Fallback to the section itself if no interactive elements
+                    activeSection.setAttribute('tabindex', '-1'); // Make it focusable
+                    activeSection.focus();
+                } else { // Ultimate fallback
+                     mainContent.setAttribute('tabindex', '-1');
+                     mainContent.focus();
                 }
             });
         }
     }
 
-    initializeApp();
+    initializeApp().catch(err => {
+        console.error("Failed to initialize the application:", err);
+        // Display a user-friendly error message on the page if critical initialization fails
+        document.body.innerHTML = '<p style="color:red; text-align:center; padding-top: 50px;">An error occurred while loading the application. Please try refreshing the page or check the console for details.</p>';
+    });
 });
