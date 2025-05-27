@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
 </head>
 <body>
+    <a href="#interactive-content" class="skip-link" data-en="Skip to main content" data-fa="پرش به محتوای اصلی">Skip to main content</a>
     <div class="container">
         <header>
             <h1 id="main-title" data-en="String Theory" data-fa="نظریه ریسمان" aria-label="Toggle dark mode by clicking title" tabindex="0">String Theory</h1>
@@ -23,7 +24,7 @@
             </div>
         </header>
 
-        <main id="interactive-content">
+        <main id="interactive-content" role="main">
             <section id="intro" class="content-section active" role="tabpanel" aria-labelledby="tab-intro">
                 <h2 id="heading-intro" tabindex="-1" data-en="Welcome!" data-fa="خوش آمدید!">Welcome!</h2>
                 <p data-en="Embark on an enlightening journey to grasp the fundamentals of String Theory, one of the most profound, ambitious, and debated ideas in modern theoretical physics. This interactive guide aims to demystify its core concepts, offering a glimpse into how physicists are attempting to describe the very fabric of reality." data-fa="سفری روشنگرانه را برای درک مبانی نظریه ریسمان، یکی از عمیق‌ترین، بلندپروازانه‌ترین و بحث‌برانگیزترین ایده‌ها در فیزیک نظری مدرن، آغاز کنید. این راهنمای تعاملی با هدف رمزگشایی از مفاهیم اصلی آن، نگاهی اجمالی به چگونگی تلاش فیزیکدانان برای توصیف تار و پود واقعیت ارائه می‌دهد.">
@@ -32,10 +33,10 @@
                 <div class="visual-placeholder svg-container" aria-label="Abstract representation of interconnected ideas">
                     <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <radialGradient id="introGradientV8" cx="50%" cy="50%" r="70%" fx="50%" fy="50%"> <stop offset="0%" style="stop-color:var(--primary-accent-light);stop-opacity:0.8" /> <stop offset="100%" style="stop-color:var(--bg-color-light);stop-opacity:0.1" /> </radialGradient>
-                            <radialGradient id="introGradientDarkV8" cx="50%" cy="50%" r="70%" fx="50%" fy="50%"> <stop offset="0%" style="stop-color:var(--primary-accent-dark);stop-opacity:0.8" /> <stop offset="100%" style="stop-color:var(--bg-color-dark);stop-opacity:0.1" /> </radialGradient>
+                            <radialGradient id="introGradientV9" cx="50%" cy="50%" r="70%" fx="50%" fy="50%"> <stop offset="0%" style="stop-color:var(--primary-accent-light);stop-opacity:0.8" /> <stop offset="100%" style="stop-color:var(--bg-color-light);stop-opacity:0.1" /> </radialGradient>
+                            <radialGradient id="introGradientDarkV9" cx="50%" cy="50%" r="70%" fx="50%" fy="50%"> <stop offset="0%" style="stop-color:var(--primary-accent-dark);stop-opacity:0.8" /> <stop offset="100%" style="stop-color:var(--bg-color-dark);stop-opacity:0.1" /> </radialGradient>
                         </defs>
-                        <circle cx="100" cy="50" r="40" class="svg-dynamic-fill" data-light-fill="url(#introGradientV8)" data-dark-fill="url(#introGradientDarkV8)" />
+                        <circle cx="100" cy="50" r="40" class="svg-dynamic-fill" data-light-fill="url(#introGradientV9)" data-dark-fill="url(#introGradientDarkV9)" />
                         <text x="100" y="55" font-family="inherit" font-size="10" text-anchor="middle" class="svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-en="Explore" data-fa="کاوش"></text>
                     </svg>
                 </div>
@@ -49,23 +50,23 @@
                 <div class="visual-placeholder svg-container" aria-label="Conceptual visualization of General Relativity vs Quantum Mechanics">
                     <svg viewBox="0 0 250 130" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <linearGradient id="grGradientLightV8" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" stop-color="var(--secondary-accent-light)" stop-opacity="0.7"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0.3"/> </linearGradient>
-                            <linearGradient id="grGradientDarkV8" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" stop-color="var(--secondary-accent-dark)" stop-opacity="0.7"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0.3"/> </linearGradient>
-                            <radialGradient id="qmGradientLightV8" cx="50%" cy="50%" r="50%"> <stop offset="0%" stop-color="var(--primary-accent-light)" stop-opacity="0.8"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0"/> </radialGradient>
-                            <radialGradient id="qmGradientDarkV8" cx="50%" cy="50%" r="50%"> <stop offset="0%" stop-color="var(--primary-accent-dark)" stop-opacity="0.8"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0"/> </radialGradient>
-                            <filter id="grBlurV8"> <feGaussianBlur stdDeviation="1"/> </filter>
-                            <filter id="qmParticleBlurV8"> <feGaussianBlur stdDeviation="0.5"/> </filter>
+                            <linearGradient id="grGradientLightV9" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" stop-color="var(--secondary-accent-light)" stop-opacity="0.7"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0.3"/> </linearGradient>
+                            <linearGradient id="grGradientDarkV9" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" stop-color="var(--secondary-accent-dark)" stop-opacity="0.7"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0.3"/> </linearGradient>
+                            <radialGradient id="qmGradientLightV9" cx="50%" cy="50%" r="50%"> <stop offset="0%" stop-color="var(--primary-accent-light)" stop-opacity="0.8"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0"/> </radialGradient>
+                            <radialGradient id="qmGradientDarkV9" cx="50%" cy="50%" r="50%"> <stop offset="0%" stop-color="var(--primary-accent-dark)" stop-opacity="0.8"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0"/> </radialGradient>
+                            <filter id="grBlurV9"> <feGaussianBlur stdDeviation="1"/> </filter>
+                            <filter id="qmParticleBlurV9"> <feGaussianBlur stdDeviation="0.5"/> </filter>
                         </defs>
                         <g transform="translate(60, 65)">
-                            <path d="M-50,-45 C-50,15 50,15 50,-45 C30,-65 -30,-65 -50,-45 Z" class="svg-dynamic-fill" data-light-fill="url(#grGradientLightV8)" data-dark-fill="url(#grGradientDarkV8)" filter="url(#grBlurV8)"/>
+                            <path d="M-50,-45 C-50,15 50,15 50,-45 C30,-65 -30,-65 -50,-45 Z" class="svg-dynamic-fill" data-light-fill="url(#grGradientLightV9)" data-dark-fill="url(#grGradientDarkV9)" filter="url(#grBlurV9)"/>
                             <circle cx="0" cy="-15" r="5" class="svg-dynamic-fill" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" opacity="0.7"/>
                             <text x="0" y="35" class="svg-text svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="8px" data-en="GR (Cosmos)" data-fa="نسبیت عام (کیهان)"></text>
                         </g>
                         <g transform="translate(190, 65)">
-                            <circle cx="0" cy="0" r="40" class="svg-dynamic-fill" data-light-fill="url(#qmGradientLightV8)" data-dark-fill="url(#qmGradientDarkV8)" opacity="0.5"/>
-                            <circle cx="-10" cy="-10" r="3" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV8)"/>
-                            <circle cx="15" cy="5" r="2" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV8)"/>
-                            <circle cx="5" cy="15" r="2.5" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV8)"/>
+                            <circle cx="0" cy="0" r="40" class="svg-dynamic-fill" data-light-fill="url(#qmGradientLightV9)" data-dark-fill="url(#qmGradientDarkV9)" opacity="0.5"/>
+                            <circle cx="-10" cy="-10" r="3" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV9)"/>
+                            <circle cx="15" cy="5" r="2" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV9)"/>
+                            <circle cx="5" cy="15" r="2.5" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV9)"/>
                              <path d="M-20 0 Q0 -20 20 0 Q0 20 -20 0" stroke="var(--svg-stroke-light)" stroke-width="0.5" fill="none" opacity="0.6" class="svg-dynamic-stroke"/>
                             <text x="0" y="35" class="svg-text svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="8px" data-en="QM (Particles)" data-fa="کوانتوم (ذرات)"></text>
                         </g>
@@ -330,41 +331,77 @@
                             <radialGradient id="centerGlowDarkV8" cx="50%" cy="50%" r="60%"> <stop offset="0%" stop-color="var(--primary-accent-dark)" stop-opacity="0.5"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0"/> </radialGradient>
                         </defs>
                         <circle cx="100" cy="50" r="10" class="svg-dynamic-fill" data-light-fill="url(#centerGlowLightV8)" data-dark-fill="url(#centerGlowDarkV8)" filter="url(#thoughtBlurV8)"/>
-                        <path d="M100,50 C70,40 60,20 40,25 S10,50 30,65 S70,70 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.4" stroke-width="1.5" transform="rotate(15, 100, 50)"/>
-                        <path d="M100,50 C130,60 140,80 160,75 S190,50 170,35 S130,30 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.4" stroke-width="1.5" transform="rotate(-25, 100, 50)"/>
+                        <path d="M100,50 C80,40 70,20 50,25 C30,30 20,50 40,65 C60,80 80,70 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.4" stroke-width="1.5" transform="rotate(15, 100, 50)"/>
+                        <path d="M100,50 C120,60 130,80 150,75 C170,70 180,50 160,35 C140,20 120,30 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.4" stroke-width="1.5" transform="rotate(-25, 100, 50)"/>
                         <path d="M100,50 C90,70 70,80 55,85 S20,70 35,50 S50,20 75,25 S90,30 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.3" stroke-width="1" transform="rotate(45, 100, 50)"/>
                         <text x="100" y="55" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="16px" data-en="?" data-fa="؟"></text>
-                        <text x="100" y="90" class="svg-text svg-dynamic-text" font-size="6px" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-en="Nature of Reality" data-fa="ماهیت واقعیت"></text>
+                        <text x="100" y="85" class="svg-text svg-dynamic-text" font-size="6px" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-en="Philosophical Questions" data-fa="پرسش‌های فلسفی"></text>
                     </svg>
                 </div>
             </section>
 
             <section id="glossary" class="content-section" role="tabpanel" aria-labelledby="tab-glossary">
                 <h2 id="heading-glossary" tabindex="-1" data-en="Glossary of Terms" data-fa="واژه‌نامه اصطلاحات">Glossary of Terms</h2>
-                <p data-en="Key terms used in the study of String Theory." data-fa="اصطلاحات کلیدی مورد استفاده در مطالعه نظریه ریسمان.">Key terms used in the study of String Theory.</p>
+                <p data-en="Key terms used in the study of String Theory. Click on a term for more details (future enhancement)." data-fa="اصطلاحات کلیدی مورد استفاده در مطالعه نظریه ریسمان. برای جزئیات بیشتر روی اصطلاح کلیک کنید (بهبود آینده).">Key terms used in the study of String Theory.</p>
                 <dl class="glossary-list">
-                    <dt data-en="String" data-fa="ریسمان">String</dt>
-                    <dd data-en="The fundamental one-dimensional object in string theory, whose vibrational modes correspond to different particles." data-fa="جسم بنیادی یک‌بعدی در نظریه ریسمان که مدهای ارتعاشی آن با ذرات مختلف مطابقت دارد. (توضیح کامل‌تر...)"></dd>
-                    
-                    <dt data-en="Supersymmetry (SUSY)" data-fa="ابرتقارن (SUSY)">Supersymmetry (SUSY)</dt>
-                    <dd data-en="A theoretical symmetry between bosons (force carriers) and fermions (matter particles), predicting partner particles for each known particle." data-fa="یک تقارن نظری بین بوزون‌ها (حاملان نیرو) و فرمیون‌ها (ذرات ماده) که برای هر ذره شناخته‌شده، یک ذره همزاد پیش‌بینی می‌کند. (توضیح کامل‌تر...)"></dd>
-
-                    <dt data-en="Compactification" data-fa="فشرده‌سازی">Compactification</dt>
-                    <dd data-en="The idea that extra spatial dimensions required by string theory are curled up to a very small size, making them undetectable at current energy scales." data-fa="این ایده که ابعاد فضایی اضافی مورد نیاز نظریه ریسمان تا اندازه بسیار کوچکی پیچیده شده‌اند و در مقیاس‌های انرژی فعلی قابل تشخیص نیستند. (توضیح کامل‌تر...)"></dd>
-                    
-                    <dt data-en="Brane (p-brane)" data-fa="برین (p-برین)">Brane (p-brane)</dt>
-                    <dd data-en="A dynamical object in string theory that extends in 'p' spatial dimensions (e.g., 0-brane is a particle, 1-brane is a string, 2-brane is a membrane)." data-fa="یک شیء دینامیکی در نظریه ریسمان که در «p» بعد فضایی گسترش یافته است (مثلاً ۰-برین یک ذره، ۱-برین یک ریسمان، ۲-برین یک غشاء است). (توضیح کامل‌تر...)"></dd>
-
-                    <dt data-en="D-brane" data-fa="D-برین">D-brane</dt>
-                    <dd data-en="A specific type of brane where the ends of open strings can attach, playing a crucial role in dualities and M-theory." data-fa="نوع خاصی از برین که انتهای ریسمان‌های باز می‌توانند به آن متصل شوند و نقش حیاتی در دوگانگی‌ها و نظریه M ایفا می‌کند. (توضیح کامل‌تر...)"></dd>
-                    
-                    <dt data-en="Duality" data-fa="دوگانگی">Duality</dt>
-                    <dd data-en="In string theory, a relationship where two seemingly different theories or physical situations are actually equivalent descriptions of the same underlying physics." data-fa="در نظریه ریسمان، رابطه‌ای که در آن دو نظریه یا موقعیت فیزیکی ظاهراً متفاوت، در واقع توصیفات معادل از یک فیزیک زیربنایی یکسان هستند. (توضیح کامل‌تر...)"></dd>
-                    
-                    <dt data-en="M-Theory" data-fa="نظریه M">M-Theory</dt>
-                    <dd data-en="A proposed 11-dimensional theory that unifies the five consistent superstring theories." data-fa="یک نظریه ۱۱ بعدی پیشنهادی که پنج نظریه ابرریسمان سازگار را متحد می‌کند. (توضیح کامل‌تر...)"></dd>
+                    <div class="glossary-entry">
+                        <dt role="term" tabindex="0" data-en="String" data-fa="ریسمان" aria-controls="details-string">String</dt>
+                        <dd role="definition" id="details-string" data-en="The fundamental one-dimensional object in string theory, whose vibrational modes correspond to different particles. Unlike point particles, strings have extension and can be open (with endpoints) or closed (loops)." data-fa="جسم بنیادی یک‌بعدی در نظریه ریسمان که مدهای ارتعاشی آن با ذرات مختلف مطابقت دارد. برخلاف ذرات نقطه‌ای، ریسمان‌ها دارای امتداد هستند و می‌توانند باز (با دو انتها) یا بسته (حلقه) باشند."></dd>
+                    </div>
+                    <div class="glossary-entry">
+                        <dt role="term" tabindex="0" data-en="Supersymmetry (SUSY)" data-fa="ابرتقارن (SUSY)" aria-controls="details-susy">Supersymmetry (SUSY)</dt>
+                        <dd role="definition" id="details-susy" data-en="A theoretical symmetry between bosons (force carriers) and fermions (matter particles), predicting partner particles (superpartners) for each known particle. SUSY helps stabilize theories and is a key ingredient in superstring theories." data-fa="یک تقارن نظری بین بوزون‌ها (حاملان نیرو) و فرمیون‌ها (ذرات ماده) که برای هر ذره شناخته‌شده، یک ذره همزاد (ابرهمزاد) پیش‌بینی می‌کند. ابرتقارن به پایدارسازی نظریه‌ها کمک می‌کند و یک جزء کلیدی در نظریه‌های ابرریسمان است."></dd>
+                    </div>
+                    <div class="glossary-entry">
+                        <dt role="term" tabindex="0" data-en="Compactification" data-fa="فشرده‌سازی" aria-controls="details-compact">Compactification</dt>
+                        <dd role="definition" id="details-compact" data-en="The idea that extra spatial dimensions required by string theory (typically 6 or 7) are curled up to a very small, unobservable size, often on the scale of Calabi-Yau manifolds." data-fa="این ایده که ابعاد فضایی اضافی مورد نیاز نظریه ریسمان (معمولاً ۶ یا ۷ بعد) تا اندازه بسیار کوچک و غیرقابل مشاهده‌ای، اغلب در مقیاس خمینه‌های کالابی-یائو، پیچیده شده‌اند."></dd>
+                    </div>
+                    <div class="glossary-entry">
+                        <dt role="term" tabindex="0" data-en="Brane (p-brane)" data-fa="برین (p-برین)" aria-controls="details-pbrane">Brane (p-brane)</dt>
+                        <dd role="definition" id="details-pbrane" data-en="A dynamical object in string theory that extends in 'p' spatial dimensions (e.g., 0-brane is a particle, 1-brane is a string, 2-brane is a membrane). Branes are fundamental in M-theory and D-branes are where open strings end." data-fa="یک شیء دینامیکی در نظریه ریسمان که در «p» بعد فضایی گسترش یافته است (مثلاً ۰-برین یک ذره، ۱-برین یک ریسمان، ۲-برین یک غشاء است). برین‌ها در نظریه M بنیادی هستند و D-برین‌ها جایی هستند که ریسمان‌های باز به آن‌ها ختم می‌شوند."></dd>
+                    </div>
+                    <div class="glossary-entry">
+                        <dt role="term" tabindex="0" data-en="D-brane" data-fa="D-برین" aria-controls="details-dbrane">D-brane</dt>
+                        <dd role="definition" id="details-dbrane" data-en="A specific type of p-brane where the endpoints of open strings must lie, satisfying Dirichlet boundary conditions. They are dynamical objects with mass and charge." data-fa="نوع خاصی از p-برین که انتهای ریسمان‌های باز باید روی آن قرار گیرند و شرایط مرزی دیریکله را برآورده کنند. آنها اشیاء دینامیکی با جرم و بار هستند."></dd>
+                    </div>
+                    <div class="glossary-entry">
+                        <dt role="term" tabindex="0" data-en="Duality" data-fa="دوگانگی" aria-controls="details-duality">Duality</dt>
+                        <dd role="definition" id="details-duality" data-en="In string theory, a relationship where two seemingly different theories or physical situations are actually equivalent descriptions of the same underlying physics. Examples include T-duality and S-duality." data-fa="در نظریه ریسمان، رابطه‌ای که در آن دو نظریه یا موقعیت فیزیکی ظاهراً متفاوت، در واقع توصیفات معادل از یک فیزیک زیربنایی یکسان هستند. نمونه‌ها شامل دوگانگی T و دوگانگی S است."></dd>
+                    </div>
+                    <div class="glossary-entry">
+                        <dt role="term" tabindex="0" data-en="M-Theory" data-fa="نظریه M" aria-controls="details-mtheory">M-Theory</dt>
+                        <dd role="definition" id="details-mtheory" data-en="A proposed 11-dimensional theory that unifies the five consistent 10-dimensional superstring theories. Its low-energy limit is 11D supergravity, and it includes M2-branes and M5-branes as fundamental objects." data-fa="یک نظریه ۱۱ بعدی پیشنهادی که پنج نظریه ابرریسمان ۱۰ بعدی سازگار را متحد می‌کند. حد انرژی پایین آن ابرگرانش ۱۱ بعدی است و شامل M2-برین‌ها و M5-برین‌ها به عنوان اشیاء بنیادی است."></dd>
+                    </div>
+                    <div class="glossary-entry">
+                        <dt role="term" tabindex="0" data-en="Calabi-Yau Manifold" data-fa="خمینه کالابی-یائو" aria-controls="details-calabi">Calabi-Yau Manifold</dt>
+                        <dd role="definition" id="details-calabi" data-en="Complex, multi-dimensional geometric shapes proposed as candidates for the compactified extra dimensions in string theory. Their specific geometry determines the properties of particles in the lower-dimensional effective theory." data-fa="اشکال هندسی پیچیده و چندبعدی که به عنوان کاندیداهایی برای ابعاد اضافی فشرده‌شده در نظریه ریسمان پیشنهاد شده‌اند. هندسه خاص آنها ویژگی‌های ذرات را در نظریه مؤثر با ابعاد پایین‌تر تعیین می‌کند."></dd>
+                    </div>
                 </dl>
             </section>
+
+            <section id="about-project" class="content-section" role="tabpanel" aria-labelledby="tab-about-project">
+                <h2 id="heading-about-project" tabindex="-1" data-en="About This Project" data-fa="درباره این پروژه">About This Project</h2>
+                <h3 data-en="Purpose" data-fa="هدف">Purpose</h3>
+                <p data-en="This interactive guide aims to provide an accessible and engaging introduction to the fascinating world of String Theory for a general audience. It simplifies complex concepts without over-trivializing them, encouraging further exploration." data-fa="هدف این راهنمای تعاملی، ارائه مقدمه‌ای قابل دسترس و جذاب به دنیای شگفت‌انگیز نظریه ریسمان برای عموم مخاطبان است. این راهنما مفاهیم پیچیده را بدون ساده‌سازی بیش از حد، توضیح می‌دهد و به کاوش بیشتر تشویق می‌کند. (توضیحات خود را اضافه کنید...)"></p>
+                
+                <h3 data-en="How to Use" data-fa="نحوه استفاده">How to Use</h3>
+                <p data-en="Navigate through the sections using the 'Previous' and 'Next' buttons. Switch languages using the 'English'/'فارسی' buttons. Toggle dark mode by clicking the main title. The 'Interactive String Lab' allows you to experiment with a virtual string." data-fa="با استفاده از دکمه‌های «قبلی» و «بعدی» بین بخش‌ها جابجا شوید. با دکمه‌های «English»/«فارسی» زبان را تغییر دهید. با کلیک روی عنوان اصلی، حالت تاریک را فعال/غیرفعال کنید. «آزمایشگاه تعاملی ریسمان» به شما امکان می‌دهد با یک ریسمان مجازی آزمایش کنید. (توضیحات خود را اضافه کنید...)"></p>
+                
+                <h3 data-en="Creator & Acknowledgements" data-fa="سازنده و قدردانی">Creator & Acknowledgements</h3>
+                <p data-en="This project was created by GeekNeuron for GitHub Pages, with significant assistance from an AI language model for content generation, code structure, and iterative improvements. (Add any other acknowledgements here...)" data-fa="این پروژه توسط GeekNeuron برای GitHub Pages ساخته شده است، با کمک قابل توجه یک مدل زبانی هوش مصنوعی برای تولید محتوا، ساختار کد، و بهبودهای مکرر. (هرگونه قدردانی دیگر را اینجا اضافه کنید...)"></p>
+                
+                <h3 data-en="Technology Stack" data-fa="فناوری‌های مورد استفاده">Technology Stack</h3>
+                <p data-en="Built with HTML, CSS, JavaScript, and the p5.js library for interactive visualizations." data-fa="ساخته شده با HTML، CSS، JavaScript، و کتابخانه p5.js برای نمایش‌های تعاملی. (جزئیات بیشتر در صورت نیاز...)"></p>
+                
+                <div class="visual-placeholder svg-container" aria-label="Project or creator logo/icon placeholder">
+                     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="40" r="25" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" opacity="0.2"/>
+                        <path d="M35,60 Q50,75 65,60" stroke="var(--svg-stroke-light)" stroke-width="3" fill="none" class="svg-dynamic-stroke"/>
+                        <text x="50" y="50" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="10px" data-en="StringT" data-fa="StringT"></text>
+                    </svg>
+                </div>
+            </section>
+
 
              <section id="conclusion" class="content-section" role="tabpanel" aria-labelledby="tab-conclusion">
                 <h2 id="heading-conclusion" tabindex="-1" data-en="A Glimpse into the Unknown" data-fa="نگاهی به ناشناخته‌ها">A Glimpse into the Unknown</h2>
@@ -377,11 +414,11 @@
                 <div class="visual-placeholder svg-container" aria-label="Inspiring cosmic imagery">
                      <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <filter id="blurFilterV8"> <feGaussianBlur in="SourceGraphic" stdDeviation="1" /> </filter>
-                            <linearGradient id="galaxyGradientV8" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:var(--secondary-accent-light);stop-opacity:1" /> <stop offset="100%" style="stop-color:var(--primary-accent-light);stop-opacity:1" /> </linearGradient>
-                            <linearGradient id="galaxyGradientDarkV8" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:var(--secondary-accent-dark);stop-opacity:1" /> <stop offset="100%" style="stop-color:var(--primary-accent-dark);stop-opacity:1" /> </linearGradient>
+                            <filter id="blurFilterV9"> <feGaussianBlur in="SourceGraphic" stdDeviation="1" /> </filter>
+                            <linearGradient id="galaxyGradientV9" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:var(--secondary-accent-light);stop-opacity:1" /> <stop offset="100%" style="stop-color:var(--primary-accent-light);stop-opacity:1" /> </linearGradient>
+                            <linearGradient id="galaxyGradientDarkV9" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:var(--secondary-accent-dark);stop-opacity:1" /> <stop offset="100%" style="stop-color:var(--primary-accent-dark);stop-opacity:1" /> </linearGradient>
                         </defs>
-                        <ellipse cx="100" cy="50" rx="80" ry="30" class="svg-dynamic-fill" data-light-fill="url(#galaxyGradientV8)" data-dark-fill="url(#galaxyGradientDarkV8)" filter="url(#blurFilterV8)" />
+                        <ellipse cx="100" cy="50" rx="80" ry="30" class="svg-dynamic-fill" data-light-fill="url(#galaxyGradientV9)" data-dark-fill="url(#galaxyGradientDarkV9)" filter="url(#blurFilterV9)" />
                         <text x="100" y="55" font-family="inherit" font-size="10" text-anchor="middle" fill="#fff" data-en="The Journey Continues..." data-fa="سفر ادامه دارد..."></text>
                     </svg>
                 </div>
@@ -424,8 +461,8 @@
         </nav>
 
         <footer>
-            <p data-en="Created by GeekNeuron for GitHub Pages. Version 8: Glossary & Advanced Interactivity." data-fa="ساخته شده توسط GeekNeuron برای GitHub Pages. نسخه ۸: واژه‌نامه و تعاملات پیشرفته.">
-                Created by GeekNeuron for GitHub Pages. Version 8: Glossary & Advanced Interactivity.
+            <p data-en="Created by GeekNeuron for GitHub Pages. Version 9: Final Polish & Enhancements." data-fa="ساخته شده توسط GeekNeuron برای GitHub Pages. نسخه ۹: پرداخت نهایی و بهبودها.">
+                Created by GeekNeuron for GitHub Pages. Version 9: Final Polish & Enhancements.
             </p>
         </footer>
     </div>
