@@ -1,1 +1,9 @@
-
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <filter id="blurFilterV11"> <feGaussianBlur in="SourceGraphic" stdDeviation="1" /> </filter>
+        <linearGradient id="galaxyGradientV11" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:var(--secondary-accent-light);stop-opacity:1" /> <stop offset="100%" style="stop-color:var(--primary-accent-light);stop-opacity:1" /> </linearGradient>
+        <linearGradient id="galaxyGradientDarkV11" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:var(--secondary-accent-dark);stop-opacity:1" /> <stop offset="100%" style="stop-color:var(--primary-accent-dark);stop-opacity:1" /> </linearGradient>
+    </defs>
+    <ellipse cx="100" cy="50" rx="80" ry="30" class="svg-dynamic-fill" data-light-fill="url(#galaxyGradientV11)" data-dark-fill="url(#galaxyGradientDarkV11)" filter="url(#blurFilterV11)" />
+    <text x="100" y="55" font-family="inherit" font-size="10" text-anchor="middle" fill="#fff" data-translation-key="conclusionVisualText">The Journey Continues...</text>
+</svg>
