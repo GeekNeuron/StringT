@@ -212,50 +212,44 @@ body.dark-mode .dark-mode-hint {
 main#interactive-content { 
     position: relative; 
     width: 100%; 
-    /* LAYOUT_FIX: No min-height, height determined by active section */
-    /* overflow: hidden; /* Removed for simpler display:none logic */
 }
 
 .content-section { 
     width: 100%; 
     opacity: 0; 
-    transform: translateY(10px); /* Start slightly down for entry */
-    transition: opacity var(--section-transition-duration) ease-out, 
-                transform var(--section-transition-duration) ease-out;
-    padding-bottom: 20px; /* Consistent padding at the bottom of section content */
+    transform: translateY(15px); 
+    transition: opacity var(--section-transition-duration) ease-in-out, 
+                transform var(--section-transition-duration) ease-in-out;
+    padding-bottom: 15px; 
     border-bottom: 1px solid var(--border-color-light); 
-    display: none; /* LAYOUT_FIX: Hidden by default, takes no space */
+    display: none; 
 }
 
 .content-section.active { 
     opacity: 1; 
     transform: translateY(0); 
-    display: block; /* LAYOUT_FIX: Show active section, it will define the height */
+    display: block; 
 }
 
-/* .exiting class is not strictly needed for display:none/block, but JS might use it for timing */
 .content-section.exiting { 
     opacity: 0;
-    transform: translateY(-10px); /* Exit upwards */
-    /* display: block; /* Keep it block during exit animation, JS will set to none after */
-    /* position: absolute; /* Ensure it doesn't affect layout while exiting if needed */
-    /* top:0; left:0; /* If absolute */
+    transform: translateY(-15px);
+    /* Keep display:block during exit animation, JS will set to none after transition */
+    position: absolute; /* Take out of flow only when exiting */
+    top: 0;
+    left: 0;
 }
-
 
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
-/* Remove border from the truly last section *visible* in the flow */
-/* This is tricky if sections are dynamically shown/hidden.
-   A simpler approach is to ensure the container for sections doesn't have a bottom border,
-   and the nav controls have a top border.
-*/
 #interactive-content > .content-section:last-of-type {
-    /* This targets the last section in HTML. If it's active, its border will be removed. */
-    /* If the order of sections can change, this might not be reliable. */
-    /* For now, assuming the last section in HTML is always the last possible displayed section. */
-    /* border-bottom: none; /* Let's try removing this and rely on nav's top border */
+    /* This will remove border from the last section in HTML, which should be fine if it's the last displayed */
+    /* border-bottom: none; /* Re-evaluating this, as nav controls have top border */
+}
+/* Ensure the currently active section that is also the last one before nav has no border */
+.content-section.active:is(:last-child, :nth-last-child(2):not(#interactive-lab ~ #interactive-lab + *)) { /* More complex selector might be needed depending on final structure */
+   /* border-bottom: none; */
 }
 
 
@@ -292,9 +286,8 @@ body.dark-mode .content-section h3 {
     font-size: 1rem; 
     text-align: justify; 
 }
-/* Ensure last paragraph in a section has a bit more space before the section ends (if no other elements follow) */
 .content-section p:last-child {
-    margin-bottom: 0; /* Remove default if it's truly the last, padding-bottom of section handles it */
+    margin-bottom: 0; 
 }
 
 
@@ -397,9 +390,35 @@ body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
 .timeline-milestone-dot { position: absolute; left: -28px; top: 18px; width: 14px; height: 14px; background-color: var(--timeline-dot-bg-light); border: 2px solid var(--timeline-dot-border-light); border-radius: 50%; z-index: 1; }
 body.dark-mode .timeline-milestone-dot { background-color: var(--timeline-dot-bg-dark); border: 2px solid var(--timeline-dot-border-dark); }
 body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; }
-.timeline-date { position: absolute; left: -28px; top: -8px; transform: translateX(-50%); font-size: 0.8rem; font-weight: bold; color: var(--secondary-accent-light); background-color: var(--bg-color-light); padding: 2px 5px; border-radius: 4px; white-space: nowrap; z-index: 2; }
-body.dark-mode .timeline-date { color: var(--secondary-accent-dark); background-color: var(--bg-color-dark); }
-body[dir="rtl"] .timeline-date { left: auto; right: -28px; transform: translateX(50%); }
+
+/* LAYOUT_FIX: Timeline Date Positioning */
+.timeline-date {
+    position: absolute;
+    /* Align right edge of date text slightly to the right of the timeline line */
+    left: -25px; /* (Dot is at -28px, Line is at -30px relative to event start if line is 20px and event margin 50px) */
+                  /* Let's assume dot center is our reference for the line. Dot center is -28px from event start. */
+                  /* We want the right edge of date text to be +5px from dot center. */
+    transform: translateX(-100%); /* This makes 'left' property refer to the right edge of the text box */
+    top: -8px; 
+    font-size: 0.8rem; 
+    font-weight: bold; 
+    color: var(--secondary-accent-light); 
+    background-color: var(--bg-color-light); 
+    padding: 2px 5px; 
+    border-radius: 4px; 
+    white-space: nowrap; 
+    z-index: 2; 
+}
+body.dark-mode .timeline-date { 
+    color: var(--secondary-accent-dark); 
+    background-color: var(--bg-color-dark); 
+}
+body[dir="rtl"] .timeline-date { 
+    left: auto;
+    right: -25px; /* Align left edge of date text slightly to the left of the timeline line */
+    transform: translateX(100%); /* This makes 'right' property refer to the left edge of the text box */
+}
+
 .timeline-content h3 { margin-top: 0; font-size: 1.15rem; margin-bottom: 6px; }
 .timeline-content p { font-size: 0.9rem; margin-bottom: 6px; }
 .timeline-details { max-height: 0; overflow: hidden; margin-top: 8px; padding-left: 10px; padding-right: 10px; background-color: var(--timeline-details-bg-light); border-radius: 4px; font-size: 0.85rem; border-left: 2px solid var(--timeline-dot-border-light); transition: max-height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), padding-top 0.35s ease-out, padding-bottom 0.35s ease-out, opacity 0.35s ease-out; opacity: 0; }
@@ -548,7 +567,11 @@ body[dir="rtl"] .content-section.exiting { transform: translateX(20px) scale(0.9
 body[dir="rtl"] .timeline-container::before { left: auto; right: 18px; }
 body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
 body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; } 
-body[dir="rtl"] .timeline-date { left: auto; right: -28px; transform: translateX(50%); }
+body[dir="rtl"] .timeline-date { 
+    left: auto; 
+    right: -25px; /* Corresponds to left: -25px for LTR */
+    transform: translateX(100%); /* Aligns left edge of date text */
+}
 body[dir="rtl"] .glossary-list dd { border-left:none; border-right: 2px solid var(--glossary-dd-border-light); } 
 body[dir="rtl"].dark-mode .glossary-list dd { border-right-color: var(--glossary-dd-border-dark); }
 
@@ -575,8 +598,17 @@ body[dir="rtl"].dark-mode .glossary-list dd { border-right-color: var(--glossary
     body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 30px; }
     .timeline-milestone-dot { left: -22px; width: 12px; height: 12px; border-width: 2px;} 
     body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -22px; }
-    .timeline-date { left: -22px; font-size: 0.75rem; top: -20px; }
-    body[dir="rtl"] .timeline-date { left: auto; right: -22px; }
+    .timeline-date { 
+        left: -20px; /* Adjust for smaller screens */
+        transform: translateX(-100%); 
+        font-size: 0.75rem; 
+        top: -20px; 
+    }
+    body[dir="rtl"] .timeline-date { 
+        left: auto; 
+        right: -20px; 
+        transform: translateX(100%); 
+    }
 }
 
 @media (max-width: 480px) {
