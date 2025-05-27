@@ -1,10 +1,10 @@
 // js/script.js
-// Version: v19_debug_final_attempt
+// Version: v19_final_debug
 
 // Main application namespace
 window.stringTheoryApp = {};
 
-console.log("DEBUG: script.js: File execution started (v19_debug_final_attempt).");
+console.log("DEBUG: script.js: File execution started (v19_final_debug).");
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DEBUG: DOMContentLoaded event fired.");
@@ -30,14 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!sectionsContainer) missing.push("interactive-content");
             if (sections.length === 0) missing.push(".content-section (any)");
             if (!prevBtn) missing.push("prev-btn");
-            // ... (add other checks)
+            if (!nextBtn) missing.push("next-btn");
+            if (!langEnBtn) missing.push("lang-en");
+            if (!langFaBtn) missing.push("lang-fa");
+            if (!mainTitleElement) missing.push("main-title");
             console.error(`CRITICAL DEBUG: Essential DOM elements missing: ${missing.join(', ')}. Check HTML IDs and structure.`);
             throw new Error(`Essential DOM elements missing: ${missing.join(', ')}.`);
         }
         console.log("DEBUG: DOM elements selected successfully.");
     } catch (e) {
         console.error("CRITICAL DEBUG: Error selecting DOM elements:", e);
-        document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details like missing element IDs. Error: ${e.message}</p>`;
+        document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details. Error: ${e.message}</p>`;
         return; 
     }
 
@@ -55,12 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return translated;
     };
-
-    // --- SVG Functions ---
-    // DEFINE SVG helper functions BEFORE they are potentially called by other functions like switchLanguage (via applyTranslationsToPage -> applySvgTextTranslations)
     
+    // --- SVG Functions ---
     function applyDynamicSvgStyles(svgElement, isDarkMode) {
-        // console.log("DEBUG: Applying dynamic SVG styles. Dark mode:", isDarkMode, "Element:", svgElement);
         const dynamicFills = svgElement.querySelectorAll('[data-light-fill][data-dark-fill]');
         dynamicFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
         const dynamicTextFills = svgElement.querySelectorAll('text[data-light-fill][data-dark-fill]');
@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function applySvgTextTranslations(svgElement) {
-        // console.log("DEBUG: Applying SVG text translations to:", svgElement);
         const textElements = svgElement.querySelectorAll('text[data-translation-key]');
         textElements.forEach(textEl => {
             const key = textEl.getAttribute('data-translation-key');
@@ -78,15 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // DEFINITION of updateSvgColors - Ensure this is defined before it's called.
-    function updateSvgColors() {
+    function updateSvgColors() { // DEFINED HERE
         console.log("DEBUG: updateSvgColors() CALLED. Dark mode:", bodyElement.classList.contains('dark-mode'));
         const isDarkMode = bodyElement.classList.contains('dark-mode');
         document.querySelectorAll('.svg-placeholder-container svg').forEach(svg => {
-            if (svg) { // Ensure svg element actually exists
+            if (svg) { 
                 applyDynamicSvgStyles(svg, isDarkMode);
-            } else {
-                console.warn("DEBUG: Found a .svg-placeholder-container without an inner SVG element during updateSvgColors.");
             }
         });
     }
@@ -131,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.warn(`DEBUG: Falling back to English translations.`);
                     return fetchTranslations('en');
                 }
-                translations = {}; // Ensure translations is an empty object on failure
+                translations = {}; 
                 return {};
             }
             const data = await response.json();
@@ -143,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn(`DEBUG: Falling back to English translations due to error.`);
                 return fetchTranslations('en');
             }
-            translations = {}; // Ensure translations is an empty object on failure
+            translations = {}; 
             return {};
         }
     }
@@ -179,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`DEBUG: switchLanguage called for lang: ${lang}`);
         currentLang = lang;
         localStorage.setItem('preferredLang', lang);
-        translations = await fetchTranslations(lang); // This might return {} if fetch fails
+        translations = await fetchTranslations(lang); 
 
         htmlElement.lang = lang;
         htmlElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
@@ -190,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         langEnBtn.setAttribute('aria-pressed', (lang === 'en').toString());
         langFaBtn.setAttribute('aria-pressed', (lang === 'fa').toString());
         
-        applyTranslationsToPage(); // Apply text based on newly loaded translations
+        applyTranslationsToPage(); 
         
         console.log("DEBUG: Before calling updateSvgColors in switchLanguage. Typeof updateSvgColors:", typeof updateSvgColors);
         if (typeof updateSvgColors === 'function') {
@@ -417,9 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ensure updateSvgColors is defined before switchLanguage calls it
         if (typeof updateSvgColors !== 'function') {
             console.error("CRITICAL DEBUG: updateSvgColors is not defined before first call in switchLanguage during init!");
-             // Define it here as a fallback, though it should be defined above.
-            // This is a defensive measure.
-            window.updateSvgColors = function() { console.warn("Fallback updateSvgColors called"); };
         }
         await switchLanguage(currentLang); 
         
