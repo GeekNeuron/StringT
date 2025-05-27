@@ -16,7 +16,7 @@
     --svg-text-light: #333a45;
     --slider-thumb-light: #007bff;
     --slider-track-light: #ddd;
-    --section-transition-duration: 0.3s; /* Slightly faster for display:none approach */
+    --section-transition-duration: 0.3s; 
     --timeline-line-color-light: #ccd1d9;
     --timeline-dot-bg-light: #fff;
     --timeline-dot-border-light: #007bff;
@@ -213,15 +213,16 @@ main#interactive-content {
     position: relative; 
     width: 100%; 
     /* LAYOUT_FIX: No min-height, height determined by active section */
+    /* overflow: hidden; /* Removed for simpler display:none logic */
 }
 
 .content-section { 
     width: 100%; 
     opacity: 0; 
-    transform: translateY(15px); 
-    transition: opacity var(--section-transition-duration) ease-in-out, 
-                transform var(--section-transition-duration) ease-in-out;
-    padding-bottom: 15px; /* Space at the bottom of each section's content */
+    transform: translateY(10px); /* Start slightly down for entry */
+    transition: opacity var(--section-transition-duration) ease-out, 
+                transform var(--section-transition-duration) ease-out;
+    padding-bottom: 20px; /* Consistent padding at the bottom of section content */
     border-bottom: 1px solid var(--border-color-light); 
     display: none; /* LAYOUT_FIX: Hidden by default, takes no space */
 }
@@ -232,19 +233,29 @@ main#interactive-content {
     display: block; /* LAYOUT_FIX: Show active section, it will define the height */
 }
 
-/* No .exiting class needed with display:none/block logic for hiding/showing */
+/* .exiting class is not strictly needed for display:none/block, but JS might use it for timing */
+.content-section.exiting { 
+    opacity: 0;
+    transform: translateY(-10px); /* Exit upwards */
+    /* display: block; /* Keep it block during exit animation, JS will set to none after */
+    /* position: absolute; /* Ensure it doesn't affect layout while exiting if needed */
+    /* top:0; left:0; /* If absolute */
+}
+
 
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
-/* Remove border from the truly last section visible in the flow */
-/* This requires JS to add a specific class to the last *active* section,
-   or careful ordering in HTML if only one section is ever active.
-   For now, let's assume the last section in HTML might not need a border if it's active.
-   A more robust solution would be JS adding a 'is-last-active-section' class.
+/* Remove border from the truly last section *visible* in the flow */
+/* This is tricky if sections are dynamically shown/hidden.
+   A simpler approach is to ensure the container for sections doesn't have a bottom border,
+   and the nav controls have a top border.
 */
 #interactive-content > .content-section:last-of-type {
-    border-bottom: none; /* This will apply if it's the last child in the container */
+    /* This targets the last section in HTML. If it's active, its border will be removed. */
+    /* If the order of sections can change, this might not be reliable. */
+    /* For now, assuming the last section in HTML is always the last possible displayed section. */
+    /* border-bottom: none; /* Let's try removing this and rely on nav's top border */
 }
 
 
@@ -281,6 +292,11 @@ body.dark-mode .content-section h3 {
     font-size: 1rem; 
     text-align: justify; 
 }
+/* Ensure last paragraph in a section has a bit more space before the section ends (if no other elements follow) */
+.content-section p:last-child {
+    margin-bottom: 0; /* Remove default if it's truly the last, padding-bottom of section handles it */
+}
+
 
 .deeper-study { 
     margin-top: 18px; 
@@ -320,7 +336,7 @@ body.dark-mode .deeper-study strong {
     justify-content: center;
     align-items: center;
     margin-top: 15px; 
-    margin-bottom: 15px; /* LAYOUT_FIX: Consistent margin below SVGs */
+    margin-bottom: 15px; 
     border: 1px dashed var(--border-color-light);
     overflow: hidden;
 }
