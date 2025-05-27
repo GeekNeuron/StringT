@@ -1,1 +1,15 @@
-
+<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+    <text x="100" y="20" class="svg-text svg-title" data-translation-key="mTheoryVisualTitle">M-Theory (11D)</text>
+    <circle cx="100" cy="15" r="20" class="svg-path" fill="none" stroke-width="1"/>
+    <text x="30" y="70" class="svg-text" data-translation-key="typesVisualTypeI">Type I</text>
+    <line x1="100" y1="25" x2="30" y2="60" class="svg-line"/>
+    <text x="70" y="100" class="svg-text" data-translation-key="typesVisualTypeIIA">Type IIA</text>
+    <line x1="100" y1="25" x2="70" y2="90" class="svg-line"/>
+    <text x="100" y="70" class="svg-text" data-translation-key="typesVisualTypeIIB">Type IIB</text>
+    <line x1="100" y1="25" x2="100" y2="60" class="svg-line"/>
+    <text x="130" y="100" class="svg-text" data-translation-key="typesVisualHO">HO (SO32)</text>
+    <line x1="100" y1="25" x2="130" y2="90" class="svg-line"/>
+    <text x="170" y="70" class="svg-text" data-translation-key="typesVisualHE">HE (E8xE8)</text>
+    <line x1="100" y1="25" x2="170" y2="60" class="svg-line"/>
+    <text x="100" y="50" class="svg-text" font-size="6" data-translation-key="mTheoryVisualDualities">Dualities</text>
+</svg>
