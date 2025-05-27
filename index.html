@@ -32,16 +32,10 @@
                 <div class="visual-placeholder svg-container" aria-label="Abstract representation of interconnected ideas">
                     <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <radialGradient id="introGradient" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
-                                <stop offset="0%" style="stop-color:var(--primary-accent-light);stop-opacity:0.8" />
-                                <stop offset="100%" style="stop-color:var(--bg-color-light);stop-opacity:0.1" />
-                            </radialGradient>
-                            <radialGradient id="introGradientDark" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
-                                <stop offset="0%" style="stop-color:var(--primary-accent-dark);stop-opacity:0.8" />
-                                <stop offset="100%" style="stop-color:var(--bg-color-dark);stop-opacity:0.1" />
-                            </radialGradient>
+                            <radialGradient id="introGradientV8" cx="50%" cy="50%" r="70%" fx="50%" fy="50%"> <stop offset="0%" style="stop-color:var(--primary-accent-light);stop-opacity:0.8" /> <stop offset="100%" style="stop-color:var(--bg-color-light);stop-opacity:0.1" /> </radialGradient>
+                            <radialGradient id="introGradientDarkV8" cx="50%" cy="50%" r="70%" fx="50%" fy="50%"> <stop offset="0%" style="stop-color:var(--primary-accent-dark);stop-opacity:0.8" /> <stop offset="100%" style="stop-color:var(--bg-color-dark);stop-opacity:0.1" /> </radialGradient>
                         </defs>
-                        <circle cx="100" cy="50" r="40" class="svg-dynamic-fill" data-light-fill="url(#introGradient)" data-dark-fill="url(#introGradientDark)" />
+                        <circle cx="100" cy="50" r="40" class="svg-dynamic-fill" data-light-fill="url(#introGradientV8)" data-dark-fill="url(#introGradientDarkV8)" />
                         <text x="100" y="55" font-family="inherit" font-size="10" text-anchor="middle" class="svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-en="Explore" data-fa="کاوش"></text>
                     </svg>
                 </div>
@@ -55,35 +49,23 @@
                 <div class="visual-placeholder svg-container" aria-label="Conceptual visualization of General Relativity vs Quantum Mechanics">
                     <svg viewBox="0 0 250 130" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <linearGradient id="grGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="var(--secondary-accent-light)" stop-opacity="0.7"/>
-                                <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0.3"/>
-                            </linearGradient>
-                            <linearGradient id="grGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="var(--secondary-accent-dark)" stop-opacity="0.7"/>
-                                <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0.3"/>
-                            </linearGradient>
-                            <radialGradient id="qmGradientLight" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" stop-color="var(--primary-accent-light)" stop-opacity="0.8"/>
-                                <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0"/>
-                            </radialGradient>
-                             <radialGradient id="qmGradientDark" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" stop-color="var(--primary-accent-dark)" stop-opacity="0.8"/>
-                                <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0"/>
-                            </radialGradient>
-                            <filter id="grBlur"> <feGaussianBlur stdDeviation="1"/> </filter>
-                            <filter id="qmParticleBlur"> <feGaussianBlur stdDeviation="0.5"/> </filter>
+                            <linearGradient id="grGradientLightV8" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" stop-color="var(--secondary-accent-light)" stop-opacity="0.7"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0.3"/> </linearGradient>
+                            <linearGradient id="grGradientDarkV8" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" stop-color="var(--secondary-accent-dark)" stop-opacity="0.7"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0.3"/> </linearGradient>
+                            <radialGradient id="qmGradientLightV8" cx="50%" cy="50%" r="50%"> <stop offset="0%" stop-color="var(--primary-accent-light)" stop-opacity="0.8"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0"/> </radialGradient>
+                            <radialGradient id="qmGradientDarkV8" cx="50%" cy="50%" r="50%"> <stop offset="0%" stop-color="var(--primary-accent-dark)" stop-opacity="0.8"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0"/> </radialGradient>
+                            <filter id="grBlurV8"> <feGaussianBlur stdDeviation="1"/> </filter>
+                            <filter id="qmParticleBlurV8"> <feGaussianBlur stdDeviation="0.5"/> </filter>
                         </defs>
                         <g transform="translate(60, 65)">
-                            <path d="M-50,-45 C-50,15 50,15 50,-45 C30,-65 -30,-65 -50,-45 Z" class="svg-dynamic-fill" data-light-fill="url(#grGradientLight)" data-dark-fill="url(#grGradientDark)" filter="url(#grBlur)"/>
+                            <path d="M-50,-45 C-50,15 50,15 50,-45 C30,-65 -30,-65 -50,-45 Z" class="svg-dynamic-fill" data-light-fill="url(#grGradientLightV8)" data-dark-fill="url(#grGradientDarkV8)" filter="url(#grBlurV8)"/>
                             <circle cx="0" cy="-15" r="5" class="svg-dynamic-fill" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" opacity="0.7"/>
                             <text x="0" y="35" class="svg-text svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="8px" data-en="GR (Cosmos)" data-fa="نسبیت عام (کیهان)"></text>
                         </g>
                         <g transform="translate(190, 65)">
-                            <circle cx="0" cy="0" r="40" class="svg-dynamic-fill" data-light-fill="url(#qmGradientLight)" data-dark-fill="url(#qmGradientDark)" opacity="0.5"/>
-                            <circle cx="-10" cy="-10" r="3" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlur)"/>
-                            <circle cx="15" cy="5" r="2" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlur)"/>
-                            <circle cx="5" cy="15" r="2.5" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlur)"/>
+                            <circle cx="0" cy="0" r="40" class="svg-dynamic-fill" data-light-fill="url(#qmGradientLightV8)" data-dark-fill="url(#qmGradientDarkV8)" opacity="0.5"/>
+                            <circle cx="-10" cy="-10" r="3" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV8)"/>
+                            <circle cx="15" cy="5" r="2" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV8)"/>
+                            <circle cx="5" cy="15" r="2.5" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV8)"/>
                              <path d="M-20 0 Q0 -20 20 0 Q0 20 -20 0" stroke="var(--svg-stroke-light)" stroke-width="0.5" fill="none" opacity="0.6" class="svg-dynamic-stroke"/>
                             <text x="0" y="35" class="svg-text svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="8px" data-en="QM (Particles)" data-fa="کوانتوم (ذرات)"></text>
                         </g>
@@ -113,6 +95,10 @@
                 <p data-en="A mind-bending requirement of String Theory is the existence of more spatial dimensions than the three (length, width, height) we perceive. For the theory's mathematical consistency, most versions predict a total of 10 or 11 spacetime dimensions (9 or 10 spatial + 1 time). So, where are these extra dimensions? The prevailing idea is that they are 'compactified,' or curled up on an incredibly small scale, possibly the Planck length (about 10^-35 meters), far too tiny to be detected directly by current experiments. Imagine a garden hose: from a distance, it appears as a 1D line, but up close, you see its 2D circular cross-section. Similarly, these extra dimensions could be all around us, but their minuscule size makes them invisible in our everyday experience and even to our most sensitive instruments." data-fa="یک الزام شگفت‌انگیز نظریه ریسمان، وجود ابعاد فضایی بیشتر از سه بعدی (طول، عرض، ارتفاع) است که ما درک می‌کنیم. برای سازگاری ریاضیاتی این نظریه، اکثر نسخه‌ها در مجموع ۱۰ یا ۱۱ بعد فضازمان (۹ یا ۱۰ بعد فضایی + ۱ بعد زمان) را پیش‌بینی می‌کنند. پس این ابعاد اضافی کجا هستند؟ ایده غالب این است که آنها «فشرده» یا در مقیاسی فوق‌العاده کوچک، احتمالاً در حد طول پلانک (حدود ۱۰ به توان منفی ۳۵ متر)، پیچیده شده‌اند، بسیار کوچک‌تر از آنکه با آزمایش‌های فعلی مستقیماً قابل تشخیص باشند. یک شلنگ باغ را تصور کنید: از فاصله دور، به صورت یک خط یک‌بعدی به نظر می‌رسد، اما از نزدیک، مقطع دایره‌ای دوبعدی آن را می‌بینید. به طور مشابه، این ابعاد اضافی می‌توانند همه جا در اطراف ما باشند، اما اندازه بسیار کوچک آنها باعث می‌شود در تجربه روزمره ما و حتی برای حساس‌ترین ابزارهای ما نامرئی باشند.">
                     A mind-bending requirement of String Theory...
                 </p>
+                <div class="deeper-study">
+                    <strong data-en="For Deeper Study:" data-fa="برای مطالعه عمیق‌تر:">For Deeper Study:</strong>
+                    <p data-en="Explore Calabi-Yau manifolds (complex, multi-dimensional shapes proposed for compactified dimensions), Kaluza-Klein theory (an earlier attempt to unify gravity and electromagnetism using an extra dimension), and the concept of moduli space (the space of possible shapes and sizes of these extra dimensions). (Add specific references or explanations here...)" data-fa="خمینه کالابی-یائو (اشکال پیچیده و چندبعدی که برای ابعاد فشرده پیشنهاد شده‌اند)، نظریه کالوزا-کلین (تلاش اولیه‌ای برای متحد کردن گرانش و الکترومغناطیس با استفاده از یک بعد اضافی)، و مفهوم فضای مدولی (فضای اشکال و اندازه‌های ممکن این ابعاد اضافی) را کاوش کنید. (ارجاعات یا توضیحات خاص را اینجا اضافه کنید...)"></p>
+                </div>
                 <div class="visual-placeholder svg-container" aria-label="Illustration of compactified dimensions">
                      <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
                         <line x1="10" y1="50" x2="190" y2="50" class="svg-line" stroke-dasharray="5,5" />
@@ -134,25 +120,62 @@
                 <p data-en="String theory's journey began in the late 1960s, not as a theory of everything, but as an attempt to understand the strong nuclear force. Its evolution has been marked by pivotal discoveries and the contributions of many brilliant minds." data-fa="سفر نظریه ریسمان در اواخر دهه ۱۹۶۰ آغاز شد، نه به عنوان یک نظریه همه‌چیز، بلکه به عنوان تلاشی برای درک نیروی هسته‌ای قوی. تکامل آن با اکتشافات محوری و مشارکت بسیاری از ذهن‌های درخشان مشخص شده است.">
                     String theory's journey began...
                 </p>
-                <h3 data-en="Early Days (Bosonic String Theory)" data-fa="روزهای اولیه (نظریه ریسمان بوزونی)">Early Days (Bosonic String Theory)</h3>
-                <p data-en="Key figures: Gabriele Veneziano, Yoichiro Nambu, Holger Bech Nielsen, Leonard Susskind. Focus on S-matrix theory and dual resonance models. Problem: Tachyons and lack of fermions." data-fa="چهره‌های کلیدی: گابریل ونزیانو، یویچیرو نامبو، هولگر بک نیلسن، لئونارد ساسکیند. تمرکز بر نظریه ماتریس S و مدل‌های رزونانس دوگانه. مشکل: تاکیون‌ها و نبود فرمیون‌ها. (محتوای دقیق‌تر اضافه شود)"> </p>
-                <h3 data-en="First Superstring Revolution (Supersymmetry & 10 Dimensions)" data-fa="انقلاب اول ابرریسمان (ابرتقارن و ۱۰ بعد)">First Superstring Revolution (Supersymmetry & 10 Dimensions)</h3>
-                <p data-en="Key figures: John Schwarz, Michael Green, Pierre Ramond, André Neveu. Introduction of supersymmetry, resolving the tachyon problem and incorporating fermions. Emergence of five consistent superstring theories." data-fa="چهره‌های کلیدی: جان شوارتز، مایکل گرین، پیر رامون، آندره نوو. معرفی ابرتقارن، حل مشکل تاکیون و گنجاندن فرمیون‌ها. ظهور پنج نظریه ابرریسمان سازگار. (محتوای دقیق‌تر اضافه شود)"> </p>
-                <h3 data-en="Second Superstring Revolution (M-Theory & Dualities)" data-fa="انقلاب دوم ابرریسمان (نظریه M و دوگانگی‌ها)">Second Superstring Revolution (M-Theory & Dualities)</h3>
-                <p data-en="Key figure: Edward Witten. Unification of the five superstring theories under M-theory in 11 dimensions. Importance of D-branes and dualities (S-duality, T-duality)." data-fa="چهره کلیدی: ادوارد ویتن. وحدت پنج نظریه ابرریسمان تحت نظریه M در ۱۱ بعد. اهمیت D-برین‌ها و دوگانگی‌ها (دوگانگی S، دوگانگی T). (محتوای دقیق‌تر اضافه شود)"> </p>
-                <div class="visual-placeholder svg-container" aria-label="Conceptual timeline of String Theory development">
-                    <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="10" y1="50" x2="190" y2="50" class="svg-line" stroke-width="2"/>
-                        <circle cx="30" cy="50" r="3" class="svg-point-fill"/>
-                        <text x="30" y="40" class="svg-text" font-size="6px" data-en="Late '60s" data-fa="اواخر دهه ۶۰"></text>
-                        <circle cx="80" cy="50" r="3" class="svg-point-fill"/>
-                        <text x="80" y="60" class="svg-text" font-size="6px" data-en="Mid '80s" data-fa="اواسط دهه ۸۰"></text>
-                        <circle cx="130" cy="50" r="3" class="svg-point-fill"/>
-                        <text x="130" y="40" class="svg-text" font-size="6px" data-en="Mid '90s" data-fa="اواسط دهه ۹۰"></text>
-                        <circle cx="180" cy="50" r="3" class="svg-point-fill"/>
-                        <text x="180" y="60" class="svg-text" font-size="6px" data-en="Present" data-fa="اکنون"></text>
-                        <text x="100" y="20" class="svg-text svg-title" data-en="Key Milestones" data-fa="نقاط عطف کلیدی"></text>
-                    </svg>
+                <div class="timeline-container" aria-label="Interactive timeline of String Theory history. Click events for details.">
+                    <div class="timeline-event" tabindex="0" role="button" aria-expanded="false" aria-controls="details-event1">
+                        <div class="timeline-date" data-en="Late 1960s" data-fa="اواخر دهه ۱۹۶۰">Late 1960s</div>
+                        <div class="timeline-milestone-dot"></div>
+                        <div class="timeline-content">
+                            <h3 data-en="Bosonic String Theory" data-fa="نظریه ریسمان بوزونی">Bosonic String Theory</h3>
+                            <p data-en="Origins in S-matrix theory. Key figures: Veneziano, Nambu, Nielsen, Susskind. Described hadronic interactions." data-fa="ریشه‌ها در نظریه ماتریس S. چهره‌های کلیدی: ونزیانو، نامبو، نیلسن، ساسکیند. تعاملات هادرونی را توصیف می‌کرد."></p>
+                            <div class="timeline-details" id="details-event1" role="region" aria-hidden="true">
+                                <p data-en="Problems: Predicted tachyons (faster-than-light particles) and lacked fermions (matter particles). Only described bosons (force carriers). Needed 26 spacetime dimensions." data-fa="مشکلات: تاکیون‌ها (ذرات سریع‌تر از نور) را پیش‌بینی می‌کرد و فاقد فرمیون‌ها (ذرات ماده) بود. فقط بوزون‌ها (حاملان نیرو) را توصیف می‌کرد. به ۲۶ بعد فضازمان نیاز داشت."></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-event" tabindex="0" role="button" aria-expanded="false" aria-controls="details-event2">
+                        <div class="timeline-date" data-en="Early 1970s" data-fa="اوایل دهه ۱۹۷۰">Early 1970s</div>
+                        <div class="timeline-milestone-dot"></div>
+                        <div class="timeline-content">
+                            <h3 data-en="Supersymmetry Introduced" data-fa="معرفی ابرتقارن">Supersymmetry Introduced</h3>
+                            <p data-en="Ramond, Neveu, Schwarz developed supersymmetric string theories (superstrings), incorporating fermions and resolving the tachyon problem." data-fa="رامون، نوو، شوارتز نظریه‌های ریسمان ابرتقارنی (ابرریسمان‌ها) را توسعه دادند که فرمیون‌ها را شامل می‌شد و مشکل تاکیون را حل می‌کرد."></p>
+                             <div class="timeline-details" id="details-event2" role="region" aria-hidden="true">
+                                <p data-en="This crucial step required 10 spacetime dimensions and made string theory a more viable candidate for a theory of fundamental particles." data-fa="این گام حیاتی به ۱۰ بعد فضازمان نیاز داشت و نظریه ریسمان را به کاندیدای قابل قبول‌تری برای نظریه ذرات بنیادی تبدیل کرد."></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-event" tabindex="0" role="button" aria-expanded="false" aria-controls="details-event3">
+                        <div class="timeline-date" data-en="1984-1986" data-fa="۱۹۸۴-۱۹۸۶">1984-1986</div>
+                        <div class="timeline-milestone-dot"></div>
+                        <div class="timeline-content">
+                            <h3 data-en="First Superstring Revolution" data-fa="انقلاب اول ابرریسمان">First Superstring Revolution</h3>
+                            <p data-en="Green and Schwarz showed anomaly cancellation in Type I theory. Discovery of Heterotic strings (Gross, Harvey, Martinec, Rohm). Five consistent 10D superstring theories emerged." data-fa="گرین و شوارتز حذف ناهنجاری در نظریه نوع I را نشان دادند. کشف ریسمان‌های هتروتیک (گراس، هاروی، مارتینک، روهم). پنج نظریه ابرریسمان ۱۰ بعدی سازگار ظهور کردند."></p>
+                            <div class="timeline-details" id="details-event3" role="region" aria-hidden="true">
+                                <p data-en="This period generated enormous excitement and established string theory as a leading candidate for a 'Theory of Everything,' capable of incorporating the Standard Model." data-fa="این دوره هیجان زیادی ایجاد کرد و نظریه ریسمان را به عنوان کاندیدای پیشرو برای «نظریه همه‌چیز» که قادر به گنجاندن مدل استاندارد بود، تثبیت کرد."></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-event" tabindex="0" role="button" aria-expanded="false" aria-controls="details-event4">
+                        <div class="timeline-date" data-en="Mid 1990s" data-fa="اواسط دهه ۱۹۹۰">Mid 1990s</div>
+                        <div class="timeline-milestone-dot"></div>
+                        <div class="timeline-content">
+                            <h3 data-en="Second Superstring Revolution (M-Theory)" data-fa="انقلاب دوم ابرریسمان (نظریه M)">Second Superstring Revolution (M-Theory)</h3>
+                            <p data-en="Witten proposed M-theory, unifying the five superstring theories as different limits of an 11D theory. Dualities and D-branes became central." data-fa="ویتن نظریه M را پیشنهاد کرد که پنج نظریه ابرریسمان را به عنوان حدود مختلف یک نظریه ۱۱ بعدی متحد می‌کرد. دوگانگی‌ها و D-برین‌ها محوری شدند."></p>
+                            <div class="timeline-details" id="details-event4" role="region" aria-hidden="true">
+                                <p data-en="M-theory suggested a deeper, underlying structure, with membranes (2-branes) and five-branes playing key roles alongside strings." data-fa="نظریه M ساختار عمیق‌تر و زیربنایی‌تری را پیشنهاد کرد که در آن ممبرین‌ها (۲-برین‌ها) و پنج-برین‌ها در کنار ریسمان‌ها نقش‌های کلیدی ایفا می‌کنند."></p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="timeline-event" tabindex="0" role="button" aria-expanded="false" aria-controls="details-event5">
+                        <div class="timeline-date" data-en="Late 1990s - Present" data-fa="اواخر دهه ۱۹۹۰ - اکنون">Late 1990s - Present</div>
+                        <div class="timeline-milestone-dot"></div>
+                        <div class="timeline-content">
+                            <h3 data-en="AdS/CFT, Landscape, Challenges" data-fa="AdS/CFT، چشم‌انداز، چالش‌ها">AdS/CFT, Landscape, Challenges</h3>
+                            <p data-en="AdS/CFT correspondence (Maldacena) provided a concrete realization of the holographic principle. The string theory landscape problem and lack of direct testability remain major challenges." data-fa="تناظر AdS/CFT (مالداسنا) تحقق عینی اصل هولوگرافیک را فراهم کرد. مشکل چشم‌انداز نظریه ریسمان و فقدان قابلیت آزمایش مستقیم، چالش‌های عمده‌ای باقی مانده‌اند."></p>
+                            <div class="timeline-details" id="details-event5" role="region" aria-hidden="true">
+                                <p data-en="Research continues into areas like flux compactifications, cosmological implications, and connections to other areas of physics and mathematics." data-fa="تحقیقات در زمینه‌هایی مانند فشرده‌سازی شار، پیامدهای کیهان‌شناختی، و ارتباط با سایر حوزه‌های فیزیک و ریاضیات ادامه دارد."></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -187,6 +210,10 @@
                 <p data-en="A major breakthrough occurred in the mid-1990s during the 'second superstring revolution,' largely pioneered by Edward Witten. It was proposed that the five consistent 10-dimensional superstring theories were not distinct, but rather different limiting cases of a single, more fundamental, 11-dimensional theory known as M-Theory. The 'M' in M-Theory is often said to stand for 'Mystery,' 'Magic,' 'Mother,' or 'Membrane,' reflecting its enigmatic nature and the importance of higher-dimensional objects called membranes (or branes) within it. M-Theory unified the five string theories through a web of relationships called dualities, which show how these seemingly different theories are actually describing the same underlying physics from different perspectives or at different energy scales." data-fa="یک پیشرفت بزرگ در اواسط دهه ۱۹۹۰ در طول «انقلاب دوم ابرریسمان»، که عمدتاً توسط ادوارد ویتن پیشگام بود، رخ داد. پیشنهاد شد که پنج نظریه ابرریسمان ۱۰ بعدی سازگار، متمایز نیستند، بلکه موارد حدی مختلفی از یک نظریه واحد، بنیادی‌تر و ۱۱ بعدی به نام نظریه M هستند. گفته می‌شود «M» در نظریه M مخفف «راز»، «جادو»، «مادر» یا «ممبرین» (غشاء) است که ماهیت اسرارآمیز آن و اهمیت اشیاء با ابعاد بالاتر به نام ممبرین‌ها (یا برین‌ها) را در آن منعکس می‌کند. نظریه M این پنج نظریه ریسمان را از طریق شبکه‌ای از روابط به نام دوگانگی‌ها متحد کرد، که نشان می‌دهد چگونه این نظریه‌های ظاهراً متفاوت در واقع فیزیک زیربنایی یکسانی را از دیدگاه‌های مختلف یا در مقیاس‌های انرژی متفاوت توصیف می‌کنند.">
                     A major breakthrough occurred in the mid-1990s...
                 </p>
+                <div class="deeper-study">
+                    <strong data-en="For Deeper Study:" data-fa="برای مطالعه عمیق‌تر:">For Deeper Study:</strong>
+                    <p data-en="Investigate S-duality (strong-weak coupling), T-duality (large-small radius), and U-duality (a combination). Explore the role of 11-dimensional supergravity as a low-energy limit of M-theory, and how M-theory incorporates membranes (M2-branes) and five-branes (M5-branes). (Add specific references or explanations here...)" data-fa="دوگانگی S (جفت‌شدگی قوی-ضعیف)، دوگانگی T (شعاع بزرگ-کوچک)، و دوگانگی U (ترکیبی از آن‌ها) را بررسی کنید. نقش ابرگرانش ۱۱ بعدی به عنوان حد انرژی پایین نظریه M، و چگونگی گنجاندن ممبرین‌ها (M2-برین‌ها) و پنج-برین‌ها (M5-برین‌ها) توسط نظریه M را کاوش کنید. (ارجاعات یا توضیحات خاص را اینجا اضافه کنید...)"></p>
+                </div>
                  <div class="visual-placeholder svg-container" aria-label="Diagram showing M-Theory unifying the 5 string theories">
                     <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
                         <text x="100" y="20" class="svg-text svg-title" data-en="M-Theory (11D)" data-fa="نظریه M (۱۱ بعدی)"></text>
@@ -233,10 +260,10 @@
 
             <section id="interactive-lab" class="content-section" role="tabpanel" aria-labelledby="tab-interactive-lab">
                 <h2 id="heading-interactive-lab" tabindex="-1" data-en="Interactive String Lab" data-fa="آزمایشگاه تعاملی ریسمان">Interactive String Lab</h2>
-                <p data-en="Experiment with a simplified interactive string. Adjust its properties and see how its vibration changes. This is a conceptual visualization, not a precise physical simulation." data-fa="با یک ریسمان تعاملی ساده‌شده آزمایش کنید. ویژگی‌های آن را تنظیم کنید و ببینید چگونه ارتعاش آن تغییر می‌کند. این یک نمایش مفهومی است، نه یک شبیه‌سازی فیزیکی دقیق.">
+                <p data-en="Experiment with a simplified interactive string. Adjust its properties, try 'plucking' it with your mouse (click & drag on the canvas), and switch between open and closed string types. This is a conceptual visualization." data-fa="با یک ریسمان تعاملی ساده‌شده آزمایش کنید. ویژگی‌های آن را تنظیم کنید، با موس خود آن را «بکنید» (روی بوم کلیک و درگ کنید) و بین انواع ریسمان باز و بسته جابجا شوید. این یک نمایش مفهومی است.">
                     Experiment with a simplified interactive string...
                 </p>
-                <div id="p5-canvas-container" class="visual-placeholder svg-container" aria-label="Interactive p5.js canvas for string visualization" style="display: flex; flex-direction: column; align-items: center; min-height: 350px;">
+                <div id="p5-canvas-container" class="visual-placeholder svg-container" aria-label="Interactive p5.js canvas for string visualization. Click and drag to pluck the string." style="display: flex; flex-direction: column; align-items: center; min-height: 350px; cursor: grab;">
                     </div>
                 <div id="string-controls-lab">
                     <div class="slider-control">
@@ -255,7 +282,11 @@
                         <span id="frequency-value">0.03</span>
                     </div>
                     <div class="toggle-control">
-                         <button id="string-type-toggle" class="lab-button" aria-pressed="false" data-en="Switch to Open String" data-fa="تغییر به ریسمان باز">Switch to Open String</button>
+                         <button id="string-type-toggle" class="lab-button" aria-pressed="false" 
+                                 data-en-closed="Switch to Open String" data-fa-closed="تغییر به ریسمان باز"
+                                 data-en-open="Switch to Closed Loop" data-fa-open="تغییر به حلقه بسته"
+                                 data-en="Switch to Open String" data-fa="تغییر به ریسمان باز">
+                                 </button>
                     </div>
                 </div>
             </section>
@@ -268,17 +299,11 @@
                  <div class="visual-placeholder svg-container" aria-label="Abstract representation of the String Theory Landscape">
                     <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <linearGradient id="landscapeGradientLight" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stop-color="var(--secondary-accent-light)" stop-opacity="0.3"/>
-                                <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0.6"/>
-                            </linearGradient>
-                            <linearGradient id="landscapeGradientDark" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stop-color="var(--secondary-accent-dark)" stop-opacity="0.3"/>
-                                <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0.6"/>
-                            </linearGradient>
+                            <linearGradient id="landscapeGradientLightV8" x1="0%" y1="0%" x2="0%" y2="100%"> <stop offset="0%" stop-color="var(--secondary-accent-light)" stop-opacity="0.3"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0.6"/> </linearGradient>
+                            <linearGradient id="landscapeGradientDarkV8" x1="0%" y1="0%" x2="0%" y2="100%"> <stop offset="0%" stop-color="var(--secondary-accent-dark)" stop-opacity="0.3"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0.6"/> </linearGradient>
                         </defs>
                         <path d="M0,80 C20,60 30,90 50,70 S70,30 90,50 S110,80 130,60 S150,20 170,40 S190,70 200,50 L200,100 L0,100 Z" 
-                              class="svg-dynamic-fill" data-light-fill="url(#landscapeGradientLight)" data-dark-fill="url(#landscapeGradientDark)"
+                              class="svg-dynamic-fill" data-light-fill="url(#landscapeGradientLightV8)" data-dark-fill="url(#landscapeGradientDarkV8)"
                               stroke="var(--svg-stroke-light)" stroke-width="1"/>
                         <text x="100" y="25" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-en="The String Theory Landscape" data-fa="چشم‌انداز نظریه ریسمان"></text>
                         <text x="100" y="85" class="svg-text svg-dynamic-text" font-size="6px" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-en="Vast number of possible universes (10^500+)" data-fa="تعداد بسیار زیاد جهان‌های ممکن (بیش از ۱۰ به توان ۵۰۰)"></text>
@@ -292,25 +317,53 @@
                     String theory, with its radical ideas...
                 </p>
                 <h3 data-en="Nature of Scientific Theory & Testability" data-fa="ماهیت نظریه علمی و قابلیت آزمایش">Nature of Scientific Theory & Testability</h3>
-                <p data-en="The lack of direct experimental predictions raises questions about whether string theory, in its current form, fully meets traditional criteria for a scientific theory. Debates continue on the role of mathematical consistency versus empirical verification. (Expand on Popperian falsifiability, post-empirical science concepts...)" data-fa="فقدان پیش‌بینی‌های تجربی مستقیم، این پرسش را مطرح می‌کند که آیا نظریه ریسمان، در شکل فعلی خود، به طور کامل معیارهای سنتی یک نظریه علمی را برآورده می‌کند یا خیر. بحث‌ها در مورد نقش سازگاری ریاضی در مقابل تأیید تجربی ادامه دارد. (در مورد ابطال‌پذیری پوپری، مفاهیم علم پسا-تجربی و غیره توضیح دهید...)"> </p>
+                <p data-en="The lack of direct experimental predictions raises questions about whether string theory, in its current form, fully meets traditional criteria for a scientific theory. Debates continue on the role of mathematical consistency versus empirical verification. (Expand on Popperian falsifiability, post-empirical science concepts, the role of beauty and elegance in theory selection...)" data-fa="فقدان پیش‌بینی‌های تجربی مستقیم، این پرسش را مطرح می‌کند که آیا نظریه ریسمان، در شکل فعلی خود، به طور کامل معیارهای سنتی یک نظریه علمی را برآورده می‌کند یا خیر. بحث‌ها در مورد نقش سازگاری ریاضی در مقابل تأیید تجربی ادامه دارد. (در مورد ابطال‌پذیری پوپری، مفاهیم علم پسا-تجربی، نقش زیبایی و ظرافت در انتخاب نظریه و غیره توضیح دهید...)"> </p>
                 <h3 data-en="The Anthropic Principle and the Landscape" data-fa="اصل انسان‌نگر و چشم‌انداز">The Anthropic Principle and the Landscape</h3>
-                <p data-en="If the string landscape offers a vast number of possible universes with different physical laws, why is our universe the way it is? The anthropic principle suggests that our observations are biased by the requirement that our universe must support life. This is a controversial but actively discussed idea. (Expand on weak/strong anthropic principles, multiverse implications...)" data-fa="اگر چشم‌انداز ریسمان تعداد زیادی جهان ممکن با قوانین فیزیکی متفاوت ارائه می‌دهد، چرا جهان ما اینگونه است؟ اصل انسان‌نگر نشان می‌دهد که مشاهدات ما تحت تأثیر این الزام است که جهان ما باید از حیات پشتیبانی کند. این یک ایده بحث‌برانگیز اما فعالانه مورد بحث است. (در مورد اصول انسان‌نگر ضعیف/قوی، پیامدهای چندجهانی و غیره توضیح دهید...)"> </p>
-                 <h3 data-en="Uniqueness of Reality" data-fa="منحصربه‌فرد بودن واقعیت">Uniqueness of Reality</h3>
-                <p data-en="Does string theory imply that our universe is just one of many, or is there a principle that selects our specific vacuum state? This touches on fundamental questions about determinism and the ultimate structure of reality. (Expand on this thought...)" data-fa="آیا نظریه ریسمان دلالت بر این دارد که جهان ما فقط یکی از بسیار است، یا اصلی وجود دارد که حالت خلاء خاص ما را انتخاب می‌کند؟ این موضوع به پرسش‌های بنیادی در مورد جبرگرایی و ساختار نهایی واقعیت می‌پردازد. (این فکر را گسترش دهید...)"> </p>
-                <div class="visual-placeholder svg-container" aria-label="Abstract visualization of philosophical concepts">
+                <p data-en="If the string landscape offers a vast number of possible universes with different physical laws, why is our universe the way it is? The anthropic principle suggests that our observations are biased by the requirement that our universe must support life. This is a controversial but actively discussed idea. (Expand on weak/strong anthropic principles, multiverse implications, fine-tuning problem...)" data-fa="اگر چشم‌انداز ریسمان تعداد زیادی جهان ممکن با قوانین فیزیکی متفاوت ارائه می‌دهد، چرا جهان ما اینگونه است؟ اصل انسان‌نگر نشان می‌دهد که مشاهدات ما تحت تأثیر این الزام است که جهان ما باید از حیات پشتیبانی کند. این یک ایده بحث‌برانگیز اما فعالانه مورد بحث است. (در مورد اصول انسان‌نگر ضعیف/قوی، پیامدهای چندجهانی، مشکل تنظیم دقیق و غیره توضیح دهید...)"> </p>
+                 <h3 data-en="Uniqueness of Reality & Nature of Spacetime" data-fa="منحصربه‌فرد بودن واقعیت و ماهیت فضازمان">Uniqueness of Reality & Nature of Spacetime</h3>
+                <p data-en="Does string theory imply that our universe is just one of many, or is there a principle that selects our specific vacuum state? What does it mean for spacetime to be emergent from more fundamental string dynamics? (Expand on these thoughts, holographic principle...)" data-fa="آیا نظریه ریسمان دلالت بر این دارد که جهان ما فقط یکی از بسیار است، یا اصلی وجود دارد که حالت خلاء خاص ما را انتخاب می‌کند؟ اینکه فضازمان از دینامیک ریسمانی بنیادی‌تر ظهور کند به چه معناست؟ (این افکار را گسترش دهید، اصل هولوگرافیک...)"> </p>
+                <div class="visual-placeholder svg-container" aria-label="Abstract visualization of philosophical concepts like interconnected thoughts or a branching reality">
                     <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <filter id="thoughtBlur" x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
-                            </filter>
+                            <filter id="thoughtBlurV8" x="-30%" y="-30%" width="160%" height="160%"> <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" /> </filter>
+                            <radialGradient id="centerGlowLightV8" cx="50%" cy="50%" r="60%"> <stop offset="0%" stop-color="var(--primary-accent-light)" stop-opacity="0.5"/> <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0"/> </radialGradient>
+                            <radialGradient id="centerGlowDarkV8" cx="50%" cy="50%" r="60%"> <stop offset="0%" stop-color="var(--primary-accent-dark)" stop-opacity="0.5"/> <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0"/> </radialGradient>
                         </defs>
-                        <path d="M50 20 Q80 10 100 30 T150 20 Q180 30 170 50 T150 80 Q120 90 100 70 T50 80 Q20 70 30 50 T50 20Z" class="svg-dynamic-fill" data-light-fill="rgba(0,123,255,0.2)" data-dark-fill="rgba(0,161,255,0.2)" filter="url(#thoughtBlur)"/>
-                        <text x="100" y="55" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="12px" data-en="?" data-fa="؟"></text>
-                        <circle cx="70" cy="30" r="5" class="svg-dynamic-fill" data-light-fill="rgba(0,123,255,0.4)" data-dark-fill="rgba(0,161,255,0.4)" />
-                        <circle cx="130" cy="70" r="7" class="svg-dynamic-fill" data-light-fill="rgba(0,123,255,0.3)" data-dark-fill="rgba(0,161,255,0.3)" />
-                         <text x="100" y="90" class="svg-text svg-dynamic-text" font-size="6px" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-en="Nature of Reality" data-fa="ماهیت واقعیت"></text>
+                        <circle cx="100" cy="50" r="10" class="svg-dynamic-fill" data-light-fill="url(#centerGlowLightV8)" data-dark-fill="url(#centerGlowDarkV8)" filter="url(#thoughtBlurV8)"/>
+                        <path d="M100,50 C70,40 60,20 40,25 S10,50 30,65 S70,70 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.4" stroke-width="1.5" transform="rotate(15, 100, 50)"/>
+                        <path d="M100,50 C130,60 140,80 160,75 S190,50 170,35 S130,30 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.4" stroke-width="1.5" transform="rotate(-25, 100, 50)"/>
+                        <path d="M100,50 C90,70 70,80 55,85 S20,70 35,50 S50,20 75,25 S90,30 100,50" fill="none" class="svg-dynamic-stroke" stroke-opacity="0.3" stroke-width="1" transform="rotate(45, 100, 50)"/>
+                        <text x="100" y="55" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="16px" data-en="?" data-fa="؟"></text>
+                        <text x="100" y="90" class="svg-text svg-dynamic-text" font-size="6px" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-en="Nature of Reality" data-fa="ماهیت واقعیت"></text>
                     </svg>
                 </div>
+            </section>
+
+            <section id="glossary" class="content-section" role="tabpanel" aria-labelledby="tab-glossary">
+                <h2 id="heading-glossary" tabindex="-1" data-en="Glossary of Terms" data-fa="واژه‌نامه اصطلاحات">Glossary of Terms</h2>
+                <p data-en="Key terms used in the study of String Theory." data-fa="اصطلاحات کلیدی مورد استفاده در مطالعه نظریه ریسمان.">Key terms used in the study of String Theory.</p>
+                <dl class="glossary-list">
+                    <dt data-en="String" data-fa="ریسمان">String</dt>
+                    <dd data-en="The fundamental one-dimensional object in string theory, whose vibrational modes correspond to different particles." data-fa="جسم بنیادی یک‌بعدی در نظریه ریسمان که مدهای ارتعاشی آن با ذرات مختلف مطابقت دارد. (توضیح کامل‌تر...)"></dd>
+                    
+                    <dt data-en="Supersymmetry (SUSY)" data-fa="ابرتقارن (SUSY)">Supersymmetry (SUSY)</dt>
+                    <dd data-en="A theoretical symmetry between bosons (force carriers) and fermions (matter particles), predicting partner particles for each known particle." data-fa="یک تقارن نظری بین بوزون‌ها (حاملان نیرو) و فرمیون‌ها (ذرات ماده) که برای هر ذره شناخته‌شده، یک ذره همزاد پیش‌بینی می‌کند. (توضیح کامل‌تر...)"></dd>
+
+                    <dt data-en="Compactification" data-fa="فشرده‌سازی">Compactification</dt>
+                    <dd data-en="The idea that extra spatial dimensions required by string theory are curled up to a very small size, making them undetectable at current energy scales." data-fa="این ایده که ابعاد فضایی اضافی مورد نیاز نظریه ریسمان تا اندازه بسیار کوچکی پیچیده شده‌اند و در مقیاس‌های انرژی فعلی قابل تشخیص نیستند. (توضیح کامل‌تر...)"></dd>
+                    
+                    <dt data-en="Brane (p-brane)" data-fa="برین (p-برین)">Brane (p-brane)</dt>
+                    <dd data-en="A dynamical object in string theory that extends in 'p' spatial dimensions (e.g., 0-brane is a particle, 1-brane is a string, 2-brane is a membrane)." data-fa="یک شیء دینامیکی در نظریه ریسمان که در «p» بعد فضایی گسترش یافته است (مثلاً ۰-برین یک ذره، ۱-برین یک ریسمان، ۲-برین یک غشاء است). (توضیح کامل‌تر...)"></dd>
+
+                    <dt data-en="D-brane" data-fa="D-برین">D-brane</dt>
+                    <dd data-en="A specific type of brane where the ends of open strings can attach, playing a crucial role in dualities and M-theory." data-fa="نوع خاصی از برین که انتهای ریسمان‌های باز می‌توانند به آن متصل شوند و نقش حیاتی در دوگانگی‌ها و نظریه M ایفا می‌کند. (توضیح کامل‌تر...)"></dd>
+                    
+                    <dt data-en="Duality" data-fa="دوگانگی">Duality</dt>
+                    <dd data-en="In string theory, a relationship where two seemingly different theories or physical situations are actually equivalent descriptions of the same underlying physics." data-fa="در نظریه ریسمان، رابطه‌ای که در آن دو نظریه یا موقعیت فیزیکی ظاهراً متفاوت، در واقع توصیفات معادل از یک فیزیک زیربنایی یکسان هستند. (توضیح کامل‌تر...)"></dd>
+                    
+                    <dt data-en="M-Theory" data-fa="نظریه M">M-Theory</dt>
+                    <dd data-en="A proposed 11-dimensional theory that unifies the five consistent superstring theories." data-fa="یک نظریه ۱۱ بعدی پیشنهادی که پنج نظریه ابرریسمان سازگار را متحد می‌کند. (توضیح کامل‌تر...)"></dd>
+                </dl>
             </section>
 
              <section id="conclusion" class="content-section" role="tabpanel" aria-labelledby="tab-conclusion">
@@ -324,17 +377,11 @@
                 <div class="visual-placeholder svg-container" aria-label="Inspiring cosmic imagery">
                      <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <filter id="blurFilterV2"> <feGaussianBlur in="SourceGraphic" stdDeviation="1" /> </filter>
-                            <linearGradient id="galaxyGradientV2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:var(--secondary-accent-light);stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:var(--primary-accent-light);stop-opacity:1" />
-                            </linearGradient>
-                            <linearGradient id="galaxyGradientDarkV2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:var(--secondary-accent-dark);stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:var(--primary-accent-dark);stop-opacity:1" />
-                            </linearGradient>
+                            <filter id="blurFilterV8"> <feGaussianBlur in="SourceGraphic" stdDeviation="1" /> </filter>
+                            <linearGradient id="galaxyGradientV8" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:var(--secondary-accent-light);stop-opacity:1" /> <stop offset="100%" style="stop-color:var(--primary-accent-light);stop-opacity:1" /> </linearGradient>
+                            <linearGradient id="galaxyGradientDarkV8" x1="0%" y1="0%" x2="100%" y2="100%"> <stop offset="0%" style="stop-color:var(--secondary-accent-dark);stop-opacity:1" /> <stop offset="100%" style="stop-color:var(--primary-accent-dark);stop-opacity:1" /> </linearGradient>
                         </defs>
-                        <ellipse cx="100" cy="50" rx="80" ry="30" class="svg-dynamic-fill" data-light-fill="url(#galaxyGradientV2)" data-dark-fill="url(#galaxyGradientDarkV2)" filter="url(#blurFilterV2)" />
+                        <ellipse cx="100" cy="50" rx="80" ry="30" class="svg-dynamic-fill" data-light-fill="url(#galaxyGradientV8)" data-dark-fill="url(#galaxyGradientDarkV8)" filter="url(#blurFilterV8)" />
                         <text x="100" y="55" font-family="inherit" font-size="10" text-anchor="middle" fill="#fff" data-en="The Journey Continues..." data-fa="سفر ادامه دارد..."></text>
                     </svg>
                 </div>
@@ -377,8 +424,8 @@
         </nav>
 
         <footer>
-            <p data-en="Created by GeekNeuron for GitHub Pages. Version 5: Expanded Content & Enhanced Interactivity." data-fa="ساخته شده توسط GeekNeuron برای GitHub Pages. نسخه ۵: محتوای گسترش‌یافته و تعاملی بهبود یافته.">
-                Created by GeekNeuron for GitHub Pages. Version 5: Expanded Content & Enhanced Interactivity.
+            <p data-en="Created by GeekNeuron for GitHub Pages. Version 8: Glossary & Advanced Interactivity." data-fa="ساخته شده توسط GeekNeuron برای GitHub Pages. نسخه ۸: واژه‌نامه و تعاملات پیشرفته.">
+                Created by GeekNeuron for GitHub Pages. Version 8: Glossary & Advanced Interactivity.
             </p>
         </footer>
     </div>
