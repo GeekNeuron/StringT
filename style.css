@@ -16,7 +16,7 @@
     --svg-text-light: #333a45;
     --slider-thumb-light: #007bff;
     --slider-track-light: #ddd;
-    --section-transition-duration: 0.4s; 
+    --section-transition-duration: 0.35s; /* Slightly faster for smoother feel */
     --timeline-line-color-light: #ccd1d9;
     --timeline-dot-bg-light: #fff;
     --timeline-dot-border-light: #007bff;
@@ -113,8 +113,8 @@ body.dark-mode .skip-link:focus {
     border-radius: 12px; 
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); 
     border: 1px solid var(--border-color-light); 
-    display: flex; /* LAYOUT_FIX: Added to help manage children heights */
-    flex-direction: column; /* LAYOUT_FIX: Stack header, main, nav, footer */
+    display: flex; 
+    flex-direction: column; 
 }
 body.dark-mode .container { 
     background-color: var(--container-bg-dark); 
@@ -129,7 +129,7 @@ header {
     margin-bottom: 25px; 
     padding-bottom: 15px; 
     border-bottom: 1px solid var(--border-color-light); 
-    width: 100%; /* Ensure header takes full width */
+    width: 100%; 
 }
 body.dark-mode header { 
     border-bottom: 1px solid var(--border-color-dark); 
@@ -209,59 +209,56 @@ body.dark-mode .dark-mode-hint {
     color: #666; 
 }
 
-main#interactive-content { /* Changed from #interactive-content for specificity */
+main#interactive-content { 
     position: relative; 
-    overflow: hidden; 
-    width: 100%; /* LAYOUT_FIX: Ensure main takes full width */
-    /* min-height: auto; /* Removed, let content dictate or use flex for container */
+    /* overflow: hidden; /* LAYOUT_FIX: Removing overflow here, will be on individual sections */
+    width: 100%; 
+    /* min-height: auto; /* Let content dictate */
 }
 .content-section { 
-    /* position: absolute; /* LAYOUT_FIX: Removed to allow natural flow and height adjustment */
     width: 100%; 
     opacity: 0; 
-    visibility: hidden; 
-    transform: translateX(20px) scale(0.98); 
-    transition: opacity var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1), 
-                transform var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
-                visibility 0s var(--section-transition-duration),
-                max-height var(--section-transition-duration) ease-out; /* Animate max-height */
+    transform: translateY(15px); /* Simpler entry, focus on opacity and max-height */
+    transition: opacity var(--section-transition-duration) ease-in-out, 
+                transform var(--section-transition-duration) ease-in-out,
+                max-height var(--section-transition-duration) ease-in-out;
     padding-bottom: 20px; 
     border-bottom: 1px solid var(--border-color-light); 
     max-height: 0; 
-    overflow: hidden; 
+    overflow: hidden; /* Crucial for max-height transition */
+    visibility: hidden; /* Hide until active */
 }
 
 .content-section.active { 
     opacity: 1; 
     visibility: visible; 
-    transform: translateX(0) scale(1); 
-    transition-delay: 0s; /* Apply all active transitions immediately */
-    /* position: relative; /* LAYOUT_FIX: Keep relative for absolute positioned children like timeline-date */
-    max-height: none; /* LAYOUT_FIX: Allow full height based on content */
-    /* Or a very large value like 2000vh if issues persist with 'none' and transitions */
-    overflow: visible; /* LAYOUT_FIX: Allow content to be visible */
+    transform: translateY(0); 
+    max-height: 5000px; /* Large enough value for any content */
+    /* overflow: visible; /* Allow content to be seen, but can cause issues with exiting */
 }
 
 .content-section.exiting { 
-    transform: translateX(-20px) scale(0.98); 
     opacity: 0; 
-    visibility: hidden; 
-    transition-delay: 0s, 0s, var(--section-transition-duration); 
+    transform: translateY(-15px);
     max-height: 0 !important; 
-    position: absolute; /* Take out of flow when exiting */
-    /* This might be needed again if just max-height:0 doesn't fully collapse during transition */
+    visibility: hidden;
+    position: absolute; /* Take out of flow when exiting to prevent jump */
+    top: 0; /* Ensure it stays at the top while exiting */
+    left: 0;
 }
 
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
-/* Ensure the last section in the flow doesn't have a bottom border */
-.content-section.active:last-of-type, 
-.content-section:not(.active):not(.exiting) ~ .content-section:last-of-type.active {
+.content-section:last-of-type { 
+    /* This might not work as expected if only one section is 'not absolute' at a time */
+    /* We can manage this with JS or ensure the last section in HTML has no border if needed */
+}
+/* If .active is the only one not absolute, this should work for the last visible one */
+.content-section.active ~ .content-section.active:last-child, /* If multiple can be active (not our case) */
+.content-section.active:last-child { /* If it's the last child in the container */
     border-bottom: none;
 }
-/* If only one section is ever "not absolute", this is simpler: */
-/* .content-section.active:is(:last-child) { border-bottom: none; } */
 
 
 .content-section h2 { 
@@ -336,7 +333,7 @@ body.dark-mode .deeper-study strong {
     justify-content: center;
     align-items: center;
     margin-top: 20px; 
-    margin-bottom: 10px; 
+    margin-bottom: 15px; /* LAYOUT_FIX: Adjusted margin below SVGs */
     border: 1px dashed var(--border-color-light);
     overflow: hidden;
 }
@@ -464,10 +461,10 @@ body.dark-mode #further-reading li i { color: #aaa; }
 .navigation-controls { 
     display: flex; 
     justify-content: space-between; 
-    margin-top: 25px; /* LAYOUT_FIX: Adjusted margin */
-    padding-top: 20px; /* LAYOUT_FIX: Consistent padding above */
+    margin-top: 20px; 
+    padding-top: 15px; 
     border-top: 1px solid var(--border-color-light); 
-    width: 100%; /* Ensure it takes full width of its container */
+    width: 100%; 
 }
 body.dark-mode .navigation-controls {
     border-top-color: var(--border-color-dark);
@@ -525,7 +522,7 @@ footer {
     border-top: 1px solid var(--border-color-light); 
     font-size: 0.85rem; 
     color: #777; 
-    width: 100%; /* Ensure footer takes full width */
+    width: 100%; 
 }
 body.dark-mode footer { 
     border-top: 1px solid var(--border-color-dark); 
