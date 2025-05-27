@@ -1,7 +1,10 @@
+// js/script.js
+// Version: v19_debug_final_attempt
+
 // Main application namespace
 window.stringTheoryApp = {};
 
-console.log("DEBUG: script.js: File execution started.");
+console.log("DEBUG: script.js: File execution started (v19_debug_final_attempt).");
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DEBUG: DOMContentLoaded event fired.");
@@ -22,22 +25,19 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlElement = document.documentElement;
         skipLink = document.querySelector('.skip-link');
         
-        if (!sectionsContainer) console.error("DEBUG: sectionsContainer NOT FOUND!");
-        if (sections.length === 0) console.warn("DEBUG: No elements with class .content-section found!");
-        if (!prevBtn) console.error("DEBUG: prevBtn NOT FOUND!");
-        if (!nextBtn) console.error("DEBUG: nextBtn NOT FOUND!");
-        if (!langEnBtn) console.error("DEBUG: langEnBtn NOT FOUND!");
-        if (!langFaBtn) console.error("DEBUG: langFaBtn NOT FOUND!");
-        if (!mainTitleElement) console.error("DEBUG: mainTitleElement NOT FOUND!");
-
         if (!sectionsContainer || sections.length === 0 || !prevBtn || !nextBtn || !langEnBtn || !langFaBtn || !mainTitleElement) {
-            console.error("CRITICAL DEBUG: One or more essential DOM elements not found. Check HTML IDs and structure.");
-            throw new Error("Essential DOM elements missing. Cannot proceed.");
+            let missing = [];
+            if (!sectionsContainer) missing.push("interactive-content");
+            if (sections.length === 0) missing.push(".content-section (any)");
+            if (!prevBtn) missing.push("prev-btn");
+            // ... (add other checks)
+            console.error(`CRITICAL DEBUG: Essential DOM elements missing: ${missing.join(', ')}. Check HTML IDs and structure.`);
+            throw new Error(`Essential DOM elements missing: ${missing.join(', ')}.`);
         }
         console.log("DEBUG: DOM elements selected successfully.");
     } catch (e) {
         console.error("CRITICAL DEBUG: Error selecting DOM elements:", e);
-        document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details like missing element IDs.</p>`;
+        document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details like missing element IDs. Error: ${e.message}</p>`;
         return; 
     }
 
@@ -51,18 +51,53 @@ document.addEventListener('DOMContentLoaded', () => {
     window.stringTheoryApp.getTranslation = (key, fallbackText = '') => {
         const translated = translations[key];
         if (translated === undefined) {
-            // console.warn(`DEBUG: Translation key missing for p5: '${key}'`);
             return fallbackText || key;
         }
         return translated;
     };
+
+    // --- SVG Functions ---
+    // DEFINE SVG helper functions BEFORE they are potentially called by other functions like switchLanguage (via applyTranslationsToPage -> applySvgTextTranslations)
+    
+    function applyDynamicSvgStyles(svgElement, isDarkMode) {
+        // console.log("DEBUG: Applying dynamic SVG styles. Dark mode:", isDarkMode, "Element:", svgElement);
+        const dynamicFills = svgElement.querySelectorAll('[data-light-fill][data-dark-fill]');
+        dynamicFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
+        const dynamicTextFills = svgElement.querySelectorAll('text[data-light-fill][data-dark-fill]');
+        dynamicTextFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
+    }
+    
+    function applySvgTextTranslations(svgElement) {
+        // console.log("DEBUG: Applying SVG text translations to:", svgElement);
+        const textElements = svgElement.querySelectorAll('text[data-translation-key]');
+        textElements.forEach(textEl => {
+            const key = textEl.getAttribute('data-translation-key');
+            if (translations[key] !== undefined) {
+                textEl.textContent = translations[key];
+            }
+        });
+    }
+    
+    // DEFINITION of updateSvgColors - Ensure this is defined before it's called.
+    function updateSvgColors() {
+        console.log("DEBUG: updateSvgColors() CALLED. Dark mode:", bodyElement.classList.contains('dark-mode'));
+        const isDarkMode = bodyElement.classList.contains('dark-mode');
+        document.querySelectorAll('.svg-placeholder-container svg').forEach(svg => {
+            if (svg) { // Ensure svg element actually exists
+                applyDynamicSvgStyles(svg, isDarkMode);
+            } else {
+                console.warn("DEBUG: Found a .svg-placeholder-container without an inner SVG element during updateSvgColors.");
+            }
+        });
+    }
+    console.log("DEBUG: Function updateSvgColors defined. Type:", typeof updateSvgColors);
+
 
     async function loadSvg(placeholderElement, filePath) {
         if (!placeholderElement) {
             console.warn(`DEBUG: SVG placeholder element not found for path: ${filePath}`);
             return { status: 'placeholder_not_found', path: filePath };
         }
-        // console.log(`DEBUG: Attempting to load SVG: ${filePath} into placeholder:`, placeholderElement.id);
         try {
             const response = await fetch(filePath + `?v=${new Date().getTime()}`);
             if (!response.ok) {
@@ -71,36 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 return { status: 'fetch_error', path: filePath, code: response.status };
             }
             const svgText = await response.text();
-            placeholderElement.innerHTML = svgText;
+            placeholderElement.innerHTML = svgText; 
             const svgElement = placeholderElement.querySelector('svg');
             if (svgElement) {
                 applyDynamicSvgStyles(svgElement, bodyElement.classList.contains('dark-mode'));
-                applySvgTextTranslations(svgElement); // Translate text within newly loaded SVG
+                applySvgTextTranslations(svgElement); 
             }
-            // console.log(`DEBUG: Successfully loaded SVG: ${filePath}`);
             return { status: 'success', path: filePath };
         } catch (error) {
             console.error(`DEBUG: Network error fetching SVG ${filePath}:`, error);
             placeholderElement.innerHTML = `<p class="error-message">Network error loading SVG: ${filePath.split('/').pop()}</p>`;
             return { status: 'network_error', path: filePath, error: error.message };
         }
-    }
-
-    function applyDynamicSvgStyles(svgElement, isDarkMode) {
-        const dynamicFills = svgElement.querySelectorAll('[data-light-fill][data-dark-fill]');
-        dynamicFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
-        const dynamicTextFills = svgElement.querySelectorAll('text[data-light-fill][data-dark-fill]');
-        dynamicTextFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
-    }
-    
-    function applySvgTextTranslations(svgElement) {
-        const textElements = svgElement.querySelectorAll('text[data-translation-key]');
-        textElements.forEach(textEl => {
-            const key = textEl.getAttribute('data-translation-key');
-            if (translations[key] !== undefined) {
-                textEl.textContent = translations[key];
-            }
-        });
     }
 
     async function fetchTranslations(lang) {
@@ -114,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.warn(`DEBUG: Falling back to English translations.`);
                     return fetchTranslations('en');
                 }
+                translations = {}; // Ensure translations is an empty object on failure
                 return {};
             }
             const data = await response.json();
@@ -125,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn(`DEBUG: Falling back to English translations due to error.`);
                 return fetchTranslations('en');
             }
+            translations = {}; // Ensure translations is an empty object on failure
             return {};
         }
     }
@@ -157,9 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function switchLanguage(lang) {
+        console.log(`DEBUG: switchLanguage called for lang: ${lang}`);
         currentLang = lang;
         localStorage.setItem('preferredLang', lang);
-        translations = await fetchTranslations(lang);
+        translations = await fetchTranslations(lang); // This might return {} if fetch fails
 
         htmlElement.lang = lang;
         htmlElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
@@ -170,8 +190,14 @@ document.addEventListener('DOMContentLoaded', () => {
         langEnBtn.setAttribute('aria-pressed', (lang === 'en').toString());
         langFaBtn.setAttribute('aria-pressed', (lang === 'fa').toString());
         
-        applyTranslationsToPage();
-        updateSvgColors();
+        applyTranslationsToPage(); // Apply text based on newly loaded translations
+        
+        console.log("DEBUG: Before calling updateSvgColors in switchLanguage. Typeof updateSvgColors:", typeof updateSvgColors);
+        if (typeof updateSvgColors === 'function') {
+            updateSvgColors(); // CORRECTED CALL
+        } else {
+            console.error("CRITICAL DEBUG: updateSvgColors function is NOT DEFINED when called from switchLanguage!");
+        }
         
         const stringTypeToggleBtn = document.getElementById('string-type-toggle');
         if (stringTypeToggleBtn) {
@@ -180,14 +206,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const closedKey = stringTypeToggleBtn.getAttribute('data-translation-key-closed') || "labToggleOpenDefault";
             stringTypeToggleBtn.textContent = isOpen ? (translations[openKey] || "Switch to Closed Loop") : (translations[closedKey] || "Switch to Open String");
         }
+        console.log(`DEBUG: switchLanguage for ${lang} completed.`);
     }
 
     function toggleDarkMode() {
+        console.log("DEBUG: toggleDarkMode called.");
         bodyElement.classList.toggle('dark-mode');
         const isDarkModeEnabled = bodyElement.classList.contains('dark-mode');
         localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
         mainTitleElement.setAttribute('aria-pressed', isDarkModeEnabled.toString());
-        updateSvgColors();
+        
+        console.log("DEBUG: Before calling updateSvgColors in toggleDarkMode. Typeof updateSvgColors:", typeof updateSvgColors);
+        if (typeof updateSvgColors === 'function') {
+            updateSvgColors(); // CORRECTED CALL
+        } else {
+            console.error("CRITICAL DEBUG: updateSvgColors function is NOT DEFINED when called from toggleDarkMode!");
+        }
+
         if (p5LabInstance && typeof p5LabInstance.redraw === 'function' && p5LabInstance.isLooping()) {
             p5LabInstance.redraw();
         }
@@ -365,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const svgLoadResults = await Promise.all(svgLoadPromises);
             let allSvgsLoadedSuccessfully = true;
             svgLoadResults.forEach(result => {
-                if (result && result.status !== 'success') { // Check if result is defined
+                if (result && result.status !== 'success') { 
                     allSvgsLoadedSuccessfully = false;
                     console.warn(`DEBUG: SVG loading issue: ${result.status} for ${result.path}${result.code ? ' (Code: ' + result.code + ')' : ''}${result.error ? ' Error: ' + result.error : ''}`);
                 }
@@ -375,12 +410,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (e) {
             console.error("DEBUG: Error during Promise.all for SVG loading:", e);
-            // This catch might not be reached if loadSvg always resolves.
         }
         console.log("DEBUG: SVG loading process completed (or attempted).");
 
         console.log("DEBUG: Loading initial language:", currentLang);
-        await switchLanguage(currentLang); // This also calls applyTranslationsToPage
+        // Ensure updateSvgColors is defined before switchLanguage calls it
+        if (typeof updateSvgColors !== 'function') {
+            console.error("CRITICAL DEBUG: updateSvgColors is not defined before first call in switchLanguage during init!");
+             // Define it here as a fallback, though it should be defined above.
+            // This is a defensive measure.
+            window.updateSvgColors = function() { console.warn("Fallback updateSvgColors called"); };
+        }
+        await switchLanguage(currentLang); 
         
         console.log("DEBUG: Initializing UI components...");
         updateSectionDisplay(); 
@@ -417,19 +458,16 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("DEBUG: Application initialized successfully.");
     }
     
-    // Check for p5_sketch.js and stringLabSketch definition
     if (typeof stringLabSketch === 'undefined') {
-         console.error("CRITICAL DEBUG: stringLabSketch is not defined. Ensure p5_sketch.js is loaded BEFORE script.js and defines this function in the global scope if using p5 global mode, or is correctly passed if using instance mode.");
+         console.error("CRITICAL DEBUG: stringLabSketch is not defined BEFORE initializeApp is called. Ensure p5_sketch.js is loaded and executed before script.js, and it defines stringLabSketch in the global scope.");
          const p5Container = document.getElementById('p5-canvas-container');
          if (p5Container) {
-            p5Container.innerHTML = `<p class="error-message">Interactive lab could not be loaded. (stringLabSketch not found)</p>`;
+            p5Container.innerHTML = `<p class="error-message">Interactive lab could not be loaded. (stringLabSketch not found). Check console.</p>`;
          }
-         // Decide if you want to stop the app entirely here or let other parts try to initialize
-         // For now, initializeApp will still be called.
     }
 
     initializeApp().catch(err => {
-        console.error("CRITICAL DEBUG: Failed to initialize the application:", err);
+        console.error("CRITICAL DEBUG: Unhandled error during initializeApp:", err);
         if (!document.querySelector('body > p.critical-error-message')) {
             const errorMsgElement = document.createElement('p');
             errorMsgElement.className = 'critical-error-message';
