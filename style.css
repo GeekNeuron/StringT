@@ -113,6 +113,8 @@ body.dark-mode .skip-link:focus {
     border-radius: 12px; 
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); 
     border: 1px solid var(--border-color-light); 
+    display: flex; /* LAYOUT_FIX: Added to help manage children heights */
+    flex-direction: column; /* LAYOUT_FIX: Stack header, main, nav, footer */
 }
 body.dark-mode .container { 
     background-color: var(--container-bg-dark); 
@@ -127,6 +129,7 @@ header {
     margin-bottom: 25px; 
     padding-bottom: 15px; 
     border-bottom: 1px solid var(--border-color-light); 
+    width: 100%; /* Ensure header takes full width */
 }
 body.dark-mode header { 
     border-bottom: 1px solid var(--border-color-dark); 
@@ -206,16 +209,14 @@ body.dark-mode .dark-mode-hint {
     color: #666; 
 }
 
-#interactive-content { 
+main#interactive-content { /* Changed from #interactive-content for specificity */
     position: relative; 
     overflow: hidden; 
-    /* min-height: auto; /* LAYOUT FIX: Allow content to dictate height */
-    /* Instead of auto, let's try ensuring it has some content flow */
-    display: flex; /* LAYOUT FIX: Use flex to manage children */
-    flex-direction: column; /* LAYOUT FIX: Stack sections vertically */
+    width: 100%; /* LAYOUT_FIX: Ensure main takes full width */
+    /* min-height: auto; /* Removed, let content dictate or use flex for container */
 }
 .content-section { 
-    /* position: absolute; /* LAYOUT FIX: Remove absolute positioning for simpler flow */
+    /* position: absolute; /* LAYOUT_FIX: Removed to allow natural flow and height adjustment */
     width: 100%; 
     opacity: 0; 
     visibility: hidden; 
@@ -223,23 +224,22 @@ body.dark-mode .dark-mode-hint {
     transition: opacity var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1), 
                 transform var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
                 visibility 0s var(--section-transition-duration),
-                max-height 0s var(--section-transition-duration); /* LAYOUT FIX: Transition max-height */
-    padding-bottom: 20px; /* LAYOUT FIX: Reduced padding */
+                max-height var(--section-transition-duration) ease-out; /* Animate max-height */
+    padding-bottom: 20px; 
     border-bottom: 1px solid var(--border-color-light); 
-    max-height: 0; /* LAYOUT FIX: Start with zero max-height */
-    overflow: hidden; /* LAYOUT FIX: Clip content when max-height is 0 */
+    max-height: 0; 
+    overflow: hidden; 
 }
 
 .content-section.active { 
     opacity: 1; 
     visibility: visible; 
     transform: translateX(0) scale(1); 
-    transition-delay: 0s, 0s, 0s, 0s; /* Apply active transition immediately */
-    /* position: relative; /* LAYOUT FIX: Not needed if not absolute */
-    max-height: 1000vh; /* LAYOUT FIX: Allow to expand to content height (large value) */
-    transition: opacity var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1), 
-                transform var(--section-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
-                max-height var(--section-transition-duration) ease-in-out; /* Animate max-height */
+    transition-delay: 0s; /* Apply all active transitions immediately */
+    /* position: relative; /* LAYOUT_FIX: Keep relative for absolute positioned children like timeline-date */
+    max-height: none; /* LAYOUT_FIX: Allow full height based on content */
+    /* Or a very large value like 2000vh if issues persist with 'none' and transitions */
+    overflow: visible; /* LAYOUT_FIX: Allow content to be visible */
 }
 
 .content-section.exiting { 
@@ -247,16 +247,22 @@ body.dark-mode .dark-mode-hint {
     opacity: 0; 
     visibility: hidden; 
     transition-delay: 0s, 0s, var(--section-transition-duration); 
-    max-height: 0 !important; /* LAYOUT FIX: Force collapse when exiting */
-    position: absolute; /* LAYOUT FIX: Take out of flow when exiting to prevent jump */
+    max-height: 0 !important; 
+    position: absolute; /* Take out of flow when exiting */
+    /* This might be needed again if just max-height:0 doesn't fully collapse during transition */
 }
 
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
-.content-section:last-of-type { 
-    border-bottom: none; /* This will apply to the last section in the HTML order */
+/* Ensure the last section in the flow doesn't have a bottom border */
+.content-section.active:last-of-type, 
+.content-section:not(.active):not(.exiting) ~ .content-section:last-of-type.active {
+    border-bottom: none;
 }
+/* If only one section is ever "not absolute", this is simpler: */
+/* .content-section.active:is(:last-child) { border-bottom: none; } */
+
 
 .content-section h2 { 
     font-size: 1.8rem; 
@@ -322,7 +328,7 @@ body.dark-mode .deeper-study strong {
 /* SVG Placeholder and general SVG styles */
 .svg-placeholder-container {
     width: 100%;
-    min-height: 100px; /* LAYOUT FIX: Reduced default min-height */
+    min-height: 100px; 
     padding: 10px; 
     background-color: var(--placeholder-bg-light);
     border-radius: 8px;
@@ -363,7 +369,7 @@ body.dark-mode .svg-placeholder-container p.error-message {
     background-color: rgba(240, 128, 128, 0.1);
 }
 
-.svg-placeholder-container svg { max-width: 100%; max-height: 200px; display: block; margin: auto; } /* LAYOUT FIX: Adjusted max-height */
+.svg-placeholder-container svg { max-width: 100%; max-height: 200px; display: block; margin: auto; } 
 .svg-line { stroke: var(--svg-stroke-light); stroke-width: 1.5; fill: none; }
 body.dark-mode .svg-line { stroke: var(--svg-stroke-dark); }
 .svg-dynamic-stroke { stroke: var(--svg-stroke-light); }
@@ -458,9 +464,10 @@ body.dark-mode #further-reading li i { color: #aaa; }
 .navigation-controls { 
     display: flex; 
     justify-content: space-between; 
-    margin-top: 20px; /* LAYOUT FIX: Reduced margin */
-    padding-top: 15px; 
+    margin-top: 25px; /* LAYOUT_FIX: Adjusted margin */
+    padding-top: 20px; /* LAYOUT_FIX: Consistent padding above */
     border-top: 1px solid var(--border-color-light); 
+    width: 100%; /* Ensure it takes full width of its container */
 }
 body.dark-mode .navigation-controls {
     border-top-color: var(--border-color-dark);
@@ -518,6 +525,7 @@ footer {
     border-top: 1px solid var(--border-color-light); 
     font-size: 0.85rem; 
     color: #777; 
+    width: 100%; /* Ensure footer takes full width */
 }
 body.dark-mode footer { 
     border-top: 1px solid var(--border-color-dark); 
