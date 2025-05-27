@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-en="String Theory - An Interactive Journey" data-fa="نظریه ریسمان - یک سفر تعاملی">String Theory - An Interactive Journey</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="main-title" data-en="String Theory" data-fa="نظریه ریسمان">String Theory</h1>
+            <div class="controls">
+                <div class="lang-switcher">
+                    <button id="lang-en" data-lang="en" class="active-lang">English</button>
+                    <button id="lang-fa" data-lang="fa">فارسی</button>
+                </div>
+                <p class="dark-mode-hint" data-en="Hint: Click title to toggle dark mode" data-fa="راهنمایی: برای تغییر حالت تاریک روی عنوان کلیک کنید">Hint: Click title to toggle dark mode</p>
+            </div>
+        </header>
+
+        <main id="interactive-content">
+            <section id="intro" class="content-section active">
+                <h2 data-en="Welcome!" data-fa="خوش آمدید!">Welcome!</h2>
+                <p data-en="Embark on an enlightening journey to grasp the fundamentals of String Theory, one of the most profound, ambitious, and debated ideas in modern theoretical physics. This interactive guide aims to demystify its core concepts, offering a glimpse into how physicists are attempting to describe the very fabric of reality." data-fa="سفری روشنگرانه را برای درک مبانی نظریه ریسمان، یکی از عمیق‌ترین، بلندپروازانه‌ترین و بحث‌برانگیزترین ایده‌ها در فیزیک نظری مدرن، آغاز کنید. این راهنمای تعاملی با هدف رمزگشایی از مفاهیم اصلی آن، نگاهی اجمالی به چگونگی تلاش فیزیکدانان برای توصیف تار و پود واقعیت ارائه می‌دهد.">
+                    Embark on an enlightening journey...
+                </p>
+                <div class="visual-placeholder svg-container" data-en="[Visual: Abstract representation of interconnected ideas or a cosmic swirl]" data-fa="[تصویر: نمایش انتزاعی ایده‌های به هم پیوسته یا یک چرخش کیهانی]">
+                    <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="introGradient" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+                                <stop offset="0%" style="stop-color:var(--primary-accent-light);stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:var(--bg-color-light);stop-opacity:0.1" />
+                            </radialGradient>
+                            <radialGradient id="introGradientDark" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+                                <stop offset="0%" style="stop-color:var(--primary-accent-dark);stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:var(--bg-color-dark);stop-opacity:0.1" />
+                            </radialGradient>
+                        </defs>
+                        <circle cx="100" cy="50" r="40" class="svg-dynamic-fill" data-light-fill="url(#introGradient)" data-dark-fill="url(#introGradientDark)" />
+                        <text x="100" y="55" font-family="inherit" font-size="10" text-anchor="middle" class="svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-en="Explore" data-fa="کاوش"></text>
+                    </svg>
+                </div>
+            </section>
+
+            <section id="problem" class="content-section">
+                <h2 data-en="What's the Problem?" data-fa="مشکل چیست؟">What's the Problem?</h2>
+                <p data-en="Modern physics stands on two colossal pillars: General Relativity, which beautifully describes gravity and the cosmos on large scales (planets, galaxies, the universe's expansion), and Quantum Mechanics, which accurately governs the world of the very small (atoms, electrons, quarks). While both are incredibly successful in their own domains, they fundamentally clash when trying to describe scenarios where both strong gravity and quantum effects are crucial, such as the singularity at the heart of a black hole or the conditions at the very beginning of the universe (the Big Bang). String Theory emerged as a leading candidate to reconcile this conflict and provide a unified 'Theory of Everything'." data-fa="فیزیک مدرن بر دو ستون عظیم استوار است: نسبیت عام، که به زیبایی گرانش و کیهان را در مقیاس‌های بزرگ (سیارات، کهکشان‌ها، انبساط جهان) توصیف می‌کند، و مکانیک کوانتومی، که با دقت دنیای بسیار کوچک (اتم‌ها، الکترون‌ها، کوارک‌ها) را کنترل می‌کند. در حالی که هر دو در حوزه‌های خود فوق‌العاده موفق هستند، در تلاش برای توصیف سناریوهایی که هم گرانش قوی و هم اثرات کوانتومی حیاتی هستند، مانند تکینگی در قلب یک سیاه‌چاله یا شرایط در همان ابتدای جهان (بیگ بنگ)، اساساً با هم در تضاد قرار می‌گیرند. نظریه ریسمان به عنوان یک کاندیدای پیشرو برای آشتی دادن این تضاد و ارائه یک «نظریه همه‌چیز» واحد ظهور کرد.">
+                    Modern physics stands on two colossal pillars...
+                </p>
+                <div class="visual-placeholder" data-en="[Visual: Split screen - one side showing curved spacetime (GR), other showing particle interactions (QM)]" data-fa="[تصویر: صفحه تقسیم شده - یک طرف فضازمان خمیده (نسبیت عام)، طرف دیگر تعاملات ذرات (مکانیک کوانتوم)]">
+                     [Visual: Split screen - GR vs QM. (SVG for this would be complex, keeping placeholder for now)]
+                </div>
+            </section>
+
+            <section id="big-idea" class="content-section">
+                <h2 data-en="The Big Idea: Vibrating Strings" data-fa="ایده بزرگ: ریسمان‌های مرتعش">The Big Idea: Vibrating Strings</h2>
+                <p data-en="At its heart, String Theory revolutionizes our concept of fundamental particles. Instead of viewing electrons, photons, and quarks as dimensionless points, it posits that they are unimaginably tiny, one-dimensional loops or segments of 'string.' These strings can vibrate in different patterns or 'modes,' much like the strings of a violin or guitar. Each distinct vibrational mode corresponds to a unique particle with specific properties like mass and charge. So, what we perceive as different particles are, in essence, just different 'notes' played by these fundamental strings. This elegant idea offers a framework where all particles and forces can arise from a single type of entity." data-fa="در قلب خود، نظریه ریسمان مفهوم ذرات بنیادی ما را متحول می‌کند. به جای مشاهده الکترون‌ها، فوتون‌ها و کوارک‌ها به عنوان نقاط بدون بعد، این نظریه فرض می‌کند که آنها حلقه‌ها یا قطعات «ریسمان» تک‌بعدی و فوق‌العاده کوچکی هستند. این ریسمان‌ها می‌توانند در الگوها یا «مُدهای» مختلفی ارتعاش کنند، بسیار شبیه به سیم‌های ویولن یا گیتار. هر مُد ارتعاشی متمایز، با یک ذره منحصربه‌فرد با ویژگی‌های خاصی مانند جرم و بار مطابقت دارد. بنابراین، آنچه ما به عنوان ذرات مختلف درک می‌کنیم، در اصل، فقط «نت‌های» متفاوتی هستند که توسط این ریسمان‌های بنیادی نواخته می‌شوند. این ایده زیبا چارچوبی را ارائه می‌دهد که در آن تمام ذرات و نیروها می‌توانند از یک نوع موجودیت واحد ناشی شوند.">
+                    At its heart, String Theory revolutionizes...
+                </p>
+                <div class="visual-placeholder svg-container" id="string-animation-placeholder" data-en="[Visual: Animation of a string vibrating in different modes]" data-fa="[تصویر: انیمیشن یک ریسمان در حال ارتعاش در حالت‌های مختلف]">
+                    <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="10" y1="50" x2="190" y2="50" class="svg-line" />
+                        <path d="M10 50 Q 50 30, 95 50 T 190 50" class="svg-path string-mode1" />
+                        <path d="M10 50 Q 32.5 20, 55 50 T 95 20 T 145 50 T 190 50" class="svg-path string-mode2" style="display:none;"/>
+                        <text x="100" y="80" class="svg-text" data-en="Different vibrations = Different particles" data-fa="ارتعاشات مختلف = ذرات مختلف"></text>
+                        </svg>
+                </div>
+            </section>
+
+            <section id="dimensions" class="content-section">
+                <h2 data-en="Extra Dimensions" data-fa="ابعاد اضافی">Extra Dimensions</h2>
+                <p data-en="A mind-bending requirement of String Theory is the existence of more spatial dimensions than the three (length, width, height) we perceive. For the theory's mathematical consistency, most versions predict a total of 10 or 11 spacetime dimensions (9 or 10 spatial + 1 time). So, where are these extra dimensions? The prevailing idea is that they are 'compactified,' or curled up on an incredibly small scale, possibly the Planck length (about 10^-35 meters), far too tiny to be detected directly by current experiments. Imagine a garden hose: from a distance, it appears as a 1D line, but up close, you see its 2D circular cross-section. Similarly, these extra dimensions could be all around us, but their minuscule size makes them invisible in our everyday experience and even to our most sensitive instruments." data-fa="یک الزام شگفت‌انگیز نظریه ریسمان، وجود ابعاد فضایی بیشتر از سه بعدی (طول، عرض، ارتفاع) است که ما درک می‌کنیم. برای سازگاری ریاضیاتی این نظریه، اکثر نسخه‌ها در مجموع ۱۰ یا ۱۱ بعد فضازمان (۹ یا ۱۰ بعد فضایی + ۱ بعد زمان) را پیش‌بینی می‌کنند. پس این ابعاد اضافی کجا هستند؟ ایده غالب این است که آنها «فشرده» یا در مقیاسی فوق‌العاده کوچک، احتمالاً در حد طول پلانک (حدود ۱۰ به توان منفی ۳۵ متر)، پیچیده شده‌اند، بسیار کوچک‌تر از آنکه با آزمایش‌های فعلی مستقیماً قابل تشخیص باشند. یک شلنگ باغ را تصور کنید: از فاصله دور، به صورت یک خط یک‌بعدی به نظر می‌رسد، اما از نزدیک، مقطع دایره‌ای دوبعدی آن را می‌بینید. به طور مشابه، این ابعاد اضافی می‌توانند همه جا در اطراف ما باشند، اما اندازه بسیار کوچک آنها باعث می‌شود در تجربه روزمره ما و حتی برای حساس‌ترین ابزارهای ما نامرئی باشند.">
+                    A mind-bending requirement of String Theory...
+                </p>
+                <div class="visual-placeholder svg-container" data-en="[Visual: Illustration of compactified dimensions, e.g., a Calabi-Yau manifold]" data-fa="[تصویر: نمایش ابعاد فشرده، به عنوان مثال، یک خمینه کالابی-یائو]">
+                     <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="10" y1="50" x2="190" y2="50" class="svg-line" stroke-dasharray="5,5" />
+                        <text x="100" y="40" class="svg-text" data-en="Our 3D Space" data-fa="فضای ۳ بعدی ما"></text>
+                        <circle cx="70" cy="50" r="3" class="svg-point-fill"/>
+                        <text x="70" y="65" class="svg-text" data-en="Point in space" data-fa="نقطه‌ای در فضا"></text>
+                        <g transform="translate(70, 50) scale(0.2)">
+                            <path d="M50,0 C100,0 100,100 50,100 C0,100 0,0 50,0 Z
+                                     M50,10 C80,10 80,90 50,90 C20,90 20,10 50,10 Z
+                                     M50,20 Q70,50 50,80 Q30,50 50,20 Z" class="svg-path"/>
+                        </g>
+                        <text x="130" y="75" class="svg-text" data-en="Tiny extra dimensions at each point" data-fa="ابعاد اضافی کوچک در هر نقطه"></text>
+                    </svg>
+                </div>
+            </section>
+
+            <section id="types-of-theories" class="content-section">
+                <h2 data-en="A Family of Theories" data-fa="خانواده‌ای از نظریه‌ها">A Family of Theories</h2>
+                <p data-en="In the 1980s, it became clear that there wasn't just one consistent String Theory, but five distinct versions, all operating in 10 spacetime dimensions and incorporating supersymmetry (a postulated symmetry between fermions, matter particles, and bosons, force-carrying particles). These were: Type I, Type IIA, Type IIB, Heterotic SO(32), and Heterotic E8×E8. Each theory had its own unique set of rules for how strings behave and interact, and described different types of strings (open or closed) and different symmetry groups. The existence of five seemingly separate theories was initially a point of concern, suggesting that the picture was still incomplete." data-fa="در دهه ۱۹۸۰، مشخص شد که فقط یک نظریه ریسمان سازگار وجود ندارد، بلکه پنج نسخه متمایز وجود دارد که همگی در ۱۰ بعد فضازمان عمل می‌کنند و ابرتقارن (تقارن فرضی بین فرمیون‌ها، ذرات ماده، و بوزون‌ها، ذرات حامل نیرو) را در بر می‌گیرند. اینها عبارت بودند از: نوع I، نوع IIA، نوع IIB، هتروتیک SO(32)، و هتروتیک E8×E8. هر نظریه مجموعه قوانین منحصربه‌فرد خود را برای نحوه رفتار و تعامل ریسمان‌ها داشت و انواع مختلفی از ریسمان‌ها (باز یا بسته) و گروه‌های تقارن متفاوتی را توصیف می‌کرد. وجود پنج نظریه ظاهراً مجزا در ابتدا باعث نگرانی بود و نشان می‌داد که تصویر هنوز ناقص است.">
+                    In the 1980s, it became clear...
+                </p>
+                 <div class="visual-placeholder" data-en="[Visual: Diagram showing 5 distinct boxes labeled with the string theory types]" data-fa="[تصویر: دیاگرامی که ۵ جعبه متمایز با برچسب انواع نظریه ریسمان را نشان می‌دهد]">
+                    [Visual: 5 String Theories diagram. (Complex SVG, keeping placeholder for now)]
+                 </div>
+            </section>
+
+            <section id="m-theory" class="content-section">
+                <h2 data-en="M-Theory: A Unification" data-fa="نظریه M: یک وحدت">M-Theory: A Unification</h2>
+                <p data-en="A major breakthrough occurred in the mid-1990s during the 'second superstring revolution,' largely pioneered by Edward Witten. It was proposed that the five consistent 10-dimensional superstring theories were not distinct, but rather different limiting cases of a single, more fundamental, 11-dimensional theory known as M-Theory. The 'M' in M-Theory is often said to stand for 'Mystery,' 'Magic,' 'Mother,' or 'Membrane,' reflecting its enigmatic nature and the importance of higher-dimensional objects called membranes (or branes) within it. M-Theory unified the five string theories through a web of relationships called dualities, which show how these seemingly different theories are actually describing the same underlying physics from different perspectives or at different energy scales." data-fa="یک پیشرفت بزرگ در اواسط دهه ۱۹۹۰ در طول «انقلاب دوم ابرریسمان»، که عمدتاً توسط ادوارد ویتن پیشگام بود، رخ داد. پیشنهاد شد که پنج نظریه ابرریسمان ۱۰ بعدی سازگار، متمایز نیستند، بلکه موارد حدی مختلفی از یک نظریه واحد، بنیادی‌تر و ۱۱ بعدی به نام نظریه M هستند. گفته می‌شود «M» در نظریه M مخفف «راز»، «جادو»، «مادر» یا «ممبرین» (غشاء) است که ماهیت اسرارآمیز آن و اهمیت اشیاء با ابعاد بالاتر به نام ممبرین‌ها (یا برین‌ها) را در آن منعکس می‌کند. نظریه M این پنج نظریه ریسمان را از طریق شبکه‌ای از روابط به نام دوگانگی‌ها متحد کرد، که نشان می‌دهد چگونه این نظریه‌های ظاهراً متفاوت در واقع فیزیک زیربنایی یکسانی را از دیدگاه‌های مختلف یا در مقیاس‌های انرژی متفاوت توصیف می‌کنند.">
+                    A major breakthrough occurred in the mid-1990s...
+                </p>
+                 <div class="visual-placeholder svg-container" data-en="[Visual: Diagram showing M-Theory as an umbrella over the 5 string theories]" data-fa="[تصویر: دیاگرامی که نظریه M را به عنوان یک چتر بر روی ۵ نظریه ریسمان نشان می‌دهد]">
+                    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                        <text x="100" y="20" class="svg-text svg-title" data-en="M-Theory (11D)" data-fa="نظریه M (۱۱ بعدی)"></text>
+                        <circle cx="100" cy="15" r="20" class="svg-path" fill="none" stroke-width="1"/>
+
+                        <text x="30" y="70" class="svg-text" data-en="Type I" data-fa="نوع I"></text>
+                        <line x1="100" y1="25" x2="30" y2="60" class="svg-line"/>
+
+                        <text x="70" y="100" class="svg-text" data-en="Type IIA" data-fa="نوع IIA"></text>
+                        <line x1="100" y1="25" x2="70" y2="90" class="svg-line"/>
+
+                        <text x="100" y="70" class="svg-text" data-en="Type IIB" data-fa="نوع IIB"></text>
+                        <line x1="100" y1="25" x2="100" y2="60" class="svg-line"/>
+
+                        <text x="130" y="100" class="svg-text" data-en="HO (SO32)" data-fa="هتروتیک SO32"></text>
+                        <line x1="100" y1="25" x2="130" y2="90" class="svg-line"/>
+
+                        <text x="170" y="70" class="svg-text" data-en="HE (E8xE8)" data-fa="هتروتیک E8xE8"></text>
+                        <line x1="100" y1="25" x2="170" y2="60" class="svg-line"/>
+                        <text x="100" y="50" class="svg-text" font-size="6" data-en="Dualities" data-fa="دوگانگی‌ها"></text>
+                    </svg>
+                 </div>
+            </section>
+
+            <section id="branes" class="content-section">
+                <h2 data-en="Branes and Beyond" data-fa="برین‌ها و فراتر از آن">Branes and Beyond</h2>
+                <p data-en="M-Theory and the various string theories don't just describe fundamental strings. They also include higher-dimensional dynamical objects called 'p-branes,' where 'p' indicates the number of spatial dimensions the brane itself occupies. A 0-brane is a point particle, a 1-brane is a string, a 2-brane is a membrane, and so on. D-branes are a particular class of branes where open strings can end. These objects are not just passive backgrounds; they have their own dynamics, can carry charge, and influence spacetime. The concept of branes has led to fascinating ideas, such as the 'braneworld scenario,' where our observable universe might be a 3-brane embedded in a higher-dimensional spacetime called the 'bulk.' Some forces, like gravity, might propagate in the bulk, while others, like electromagnetism, could be confined to our brane." data-fa="نظریه M و نظریه‌های مختلف ریسمان فقط ریسمان‌های بنیادی را توصیف نمی‌کنند. آنها همچنین شامل اشیاء دینامیکی با ابعاد بالاتر به نام «p-برین» هستند، که در آن «p» تعداد ابعاد فضایی را که خود برین اشغال می‌کند، نشان می‌دهد. یک ۰-برین یک ذره نقطه‌ای است، یک ۱-برین یک ریسمان است، یک ۲-برین یک غشاء است، و غیره. D-برین‌ها دسته خاصی از برین‌ها هستند که ریسمان‌های باز می‌توانند به آنها ختم شوند. این اشیاء فقط پس‌زمینه‌های غیرفعال نیستند؛ آنها دینامیک خاص خود را دارند، می‌توانند بار حمل کنند و بر فضازمان تأثیر بگذارند. مفهوم برین‌ها به ایده‌های جذابی منجر شده است، مانند «سناریوی جهان برینی»، که در آن جهان قابل مشاهده ما ممکن است یک ۳-برین باشد که در یک فضازمان با ابعاد بالاتر به نام «بالک» جاسازی شده است. برخی نیروها، مانند گرانش، ممکن است در بالک منتشر شوند، در حالی که نیروهای دیگر، مانند الکترومغناطیس، می‌توانند به برین ما محدود باشند.">
+                    M-Theory and the various string theories...
+                </p>
+                 <div class="visual-placeholder" data-en="[Visual: Illustration of different dimensional branes, maybe our universe as a brane]" data-fa="[تصویر: نمایش برین‌های با ابعاد مختلف، شاید جهان ما به عنوان یک برین]">
+                    [Visual: p-branes illustration. (SVG for this is quite involved, keeping placeholder)]
+                 </div>
+            </section>
+
+            <section id="landscape" class="content-section">
+                <h2 data-en="The Landscape & Challenges" data-fa="چشم‌انداز و چالش‌ها">The Landscape & Challenges</h2>
+                <p data-en="One of the most significant conceptual challenges in String Theory is the 'landscape problem.' The theory appears to allow for an enormous number (perhaps 10^500 or even more) of possible stable or metastable vacuum solutions, each corresponding to a different way the extra dimensions can be compactified, and thus to a universe with different fundamental constants and laws of physics. This vast 'landscape' of possibilities makes it difficult to pinpoint a unique solution that describes our specific universe. Furthermore, String Theory has yet to make unambiguous, experimentally testable predictions at energies accessible to current particle accelerators. The characteristic energy scale of strings is believed to be near the Planck scale, far beyond our reach. The extreme mathematical complexity also remains a formidable barrier to fully understanding its implications." data-fa="یکی از مهم‌ترین چالش‌های مفهومی در نظریه ریسمان «مسئله چشم‌انداز» است. به نظر می‌رسد این نظریه تعداد بسیار زیادی (شاید ۱۰ به توان ۵۰۰ یا حتی بیشتر) از راه‌حل‌های خلاء پایدار یا شبه‌پایدار ممکن را مجاز می‌داند، که هر کدام مربوط به روشی متفاوت برای فشرده‌سازی ابعاد اضافی، و در نتیجه، جهانی با ثابت‌های بنیادی و قوانین فیزیکی متفاوت است. این «چشم‌انداز» وسیع از احتمالات، شناسایی یک راه‌حل منحصربه‌فرد که جهان خاص ما را توصیف کند، دشوار می‌سازد. علاوه بر این، نظریه ریسمان هنوز پیش‌بینی‌های بدون ابهام و قابل آزمایش تجربی در انرژی‌های قابل دسترس برای شتاب‌دهنده‌های ذرات فعلی ارائه نکرده است. اعتقاد بر این است که مقیاس انرژی مشخصه ریسمان‌ها نزدیک به مقیاس پلانک است، که بسیار فراتر از دسترس ماست. پیچیدگی ریاضیاتی شدید نیز همچنان یک مانع بزرگ برای درک کامل پیامدهای آن است.">
+                    One of the most significant conceptual challenges...
+                </p>
+                 <div class="visual-placeholder" data-en="[Visual: Abstract representation of the 'landscape' or a question mark]" data-fa="[تصویر: نمایش انتزاعی «چشم‌انداز» یا یک علامت سوال]">
+                    [Visual: String Theory Landscape. (Complex SVG, keeping placeholder)]
+                 </div>
+            </section>
+
+             <section id="conclusion" class="content-section">
+                <h2 data-en="A Glimpse into the Unknown" data-fa="نگاهی به ناشناخته‌ها">A Glimpse into the Unknown</h2>
+                <p data-en="Despite these profound challenges, String Theory remains a vibrant and highly influential area of research in theoretical physics. It offers a mathematically consistent framework for unifying quantum mechanics and general relativity, provides powerful tools and insights into quantum field theory and mathematics, and continues to fuel our quest to understand the ultimate nature of space, time, and matter. While a final, experimentally verified 'Theory of Everything' may still be distant, the intellectual journey of String Theory has already reshaped our understanding of the fundamental laws of the universe." data-fa="با وجود این چالش‌های عمیق، نظریه ریسمان همچنان یک حوزه تحقیقاتی پرجنب‌وجوش و بسیار تأثیرگذار در فیزیک نظری است. این نظریه چارچوبی از نظر ریاضی سازگار برای متحد کردن مکانیک کوانتومی و نسبیت عام ارائه می‌دهد، ابزارها و بینش‌های قدرتمندی را در مورد نظریه میدان کوانتومی و ریاضیات فراهم می‌کند، و همچنان به تلاش ما برای درک ماهیت نهایی فضا، زمان و ماده دامن می‌زند. در حالی که یک «نظریه همه‌چیز» نهایی و تأیید شده تجربی ممکن است هنوز دور باشد، سفر فکری نظریه ریسمان پیش از این درک ما از قوانین بنیادی جهان را تغییر شکل داده است.">
+                    Despite these profound challenges...
+                </p>
+                <p data-en="Thank you for exploring this fascinating and complex topic with us!" data-fa="از اینکه این موضوع جذاب و پیچیده را با ما کاوش کردید سپاسگزاریم!">
+                    Thank you for exploring this fascinating and complex topic with us!
+                </p>
+                <div class="visual-placeholder svg-container" data-en="[Visual: Inspiring cosmic imagery]" data-fa="[تصویر: تصاویر کیهانی الهام‌بخش]">
+                     <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <filter id="blurFilter">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+                            </filter>
+                            <linearGradient id="galaxyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--secondary-accent-light);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--primary-accent-light);stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="galaxyGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--secondary-accent-dark);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--primary-accent-dark);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <ellipse cx="100" cy="50" rx="80" ry="30" class="svg-dynamic-fill" data-light-fill="url(#galaxyGradient)" data-dark-fill="url(#galaxyGradientDark)" filter="url(#blurFilter)" />
+                        <text x="100" y="55" font-family="inherit" font-size="10" text-anchor="middle" fill="#fff" data-en="The Journey Continues..." data-fa="سفر ادامه دارد..."></text>
+                    </svg>
+                </div>
+            </section>
+
+            <section id="further-reading" class="content-section">
+                <h2 data-en="Further Reading & Resources" data-fa="مطالعه بیشتر و منابع">Further Reading & Resources</h2>
+                <p data-en="This interactive guide provides a brief overview. To delve deeper into String Theory, consider these resources (you'll need to populate this list):" data-fa="این راهنمای تعاملی یک نمای کلی ارائه می‌دهد. برای تعمق بیشتر در نظریه ریسمان، این منابع را در نظر بگیرید (شما باید این فهرست را تکمیل کنید):">
+                    This interactive guide provides a brief overview...
+                </p>
+                <ul id="resources-list">
+                    <li data-en="[Book/Article Title 1 - Author, Year]" data-fa="[عنوان کتاب/مقاله ۱ - نویسنده، سال]"><i>Placeholder for resource 1...</i></li>
+                    <li data-en="[Book/Article Title 2 - Author, Year]" data-fa="[عنوان کتاب/مقاله ۲ - نویسنده، سال]"><i>Placeholder for resource 2...</i></li>
+                    <li data-en="[Website/Course 1 - Link]" data-fa="[وبسایت/دوره ۱ - پیوند]"><i>Placeholder for resource 3...</i></li>
+                </ul>
+                 <div class="visual-placeholder" data-en="[Visual: Books or academic symbols]" data-fa="[تصویر: کتاب‌ها یا نمادهای دانشگاهی]">
+                    [Visual: Books or academic symbols]
+                </div>
+            </section>
+        </main>
+
+        <nav class="navigation-controls">
+            <button id="prev-btn" data-en="Previous" data-fa="قبلی">Previous</button>
+            <button id="next-btn" data-en="Next" data-fa="بعدی">Next</button>
+        </nav>
+
+        <footer>
+            <p data-en="Created by GeekNeuron for GitHub Pages. Enhanced version aiming for a professional overview." data-fa="ساخته شده توسط GeekNeuron برای GitHub Pages. نسخه بهبود یافته با هدف ارائه یک نمای کلی حرفه‌ای.">
+                Created by GeekNeuron for GitHub Pages. Enhanced version aiming for a professional overview.
+            </p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
