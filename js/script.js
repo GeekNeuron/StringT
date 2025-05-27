@@ -1,20 +1,38 @@
+// js/script.js
+
 // Main application namespace
 window.stringTheoryApp = {};
 
+console.log("script.js: File loaded.");
+
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM fully loaded and parsed.");
+    console.log("DOMContentLoaded event fired.");
 
     // --- DOM Element Selection ---
-    const sectionsContainer = document.getElementById('interactive-content');
-    const sections = Array.from(document.querySelectorAll('.content-section'));
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const langEnBtn = document.getElementById('lang-en');
-    const langFaBtn = document.getElementById('lang-fa');
-    const mainTitleElement = document.getElementById('main-title');
-    const bodyElement = document.body;
-    const htmlElement = document.documentElement;
-    const skipLink = document.querySelector('.skip-link');
+    let sectionsContainer, sections = [], prevBtn, nextBtn, langEnBtn, langFaBtn, mainTitleElement, bodyElement, htmlElement, skipLink;
+
+    try {
+        sectionsContainer = document.getElementById('interactive-content');
+        sections = Array.from(document.querySelectorAll('.content-section'));
+        prevBtn = document.getElementById('prev-btn');
+        nextBtn = document.getElementById('next-btn');
+        langEnBtn = document.getElementById('lang-en');
+        langFaBtn = document.getElementById('lang-fa');
+        mainTitleElement = document.getElementById('main-title');
+        bodyElement = document.body;
+        htmlElement = document.documentElement;
+        skipLink = document.querySelector('.skip-link');
+        console.log("DOM elements selected successfully.");
+        if (!sectionsContainer || sections.length === 0 || !prevBtn || !nextBtn || !langEnBtn || !langFaBtn || !mainTitleElement) {
+            console.error("CRITICAL: One or more essential DOM elements not found. Check HTML IDs.");
+            throw new Error("Essential DOM elements missing.");
+        }
+    } catch (e) {
+        console.error("Error selecting DOM elements:", e);
+        document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12).</p>`;
+        return; // Stop execution if essential elements are missing
+    }
+
 
     // --- State Variables ---
     let currentSectionIndex = 0;
@@ -39,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // console.log(`Attempting to load SVG: ${filePath} into placeholder:`, placeholderElement.id);
         try {
-            const response = await fetch(filePath + `?v=${new Date().getTime()}`);
+            const response = await fetch(filePath + `?v=${new Date().getTime()}`); // Cache busting
             if (!response.ok) {
                 console.error(`Failed to load SVG: ${filePath}, Status: ${response.status} ${response.statusText}`);
                 placeholderElement.innerHTML = `<p class="error-message">Error loading: ${filePath.split('/').pop()} (${response.status})</p>`;
@@ -74,14 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = textEl.getAttribute('data-translation-key');
             if (translations[key] !== undefined) {
                 textEl.textContent = translations[key];
-            } else {
-                // console.warn(`SVG Text translation key not found in JSON: ${key} for element:`, textEl);
             }
         });
     }
 
     async function fetchTranslations(lang) {
-        // console.log(`Fetching translations for: ${lang}`);
+        console.log(`Fetching translations for: ${lang} from lang/${lang}.json`);
         try {
             const response = await fetch(`lang/${lang}.json?v=${new Date().getTime()}`);
             if (!response.ok) {
@@ -93,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return {};
             }
             const data = await response.json();
-            // console.log(`Successfully fetched translations for ${lang}.`);
+            console.log(`Successfully fetched translations for ${lang}. Number of keys: ${Object.keys(data).length}`);
             return data;
         } catch (error) {
             console.error(`Error fetching or parsing translations for ${lang}:`, error);
@@ -110,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn("Translations not loaded or empty. Page text might not update correctly.");
             return;
         }
-        // console.log("Applying translations to page...");
+        console.log("Applying translations to page...");
         const docTitleKey = "docTitle";
         if (translations[docTitleKey] !== undefined) document.title = translations[docTitleKey];
 
@@ -123,15 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     el.textContent = translations[key];
                 }
-            } else {
-                // console.warn(`Translation key not found in JSON: ${key} for element:`, el);
             }
         });
         document.querySelectorAll('.svg-placeholder-container svg').forEach(applySvgTextTranslations);
         if (p5LabInstance && typeof p5LabInstance.redraw === 'function' && p5LabInstance.isLooping()) {
              p5LabInstance.redraw();
         }
-        // console.log("Translations applied.");
+        console.log("Translations applied.");
     }
 
     async function switchLanguage(lang) {
@@ -180,8 +194,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSectionDisplay() {
+        if (sections.length === 0) {
+            console.warn("No sections found to display.");
+            return;
+        }
         const currentActiveSection = sectionsContainer.querySelector('.content-section.active');
         const newActiveSection = sections[currentSectionIndex];
+
+        if (!newActiveSection) {
+            console.error(`New active section at index ${currentSectionIndex} is undefined.`);
+            return;
+        }
 
         if (currentActiveSection && currentActiveSection !== newActiveSection) {
             currentActiveSection.classList.add('exiting');
@@ -250,9 +273,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function initializeP5Lab() {
+        console.log("Attempting to initialize p5 Lab...");
         if (typeof stringLabSketch === 'function' && document.getElementById('interactive-lab')) {
+            console.log("stringLabSketch function found and interactive-lab element exists.");
             try {
                 p5LabInstance = new p5(stringLabSketch); 
+                console.log("p5 instance created.");
 
                 const modeSlider = document.getElementById('mode-slider');
                 const amplitudeSlider = document.getElementById('amplitude-slider');
@@ -266,6 +292,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const freqFactor = frequencySlider ? parseInt(frequencySlider.value) : 3;
                         const isOpen = stringTypeToggleBtn ? stringTypeToggleBtn.getAttribute('aria-pressed') === 'true' : false;
                         p5LabInstance.updateP5Controls(mode, amp, freqFactor, isOpen);
+                    } else {
+                        console.warn("p5LabInstance or updateP5Controls not available.");
                     }
                 }
                 if (modeSlider) modeSlider.addEventListener('input', updateP5SketchFromControls);
@@ -274,33 +302,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (stringTypeToggleBtn) {
                     stringTypeToggleBtn.addEventListener('click', () => {
                         const lang = htmlElement.lang || 'en';
-                        const isOpen = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true'; // State AFTER click
+                        const isOpen = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true'; 
                         const openKey = stringTypeToggleBtn.getAttribute('data-translation-key-open') || "labToggleOpenActive";
                         const closedKey = stringTypeToggleBtn.getAttribute('data-translation-key-closed') || "labToggleOpenDefault";
                         stringTypeToggleBtn.textContent = isOpen ? (translations[openKey] || "Switch to Closed Loop") : (translations[closedKey] || "Switch to Open String");
                         updateP5SketchFromControls(); 
                     });
                 }
+                console.log("p5 Lab controls initialized.");
             } catch (e) {
-                console.error("Error initializing p5 sketch:", e);
+                console.error("Error initializing p5 sketch instance:", e);
             }
         } else {
             if (typeof stringLabSketch !== 'function') {
-                console.error("p5_sketch.js might not have loaded correctly or stringLabSketch is not defined globally by p5_sketch.js.");
+                console.error("CRITICAL: stringLabSketch is not defined. Ensure p5_sketch.js is loaded correctly and defines this function globally.");
             }
             if(!document.getElementById('interactive-lab')){
-                console.warn("Interactive lab section not found in HTML.");
+                console.warn("Interactive lab section ('interactive-lab') not found in HTML.");
             }
         }
     }
 
     async function initializeApp() {
-        console.log("Starting application initialization...");
+        console.log("Starting application initialization (initializeApp)...");
         applySavedDarkMode(); 
         
         console.log("Loading SVGs...");
         const svgPlaceholdersMap = {
-            // Ensure these IDs match EXACTLY with the IDs in your index.html for the placeholder divs
             'intro-svg': 'svg/intro-visual.svg',
             'problem-svg': 'svg/problem-visual.svg',
             'bigidea-svg': 'svg/bigidea-visual.svg',
@@ -321,22 +349,26 @@ document.addEventListener('DOMContentLoaded', () => {
             if (element) {
                 svgLoadPromises.push(loadSvg(element, svgPlaceholdersMap[id]));
             } else {
-                console.warn(`SVG placeholder div with ID '${id}' not found in HTML.`);
+                console.warn(`SVG placeholder div with ID '${id}' not found in HTML during initializeApp.`);
             }
         }
         
         try {
             const svgLoadResults = await Promise.all(svgLoadPromises);
+            let allSvgsLoadedSuccessfully = true;
             svgLoadResults.forEach(result => {
-                if (result && result.status !== 'success') { // Check if result is defined
+                if (result && result.status !== 'success') {
+                    allSvgsLoadedSuccessfully = false;
                     console.warn(`SVG loading issue: ${result.status} for ${result.path}${result.code ? ' (Code: ' + result.code + ')' : ''}${result.error ? ' Error: ' + result.error : ''}`);
                 }
             });
+            if(allSvgsLoadedSuccessfully) console.log("All SVGs loaded successfully (or placeholders not found).");
+            else console.warn("Some SVGs failed to load. Check previous logs.");
+
         } catch (e) {
             console.error("Error during Promise.all for SVG loading:", e);
         }
-        console.log("SVG loading process completed (or attempted).");
-
+        
         console.log("Loading initial language:", currentLang);
         await switchLanguage(currentLang); 
         
@@ -373,31 +405,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log("Application initialized successfully.");
     }
-
-    // Ensure p5_sketch.js (which defines stringLabSketch) is loaded before trying to use it.
-    // The `defer` attribute on script tags in HTML helps, but for direct calls like `new p5(stringLabSketch)`,
-    // `stringLabSketch` must be in the global scope or passed correctly.
-    // We assume p5_sketch.js defines `stringLabSketch` globally or it's handled by p5.js loading.
+    
+    // Check for p5_sketch.js and stringLabSketch definition
     if (typeof stringLabSketch === 'undefined') {
-         console.error("CRITICAL: stringLabSketch is not defined. Ensure p5_sketch.js is loaded correctly and defines this function globally, or adjust p5 instantiation.");
-         // Display error to user if p5 sketch is critical for app start
-         // document.body.innerHTML = '<p style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Core component (p5_sketch.js) failed to load. Please check console.</p>';
-         // For now, let initializeApp try to run, it might handle parts of the app.
+         console.error("CRITICAL: stringLabSketch is not defined. Ensure p5_sketch.js is loaded BEFORE script.js and defines this function in the global scope if using p5 global mode, or is correctly passed if using instance mode.");
+         // Display a more specific error if p5 sketch is missing, as it's a core interactive part.
+         const p5Container = document.getElementById('p5-canvas-container');
+         if (p5Container) {
+            p5Container.innerHTML = `<p class="error-message">Interactive lab could not be loaded. (stringLabSketch not found)</p>`;
+         }
     }
-
 
     initializeApp().catch(err => {
         console.error("CRITICAL: Failed to initialize the application:", err);
-        // Check if body already has error message to prevent overwrite
         if (!document.querySelector('body > p.critical-error-message')) {
             const errorMsgElement = document.createElement('p');
-            errorMsgElement.className = 'critical-error-message'; // For potential styling
-            errorMsgElement.style.color = 'red';
-            errorMsgElement.style.textAlign = 'center';
-            errorMsgElement.style.padding = '50px';
-            errorMsgElement.style.fontSize = '1.2em';
+            errorMsgElement.className = 'critical-error-message';
+            errorMsgElement.style.color = 'red'; errorMsgElement.style.textAlign = 'center';
+            errorMsgElement.style.padding = '50px'; errorMsgElement.style.fontSize = '1.2em';
             errorMsgElement.textContent = 'An error occurred while loading the application. Please try refreshing the page. Check the console (F12) for more details.';
-            document.body.innerHTML = ''; // Clear existing body content
+            document.body.innerHTML = ''; 
             document.body.appendChild(errorMsgElement);
         }
     });
