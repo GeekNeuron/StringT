@@ -1,1 +1,20 @@
-
+<svg viewBox="0 0 250 120" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .theory-boxV11 { stroke-width: 1; rx: 3; ry: 3; } /* Renamed class to avoid potential global conflicts */
+        .theory-textV11 { font-size: 7px; text-anchor: middle; font-family: inherit; }
+    </style>
+    <rect x="10" y="40" width="40" height="25" class="svg-path theory-boxV11"/>
+    <text x="30" y="57" class="svg-text theory-textV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="typesVisualTypeI">Type I</text>
+    <rect x="60" y="40" width="40" height="25" class="svg-path theory-boxV11"/>
+    <text x="80" y="57" class="svg-text theory-textV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="typesVisualTypeIIA">Type IIA</text>
+    <rect x="110" y="40" width="40" height="25" class="svg-path theory-boxV11"/>
+    <text x="130" y="57" class="svg-text theory-textV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="typesVisualTypeIIB">Type IIB</text>
+    <rect x="160" y="40" width="40" height="25" class="svg-path theory-boxV11"/>
+    <text x="180" y="52" class="svg-text theory-textV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="typesVisualHO">HO</text>
+    <text x="180" y="62" class="svg-text theory-textV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="typesVisualSO32">SO(32)</text>
+    <rect x="210" y="40" width="40" height="25" class="svg-path theory-boxV11"/>
+    <text x="230" y="52" class="svg-text theory-textV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="typesVisualHE">HE</text>
+    <text x="230" y="62" class="svg-text theory-textV11 svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="typesVisualE8E8">E8xE8</text>
+    <text x="125" y="20" class="svg-text svg-title svg-dynamic-text" data-light-fill="var(--svg-text-light)" data-dark-fill="var(--svg-text-dark)" data-translation-key="typesVisualTitle">Five Consistent Superstring Theories (10D)</text>
+    <text x="125" y="90" class="svg-text svg-dynamic-text" font-size="6" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-translation-key="typesVisualSubtext">Before M-Theory unification</text>
+</svg>
