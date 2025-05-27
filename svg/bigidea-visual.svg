@@ -1,1 +1,6 @@
-
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+    <line x1="10" y1="50" x2="190" y2="50" class="svg-line" />
+    <path d="M10 50 Q 50 30, 95 50 T 190 50" class="svg-path string-mode1" />
+    <path d="M10 50 Q 32.5 20, 55 50 T 95 20 T 145 50 T 190 50" class="svg-path string-mode2" style="display:none;"/>
+    <text x="100" y="80" class="svg-text" data-translation-key="bigIdeaVisualText">Different vibrations = Different particles</text>
+</svg>
