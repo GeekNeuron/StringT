@@ -1,1 +1,14 @@
-
+<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <radialGradient id="introGradientV11" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+            <stop offset="0%" style="stop-color:var(--primary-accent-light);stop-opacity:0.8" />
+            <stop offset="100%" style="stop-color:var(--bg-color-light);stop-opacity:0.1" />
+        </radialGradient>
+        <radialGradient id="introGradientDarkV11" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+            <stop offset="0%" style="stop-color:var(--primary-accent-dark);stop-opacity:0.8" />
+            <stop offset="100%" style="stop-color:var(--bg-color-dark);stop-opacity:0.1" />
+        </radialGradient>
+    </defs>
+    <circle cx="100" cy="50" r="40" class="svg-dynamic-fill" data-light-fill="url(#introGradientV11)" data-dark-fill="url(#introGradientDarkV11)" />
+    <text x="100" y="55" font-family="inherit" font-size="10" text-anchor="middle" class="svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" data-translation-key="introExplore">Explore</text>
+</svg>
