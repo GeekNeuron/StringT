@@ -1,10 +1,10 @@
 // js/script.js
-// Version: v19_final_debug
+// Version: v19_final_debug_reissue (Ensuring correct function names and definitions)
 
 // Main application namespace
 window.stringTheoryApp = {};
 
-console.log("DEBUG: script.js: File execution started (v19_final_debug).");
+console.log("DEBUG: script.js: File execution started (v19_final_debug_reissue).");
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DEBUG: DOMContentLoaded event fired.");
@@ -60,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     // --- SVG Functions ---
+    // DEFINE SVG helper functions BEFORE they are potentially called by other functions
+    
     function applyDynamicSvgStyles(svgElement, isDarkMode) {
         const dynamicFills = svgElement.querySelectorAll('[data-light-fill][data-dark-fill]');
         dynamicFills.forEach(el => el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill));
@@ -77,8 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    function updateSvgColors() { // DEFINED HERE
-        console.log("DEBUG: updateSvgColors() CALLED. Dark mode:", bodyElement.classList.contains('dark-mode'));
+    // DEFINITION of updateSvgColors - Ensure this is defined before it's called.
+    function updateSvgColors() { 
+        // console.log("DEBUG: updateSvgColors() CALLED. Dark mode:", bodyElement.classList.contains('dark-mode'));
         const isDarkMode = bodyElement.classList.contains('dark-mode');
         document.querySelectorAll('.svg-placeholder-container svg').forEach(svg => {
             if (svg) { 
@@ -86,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    console.log("DEBUG: Function updateSvgColors defined. Type:", typeof updateSvgColors);
+    // console.log("DEBUG: Function updateSvgColors defined. Type:", typeof updateSvgColors);
 
 
     async function loadSvg(placeholderElement, filePath) {
@@ -98,7 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(filePath + `?v=${new Date().getTime()}`);
             if (!response.ok) {
                 console.error(`DEBUG: Failed to load SVG: ${filePath}, Status: ${response.status} ${response.statusText}`);
-                placeholderElement.innerHTML = `<p class="error-message">Error loading: ${filePath.split('/').pop()} (${response.status})</p>`;
+                placeholderElement.innerHTML = `<p class="error-message" data-translation-key="errorLoadingSVG">Error loading SVG</p><p class="error-details">${filePath.split('/').pop()} (${response.status})</p>`;
+                if (translations['errorLoadingSVG']) placeholderElement.querySelector('.error-message').textContent = translations['errorLoadingSVG'];
                 return { status: 'fetch_error', path: filePath, code: response.status };
             }
             const svgText = await response.text();
@@ -111,33 +115,34 @@ document.addEventListener('DOMContentLoaded', () => {
             return { status: 'success', path: filePath };
         } catch (error) {
             console.error(`DEBUG: Network error fetching SVG ${filePath}:`, error);
-            placeholderElement.innerHTML = `<p class="error-message">Network error loading SVG: ${filePath.split('/').pop()}</p>`;
+            placeholderElement.innerHTML = `<p class="error-message" data-translation-key="errorNetworkSVG">Network error loading SVG</p><p class="error-details">${filePath.split('/').pop()}</p>`;
+            if (translations['errorNetworkSVG']) placeholderElement.querySelector('.error-message').textContent = translations['errorNetworkSVG'];
             return { status: 'network_error', path: filePath, error: error.message };
         }
     }
 
     async function fetchTranslations(lang) {
-        console.log(`DEBUG: Fetching translations for: ${lang} from lang/${lang}.json`);
+        // console.log(`DEBUG: Fetching translations for: ${lang} from lang/${lang}.json`);
         try {
             const response = await fetch(`lang/${lang}.json?v=${new Date().getTime()}`);
-            console.log(`DEBUG: Fetch response for lang/${lang}.json status: ${response.status}`);
+            // console.log(`DEBUG: Fetch response for lang/${lang}.json status: ${response.status}`);
             if (!response.ok) {
                 console.error(`DEBUG: Could not load ${lang}.json. Status: ${response.status} ${response.statusText}`);
-                if (lang !== 'en') {
+                if (lang !== 'en') { 
                     console.warn(`DEBUG: Falling back to English translations.`);
-                    return fetchTranslations('en');
+                    return fetchTranslations('en'); 
                 }
                 translations = {}; 
                 return {};
             }
             const data = await response.json();
-            console.log(`DEBUG: Successfully fetched and parsed translations for ${lang}. Number of keys: ${Object.keys(data).length}`);
+            // console.log(`DEBUG: Successfully fetched and parsed translations for ${lang}. Number of keys: ${Object.keys(data).length}`);
             return data;
         } catch (error) {
             console.error(`DEBUG: Error fetching or parsing translations for ${lang}:`, error);
-            if (lang !== 'en') {
+            if (lang !== 'en') { 
                 console.warn(`DEBUG: Falling back to English translations due to error.`);
-                return fetchTranslations('en');
+                return fetchTranslations('en'); 
             }
             translations = {}; 
             return {};
@@ -145,11 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyTranslationsToPage() {
-        if (!translations || Object.keys(translations).length === 0) {
+        if (!translations || Object.keys(translations).length === 0) { 
             console.warn("DEBUG: Translations not loaded or empty. Page text might not update correctly.");
-            return;
+            return; 
         }
-        console.log("DEBUG: Applying translations to page...");
+        // console.log("DEBUG: Applying translations to page...");
         const docTitleKey = "docTitle";
         if (translations[docTitleKey] !== undefined) document.title = translations[docTitleKey];
 
@@ -168,11 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (p5LabInstance && typeof p5LabInstance.redraw === 'function' && p5LabInstance.isLooping()) {
              p5LabInstance.redraw();
         }
-        console.log("DEBUG: Translations applied.");
+        // console.log("DEBUG: Translations applied.");
     }
 
     async function switchLanguage(lang) {
-        console.log(`DEBUG: switchLanguage called for lang: ${lang}`);
+        // console.log(`DEBUG: switchLanguage called for lang: ${lang}`);
         currentLang = lang;
         localStorage.setItem('preferredLang', lang);
         translations = await fetchTranslations(lang); 
@@ -188,9 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         applyTranslationsToPage(); 
         
-        console.log("DEBUG: Before calling updateSvgColors in switchLanguage. Typeof updateSvgColors:", typeof updateSvgColors);
+        // console.log("DEBUG: Before calling updateSvgColors in switchLanguage. Typeof updateSvgColors:", typeof updateSvgColors);
         if (typeof updateSvgColors === 'function') {
-            updateSvgColors(); // CORRECTED CALL
+            updateSvgColors(); // CORRECT NAME
         } else {
             console.error("CRITICAL DEBUG: updateSvgColors function is NOT DEFINED when called from switchLanguage!");
         }
@@ -202,19 +207,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const closedKey = stringTypeToggleBtn.getAttribute('data-translation-key-closed') || "labToggleOpenDefault";
             stringTypeToggleBtn.textContent = isOpen ? (translations[openKey] || "Switch to Closed Loop") : (translations[closedKey] || "Switch to Open String");
         }
-        console.log(`DEBUG: switchLanguage for ${lang} completed.`);
+        // console.log(`DEBUG: switchLanguage for ${lang} completed.`);
     }
 
     function toggleDarkMode() {
-        console.log("DEBUG: toggleDarkMode called.");
+        // console.log("DEBUG: toggleDarkMode called.");
         bodyElement.classList.toggle('dark-mode');
         const isDarkModeEnabled = bodyElement.classList.contains('dark-mode');
         localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
         mainTitleElement.setAttribute('aria-pressed', isDarkModeEnabled.toString());
         
-        console.log("DEBUG: Before calling updateSvgColors in toggleDarkMode. Typeof updateSvgColors:", typeof updateSvgColors);
+        // console.log("DEBUG: Before calling updateSvgColors in toggleDarkMode. Typeof updateSvgColors:", typeof updateSvgColors);
         if (typeof updateSvgColors === 'function') {
-            updateSvgColors(); // CORRECTED CALL
+            updateSvgColors(); // CORRECT NAME
         } else {
             console.error("CRITICAL DEBUG: updateSvgColors function is NOT DEFINED when called from toggleDarkMode!");
         }
@@ -233,17 +238,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSectionDisplay() {
-        if (sections.length === 0) {
-            console.warn("DEBUG: No sections found to display.");
-            return;
-        }
+        if (sections.length === 0) { return; }
         const currentActiveSection = sectionsContainer.querySelector('.content-section.active');
         const newActiveSection = sections[currentSectionIndex];
-
-        if (!newActiveSection) {
-            console.error(`DEBUG: New active section at index ${currentSectionIndex} is undefined.`);
-            return;
-        }
+        if (!newActiveSection) { return; }
 
         if (currentActiveSection && currentActiveSection !== newActiveSection) {
             currentActiveSection.classList.add('exiting');
@@ -251,15 +249,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (event.target === this && event.propertyName === 'opacity') { 
                     this.classList.remove('active'); 
                     this.classList.remove('exiting');
+                    this.style.display = 'none'; 
                 }
                 this.removeEventListener('transitionend', handler);
             }, { once: false }); 
         }
         
-        sections.forEach(s => { if (s !== newActiveSection && s !== currentActiveSection) s.classList.remove('active');});
+        sections.forEach(s => { 
+            if (s !== newActiveSection && !s.classList.contains('exiting')) { 
+                s.classList.remove('active');
+                s.style.display = 'none';
+            }
+        });
         
         newActiveSection.classList.remove('exiting'); 
+        newActiveSection.style.display = 'block'; 
+        void newActiveSection.offsetWidth; 
         newActiveSection.classList.add('active');
+
 
         sections.forEach((section, index) => {
             if (section.id === 'interactive-lab' && p5LabInstance) {
@@ -288,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prevBtn.setAttribute('aria-disabled', prevBtn.disabled.toString());
         nextBtn.setAttribute('aria-disabled', nextBtn.disabled.toString());
     }
+    
 
     function initializeTimelineInteraction() {
         const timelineEvents = document.querySelectorAll('.timeline-event');
@@ -304,20 +312,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initializeGlossaryInteraction() {
+        console.log("DEBUG: Initializing glossary interaction...");
         const glossaryTerms = document.querySelectorAll('.glossary-list dt');
+        console.log(`DEBUG: Found ${glossaryTerms.length} glossary terms (dt).`);
         glossaryTerms.forEach(term => {
-            term.addEventListener('focus', () => term.classList.add('focused'));
-            term.addEventListener('blur', () => term.classList.remove('focused'));
+            const ddId = term.getAttribute('aria-controls');
+            const definition = ddId ? document.getElementById(ddId) : null;
+
+            if (!definition) { 
+                console.warn("DEBUG: Glossary: No definition found for term with aria-controls:", ddId, "Term text:", term.textContent);
+                return; 
+            }
+            // console.log("DEBUG: Glossary: Setting up term:", term.textContent, "and definition:", definition.id);
+
+            term.setAttribute('aria-expanded', 'false'); // Set initial state
+            definition.setAttribute('aria-hidden', 'true'); // Set initial state
+
+            term.addEventListener('click', () => {
+                // console.log("DEBUG: Glossary term clicked:", term.textContent);
+                const isExpanded = definition.classList.toggle('expanded');
+                term.setAttribute('aria-expanded', isExpanded.toString());
+                definition.setAttribute('aria-hidden', (!isExpanded).toString());
+                // console.log("DEBUG: Glossary definition for", term.textContent, "is now", isExpanded ? "expanded" : "collapsed");
+            });
+            term.addEventListener('keydown', (e) => { 
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); 
+                    term.click();
+                }
+            });
         });
     }
     
     function initializeP5Lab() {
-        console.log("DEBUG: Attempting to initialize p5 Lab...");
+        // console.log("DEBUG: Attempting to initialize p5 Lab...");
         if (typeof stringLabSketch === 'function' && document.getElementById('interactive-lab')) {
-            console.log("DEBUG: stringLabSketch function found and interactive-lab element exists.");
+            // console.log("DEBUG: stringLabSketch function found and interactive-lab element exists.");
             try {
                 p5LabInstance = new p5(stringLabSketch); 
-                console.log("DEBUG: p5 instance created.");
+                // console.log("DEBUG: p5 instance created.");
 
                 const modeSlider = document.getElementById('mode-slider');
                 const amplitudeSlider = document.getElementById('amplitude-slider');
@@ -331,8 +364,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         const freqFactor = frequencySlider ? parseInt(frequencySlider.value) : 3;
                         const isOpen = stringTypeToggleBtn ? stringTypeToggleBtn.getAttribute('aria-pressed') === 'true' : false;
                         p5LabInstance.updateP5Controls(mode, amp, freqFactor, isOpen);
-                    } else {
-                        console.warn("DEBUG: p5LabInstance or updateP5Controls not available.");
                     }
                 }
                 if (modeSlider) modeSlider.addEventListener('input', updateP5SketchFromControls);
@@ -340,15 +371,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (frequencySlider) frequencySlider.addEventListener('input', updateP5SketchFromControls);
                 if (stringTypeToggleBtn) {
                     stringTypeToggleBtn.addEventListener('click', () => {
+                        const currentPressedState = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true';
+                        stringTypeToggleBtn.setAttribute('aria-pressed', (!currentPressedState).toString());
+                        
                         const lang = htmlElement.lang || 'en';
-                        const isOpen = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true'; 
+                        const isOpenNewState = !currentPressedState; 
                         const openKey = stringTypeToggleBtn.getAttribute('data-translation-key-open') || "labToggleOpenActive";
                         const closedKey = stringTypeToggleBtn.getAttribute('data-translation-key-closed') || "labToggleOpenDefault";
-                        stringTypeToggleBtn.textContent = isOpen ? (translations[openKey] || "Switch to Closed Loop") : (translations[closedKey] || "Switch to Open String");
+                        stringTypeToggleBtn.textContent = isOpenNewState ? (translations[openKey] || "Switch to Closed Loop") : (translations[closedKey] || "Switch to Open String");
                         updateP5SketchFromControls(); 
                     });
                 }
-                console.log("DEBUG: p5 Lab controls initialized.");
+                // console.log("DEBUG: p5 Lab controls initialized.");
             } catch (e) {
                 console.error("DEBUG: Error initializing p5 sketch instance:", e);
             }
@@ -369,14 +403,14 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("DEBUG: Loading SVGs...");
         const svgPlaceholdersMap = {
             'intro-svg': 'svg/intro-visual.svg',
-            'problem-svg': 'svg/problem-visual.svg',
+            'problem-svg': 'svg/problem-visual-v2.svg', 
             'bigidea-svg': 'svg/bigidea-visual.svg',
             'dimensions-svg': 'svg/dimensions-visual.svg',
             'types-svg': 'svg/types-visual.svg',
             'mtheory-svg': 'svg/mtheory-visual.svg',
             'branes-svg': 'svg/branes-visual.svg',
             'landscape-svg': 'svg/landscape-visual.svg',
-            'philosophy-svg': 'svg/philosophy-visual.svg',
+            'philosophy-svg': 'svg/philosophy-visual-v2.svg', 
             'about-svg': 'svg/about-visual.svg',
             'conclusion-svg': 'svg/conclusion-visual.svg',
             'furtherreading-svg': 'svg/furtherreading-visual.svg'
@@ -387,39 +421,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const element = document.getElementById(id); 
             if (element) {
                 svgLoadPromises.push(loadSvg(element, svgPlaceholdersMap[id]));
-            } else {
-                console.warn(`DEBUG: SVG placeholder div with ID '${id}' not found in HTML during initializeApp.`);
             }
         }
         
         try {
-            const svgLoadResults = await Promise.all(svgLoadPromises);
-            let allSvgsLoadedSuccessfully = true;
-            svgLoadResults.forEach(result => {
-                if (result && result.status !== 'success') { 
-                    allSvgsLoadedSuccessfully = false;
-                    console.warn(`DEBUG: SVG loading issue: ${result.status} for ${result.path}${result.code ? ' (Code: ' + result.code + ')' : ''}${result.error ? ' Error: ' + result.error : ''}`);
-                }
-            });
-            if(allSvgsLoadedSuccessfully) console.log("DEBUG: All SVGs loaded successfully (or placeholders not found).");
-            else console.warn("DEBUG: Some SVGs failed to load. Check previous logs.");
-
+            await Promise.all(svgLoadPromises);
         } catch (e) {
             console.error("DEBUG: Error during Promise.all for SVG loading:", e);
         }
-        console.log("DEBUG: SVG loading process completed (or attempted).");
-
-        console.log("DEBUG: Loading initial language:", currentLang);
-        // Ensure updateSvgColors is defined before switchLanguage calls it
+        
+        // Ensure updateSvgColors is defined before it's called by switchLanguage
         if (typeof updateSvgColors !== 'function') {
             console.error("CRITICAL DEBUG: updateSvgColors is not defined before first call in switchLanguage during init!");
+            // Fallback or error handling
         }
         await switchLanguage(currentLang); 
         
-        console.log("DEBUG: Initializing UI components...");
         updateSectionDisplay(); 
         initializeTimelineInteraction();
-        initializeGlossaryInteraction();
+        initializeGlossaryInteraction(); 
         initializeP5Lab(); 
 
         // Event Listeners
@@ -455,7 +475,10 @@ document.addEventListener('DOMContentLoaded', () => {
          console.error("CRITICAL DEBUG: stringLabSketch is not defined BEFORE initializeApp is called. Ensure p5_sketch.js is loaded and executed before script.js, and it defines stringLabSketch in the global scope.");
          const p5Container = document.getElementById('p5-canvas-container');
          if (p5Container) {
-            p5Container.innerHTML = `<p class="error-message">Interactive lab could not be loaded. (stringLabSketch not found). Check console.</p>`;
+            p5Container.innerHTML = `<p class="error-message" data-translation-key="errorP5Load">Interactive lab could not be loaded. (Sketch not found)</p>`;
+            if(translations && translations['errorP5Load']) {
+                p5Container.querySelector('.error-message').textContent = translations['errorP5Load'];
+            }
          }
     }
 
