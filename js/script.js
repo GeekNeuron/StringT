@@ -1,19 +1,18 @@
 // js/script.js
-// Version: v19_final_debug_reissue (Ensuring correct function names and definitions)
+// Version: v25_bigidea_animation
 
 // Main application namespace
 window.stringTheoryApp = {};
 
-console.log("DEBUG: script.js: File execution started (v19_final_debug_reissue).");
+// console.log("DEBUG: script.js: File execution started (v25_bigidea_animation).");
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DEBUG: DOMContentLoaded event fired.");
+    // console.log("DEBUG: DOMContentLoaded event fired.");
 
     // --- DOM Element Selection ---
     let sectionsContainer, sections = [], prevBtn, nextBtn, langEnBtn, langFaBtn, mainTitleElement, bodyElement, htmlElement, skipLink;
 
     try {
-        console.log("DEBUG: Attempting to select DOM elements...");
         sectionsContainer = document.getElementById('interactive-content');
         sections = Array.from(document.querySelectorAll('.content-section'));
         prevBtn = document.getElementById('prev-btn');
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(`CRITICAL DEBUG: Essential DOM elements missing: ${missing.join(', ')}. Check HTML IDs and structure.`);
             throw new Error(`Essential DOM elements missing: ${missing.join(', ')}.`);
         }
-        console.log("DEBUG: DOM elements selected successfully.");
     } catch (e) {
         console.error("CRITICAL DEBUG: Error selecting DOM elements:", e);
         document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details. Error: ${e.message}</p>`;
@@ -49,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLang = localStorage.getItem('preferredLang') || (navigator.language.startsWith('fa') ? 'fa' : 'en');
     let translations = {};
     let p5LabInstance = null;
-    const sectionTransitionDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--section-transition-duration').replace('s', '')) * 1000 || 450;
+    const sectionTransitionDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--section-transition-duration').replace('s', '')) * 1000 || 300;
+    let bigIdeaAnimationInterval = null; // For the vibrating string SVG animation
 
     window.stringTheoryApp.getTranslation = (key, fallbackText = '') => {
         const translated = translations[key];
@@ -58,9 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return translated;
     };
-    
-    // --- SVG Functions ---
-    // DEFINE SVG helper functions BEFORE they are potentially called by other functions
     
     function applyDynamicSvgStyles(svgElement, isDarkMode) {
         const dynamicFills = svgElement.querySelectorAll('[data-light-fill][data-dark-fill]');
@@ -79,9 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // DEFINITION of updateSvgColors - Ensure this is defined before it's called.
     function updateSvgColors() { 
-        // console.log("DEBUG: updateSvgColors() CALLED. Dark mode:", bodyElement.classList.contains('dark-mode'));
         const isDarkMode = bodyElement.classList.contains('dark-mode');
         document.querySelectorAll('.svg-placeholder-container svg').forEach(svg => {
             if (svg) { 
@@ -89,18 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    // console.log("DEBUG: Function updateSvgColors defined. Type:", typeof updateSvgColors);
-
 
     async function loadSvg(placeholderElement, filePath) {
         if (!placeholderElement) {
-            console.warn(`DEBUG: SVG placeholder element not found for path: ${filePath}`);
             return { status: 'placeholder_not_found', path: filePath };
         }
         try {
             const response = await fetch(filePath + `?v=${new Date().getTime()}`);
             if (!response.ok) {
-                console.error(`DEBUG: Failed to load SVG: ${filePath}, Status: ${response.status} ${response.statusText}`);
                 placeholderElement.innerHTML = `<p class="error-message" data-translation-key="errorLoadingSVG">Error loading SVG</p><p class="error-details">${filePath.split('/').pop()} (${response.status})</p>`;
                 if (translations['errorLoadingSVG']) placeholderElement.querySelector('.error-message').textContent = translations['errorLoadingSVG'];
                 return { status: 'fetch_error', path: filePath, code: response.status };
@@ -114,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return { status: 'success', path: filePath };
         } catch (error) {
-            console.error(`DEBUG: Network error fetching SVG ${filePath}:`, error);
             placeholderElement.innerHTML = `<p class="error-message" data-translation-key="errorNetworkSVG">Network error loading SVG</p><p class="error-details">${filePath.split('/').pop()}</p>`;
             if (translations['errorNetworkSVG']) placeholderElement.querySelector('.error-message').textContent = translations['errorNetworkSVG'];
             return { status: 'network_error', path: filePath, error: error.message };
@@ -122,39 +111,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchTranslations(lang) {
-        // console.log(`DEBUG: Fetching translations for: ${lang} from lang/${lang}.json`);
         try {
             const response = await fetch(`lang/${lang}.json?v=${new Date().getTime()}`);
-            // console.log(`DEBUG: Fetch response for lang/${lang}.json status: ${response.status}`);
             if (!response.ok) {
-                console.error(`DEBUG: Could not load ${lang}.json. Status: ${response.status} ${response.statusText}`);
-                if (lang !== 'en') { 
-                    console.warn(`DEBUG: Falling back to English translations.`);
-                    return fetchTranslations('en'); 
-                }
-                translations = {}; 
-                return {};
+                if (lang !== 'en') { return fetchTranslations('en'); }
+                translations = {}; return {};
             }
-            const data = await response.json();
-            // console.log(`DEBUG: Successfully fetched and parsed translations for ${lang}. Number of keys: ${Object.keys(data).length}`);
-            return data;
+            return await response.json();
         } catch (error) {
-            console.error(`DEBUG: Error fetching or parsing translations for ${lang}:`, error);
-            if (lang !== 'en') { 
-                console.warn(`DEBUG: Falling back to English translations due to error.`);
-                return fetchTranslations('en'); 
-            }
-            translations = {}; 
-            return {};
+            if (lang !== 'en') { return fetchTranslations('en'); }
+            translations = {}; return {};
         }
     }
 
     function applyTranslationsToPage() {
-        if (!translations || Object.keys(translations).length === 0) { 
-            console.warn("DEBUG: Translations not loaded or empty. Page text might not update correctly.");
-            return; 
-        }
-        // console.log("DEBUG: Applying translations to page...");
+        if (!translations || Object.keys(translations).length === 0) { return; }
         const docTitleKey = "docTitle";
         if (translations[docTitleKey] !== undefined) document.title = translations[docTitleKey];
 
@@ -173,11 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (p5LabInstance && typeof p5LabInstance.redraw === 'function' && p5LabInstance.isLooping()) {
              p5LabInstance.redraw();
         }
-        // console.log("DEBUG: Translations applied.");
     }
 
     async function switchLanguage(lang) {
-        // console.log(`DEBUG: switchLanguage called for lang: ${lang}`);
         currentLang = lang;
         localStorage.setItem('preferredLang', lang);
         translations = await fetchTranslations(lang); 
@@ -193,12 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         applyTranslationsToPage(); 
         
-        // console.log("DEBUG: Before calling updateSvgColors in switchLanguage. Typeof updateSvgColors:", typeof updateSvgColors);
-        if (typeof updateSvgColors === 'function') {
-            updateSvgColors(); // CORRECT NAME
-        } else {
-            console.error("CRITICAL DEBUG: updateSvgColors function is NOT DEFINED when called from switchLanguage!");
-        }
+        if (typeof updateSvgColors === 'function') { updateSvgColors(); } 
+        else { console.error("CRITICAL DEBUG: updateSvgColors function is NOT DEFINED when called from switchLanguage!"); }
         
         const stringTypeToggleBtn = document.getElementById('string-type-toggle');
         if (stringTypeToggleBtn) {
@@ -207,22 +172,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const closedKey = stringTypeToggleBtn.getAttribute('data-translation-key-closed') || "labToggleOpenDefault";
             stringTypeToggleBtn.textContent = isOpen ? (translations[openKey] || "Switch to Closed Loop") : (translations[closedKey] || "Switch to Open String");
         }
-        // console.log(`DEBUG: switchLanguage for ${lang} completed.`);
     }
 
     function toggleDarkMode() {
-        // console.log("DEBUG: toggleDarkMode called.");
         bodyElement.classList.toggle('dark-mode');
         const isDarkModeEnabled = bodyElement.classList.contains('dark-mode');
         localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
         mainTitleElement.setAttribute('aria-pressed', isDarkModeEnabled.toString());
         
-        // console.log("DEBUG: Before calling updateSvgColors in toggleDarkMode. Typeof updateSvgColors:", typeof updateSvgColors);
-        if (typeof updateSvgColors === 'function') {
-            updateSvgColors(); // CORRECT NAME
-        } else {
-            console.error("CRITICAL DEBUG: updateSvgColors function is NOT DEFINED when called from toggleDarkMode!");
-        }
+        if (typeof updateSvgColors === 'function') { updateSvgColors(); } 
+        else { console.error("CRITICAL DEBUG: updateSvgColors function is NOT DEFINED when called from toggleDarkMode!"); }
 
         if (p5LabInstance && typeof p5LabInstance.redraw === 'function' && p5LabInstance.isLooping()) {
             p5LabInstance.redraw();
@@ -236,6 +195,47 @@ document.addEventListener('DOMContentLoaded', () => {
         else bodyElement.classList.remove('dark-mode');
         mainTitleElement.setAttribute('aria-pressed', isDarkModeEnabled.toString());
     }
+
+    function manageBigIdeaAnimation(isActive) {
+        const svgPlaceholder = document.getElementById('bigidea-svg');
+        if (!svgPlaceholder) return;
+
+        const stringMode1 = svgPlaceholder.querySelector('.string-mode1');
+        const stringMode2 = svgPlaceholder.querySelector('.string-mode2');
+
+        if (!stringMode1 || !stringMode2) {
+            // console.warn("DEBUG: String mode paths not found in bigidea-svg.");
+            if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
+            bigIdeaAnimationInterval = null;
+            return;
+        }
+
+        if (isActive) {
+            if (!bigIdeaAnimationInterval) { // Start animation if not already running
+                // Ensure one is visible and the other is hidden initially
+                stringMode1.style.display = 'block';
+                stringMode2.style.display = 'none';
+                bigIdeaAnimationInterval = setInterval(() => {
+                    if (stringMode1.style.display !== 'none') {
+                        stringMode1.style.display = 'none';
+                        stringMode2.style.display = 'block';
+                    } else {
+                        stringMode1.style.display = 'block';
+                        stringMode2.style.display = 'none';
+                    }
+                }, 2000); // Toggle every 2 seconds
+            }
+        } else {
+            if (bigIdeaAnimationInterval) {
+                clearInterval(bigIdeaAnimationInterval);
+                bigIdeaAnimationInterval = null;
+                // Optionally reset to a default state
+                // stringMode1.style.display = 'block';
+                // stringMode2.style.display = 'none';
+            }
+        }
+    }
+
 
     function updateSectionDisplay() {
         if (sections.length === 0) { return; }
@@ -269,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         sections.forEach((section, index) => {
+            // Manage p5 Lab
             if (section.id === 'interactive-lab' && p5LabInstance) {
                 if (index === currentSectionIndex) {
                     if (typeof p5LabInstance.isLooping === 'function' && !p5LabInstance.isLooping()) p5LabInstance.loop();
@@ -279,6 +280,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         else p5LabInstance.noLoop();
                     }
                 }
+            }
+            // Manage Big Idea SVG Animation
+            if (section.id === 'big-idea') {
+                manageBigIdeaAnimation(index === currentSectionIndex);
+            } else if (index !== currentSectionIndex && section.id === 'big-idea' && bigIdeaAnimationInterval) {
+                // Ensure animation stops if another section becomes active and this was the big-idea section
+                manageBigIdeaAnimation(false);
             }
         });
 
@@ -312,28 +320,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initializeGlossaryInteraction() {
-        console.log("DEBUG: Initializing glossary interaction...");
         const glossaryTerms = document.querySelectorAll('.glossary-list dt');
-        console.log(`DEBUG: Found ${glossaryTerms.length} glossary terms (dt).`);
         glossaryTerms.forEach(term => {
             const ddId = term.getAttribute('aria-controls');
             const definition = ddId ? document.getElementById(ddId) : null;
 
-            if (!definition) { 
-                console.warn("DEBUG: Glossary: No definition found for term with aria-controls:", ddId, "Term text:", term.textContent);
-                return; 
-            }
-            // console.log("DEBUG: Glossary: Setting up term:", term.textContent, "and definition:", definition.id);
-
-            term.setAttribute('aria-expanded', 'false'); // Set initial state
-            definition.setAttribute('aria-hidden', 'true'); // Set initial state
+            if (!definition) { return; }
+            if (!term.hasAttribute('aria-expanded')) term.setAttribute('aria-expanded', 'false');
+            if (!definition.hasAttribute('aria-hidden')) definition.setAttribute('aria-hidden', 'true');
 
             term.addEventListener('click', () => {
-                // console.log("DEBUG: Glossary term clicked:", term.textContent);
                 const isExpanded = definition.classList.toggle('expanded');
                 term.setAttribute('aria-expanded', isExpanded.toString());
                 definition.setAttribute('aria-hidden', (!isExpanded).toString());
-                // console.log("DEBUG: Glossary definition for", term.textContent, "is now", isExpanded ? "expanded" : "collapsed");
             });
             term.addEventListener('keydown', (e) => { 
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -345,13 +344,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function initializeP5Lab() {
-        // console.log("DEBUG: Attempting to initialize p5 Lab...");
         if (typeof stringLabSketch === 'function' && document.getElementById('interactive-lab')) {
-            // console.log("DEBUG: stringLabSketch function found and interactive-lab element exists.");
             try {
                 p5LabInstance = new p5(stringLabSketch); 
-                // console.log("DEBUG: p5 instance created.");
-
                 const modeSlider = document.getElementById('mode-slider');
                 const amplitudeSlider = document.getElementById('amplitude-slider');
                 const frequencySlider = document.getElementById('frequency-slider');
@@ -382,25 +377,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         updateP5SketchFromControls(); 
                     });
                 }
-                // console.log("DEBUG: p5 Lab controls initialized.");
             } catch (e) {
                 console.error("DEBUG: Error initializing p5 sketch instance:", e);
-            }
-        } else {
-            if (typeof stringLabSketch !== 'function') {
-                console.error("CRITICAL DEBUG: stringLabSketch is not defined. Ensure p5_sketch.js is loaded BEFORE script.js and defines this function in the global scope.");
-            }
-            if(!document.getElementById('interactive-lab')){
-                console.warn("DEBUG: Interactive lab section ('interactive-lab') not found in HTML.");
             }
         }
     }
 
     async function initializeApp() {
-        console.log("DEBUG: Starting application initialization (initializeApp)...");
         applySavedDarkMode(); 
         
-        console.log("DEBUG: Loading SVGs...");
         const svgPlaceholdersMap = {
             'intro-svg': 'svg/intro-visual.svg',
             'problem-svg': 'svg/problem-visual-v2.svg', 
@@ -430,11 +415,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("DEBUG: Error during Promise.all for SVG loading:", e);
         }
         
-        // Ensure updateSvgColors is defined before it's called by switchLanguage
-        if (typeof updateSvgColors !== 'function') {
-            console.error("CRITICAL DEBUG: updateSvgColors is not defined before first call in switchLanguage during init!");
-            // Fallback or error handling
-        }
         await switchLanguage(currentLang); 
         
         updateSectionDisplay(); 
