@@ -244,8 +244,8 @@ main#interactive-content {
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
-#interactive-content > .content-section:last-of-type.active { /* Only remove border if it's the last AND active */
-    border-bottom: none;
+#interactive-content > .content-section:last-of-type {
+    /* border-bottom: none; /* Rely on nav's top border */
 }
 
 
@@ -375,24 +375,24 @@ body.dark-mode .svg-dynamic-fill { fill: var(--primary-accent-dark); }
 
 /* Timeline Styles */
 .timeline-container { position: relative; margin-top: 25px; padding: 15px 0; }
-.timeline-container::before { content: ''; position: absolute; left: 18px; top: 0; bottom: 0; width: 2px; background-color: var(--timeline-line-color-light); border-radius: 1px; }
+.timeline-container::before { content: ''; position: absolute; left: 20px; /* Adjusted for date positioning */ top: 0; bottom: 0; width: 2px; background-color: var(--timeline-line-color-light); border-radius: 1px; }
 body.dark-mode .timeline-container::before { background-color: var(--timeline-line-color-dark); }
-body[dir="rtl"] .timeline-container::before { left: auto; right: 18px; }
+body[dir="rtl"] .timeline-container::before { left: auto; right: 20px; /* Adjusted for date positioning */ }
 
-.timeline-event { position: relative; margin-left: 45px; margin-bottom: 18px; padding: 12px 15px; background-color: var(--container-bg-light); border-radius: 6px; border: 1px solid var(--border-color-light); cursor: pointer; transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; }
+.timeline-event { position: relative; margin-left: 50px; margin-bottom: 18px; padding: 12px 15px; background-color: var(--container-bg-light); border-radius: 6px; border: 1px solid var(--border-color-light); cursor: pointer; transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; }
 .timeline-event:hover, .timeline-event:focus-visible { transform: translateY(-2px) scale(1.005); box-shadow: 0 3px 12px rgba(0,0,0,0.06); outline: 2px solid var(--focus-ring-color-light); outline-offset: 2px; }
 body.dark-mode .timeline-event { background-color: var(--container-bg-dark); border: 1px solid var(--border-color-dark); }
 body.dark-mode .timeline-event:hover, body.dark-mode .timeline-event:focus-visible { box-shadow: 0 3px 12px rgba(0,0,0,0.12); outline-color: var(--focus-ring-color-dark); }
-body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
+body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 50px; }
 
-.timeline-milestone-dot { position: absolute; left: -28px; top: 18px; width: 14px; height: 14px; background-color: var(--timeline-dot-bg-light); border: 2px solid var(--timeline-dot-border-light); border-radius: 50%; z-index: 1; }
+.timeline-milestone-dot { position: absolute; left: -30px; /* (50px margin - 20px line pos - ~2px half line width) approx */ top: 18px; width: 14px; height: 14px; background-color: var(--timeline-dot-bg-light); border: 2px solid var(--timeline-dot-border-light); border-radius: 50%; z-index: 1; }
 body.dark-mode .timeline-milestone-dot { background-color: var(--timeline-dot-bg-dark); border: 2px solid var(--timeline-dot-border-dark); }
-body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; }
+body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -30px; }
 
 /* LAYOUT_FIX: Timeline Date Positioning for LTR and RTL */
 .timeline-date {
     position: absolute;
-    top: 16px; /* Align with dot vertically */
+    top: 16px; 
     font-size: 0.8rem; 
     font-weight: bold; 
     color: var(--secondary-accent-light); 
@@ -402,15 +402,19 @@ body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; }
     white-space: nowrap; 
     z-index: 2; 
 }
-body:not([dir="rtl"]) .timeline-date { /* LTR: Date text to the right of the line, left edge slightly crossing */
-    left: -26px; /* Dot center is at -28px from event edge. Line is ~1px wide next to it. This puts left edge of date near line */
-    /* transform: translateX(0); Default, no transform needed if positioning by left */
-    text-align: left;
+body:not([dir="rtl"]) .timeline-date { /* LTR: Date text to the right of the line */
+    left: -15px; /* Line is at 20px from container, event margin is 50px. Dot center is at 50-28 = 22px. We want date's left edge to be around 23-25px. */
+    /* If dot is at -30px relative to event, its absolute is 50-30=20px. Line is at 20px.
+       We want date's left edge to be slightly past 20px, e.g., 22px.
+       So, relative to event start (50px), it should be 22-50 = -28px.
+       Let's try left: -26px; transform: translateX(0); text-align: left; */
+    left: -26px; /* This should place the left edge of the date text 26px to the left of the event's content box */
+    /* No transform needed if text-align handles it */
+    text-align: left; 
 }
-body[dir="rtl"] .timeline-date { /* RTL: Date text to the right of the line (visually left), right edge slightly crossing */
+body[dir="rtl"] .timeline-date { /* RTL: Date text to the right of the line (visually left) */
     right: -26px; 
-    /* transform: translateX(0); Default, no transform needed if positioning by right */
-    text-align: right;
+    text-align: right; 
 }
 body.dark-mode .timeline-date { 
     color: var(--secondary-accent-dark); 
@@ -432,7 +436,7 @@ body.dark-mode .timeline-date {
     transition: max-height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 padding-top 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 padding-bottom 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                opacity 0.3s ease-out 0.05s; /* Slightly delay opacity for smoother feel */
+                opacity 0.3s ease-out 0.05s; 
     opacity: 0; 
 }
 .timeline-details.expanded { 
@@ -454,7 +458,7 @@ body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline
     color: var(--secondary-accent-light); 
     background-color: var(--glossary-dt-bg-light); 
     padding: 10px 15px; 
-    padding-right: 35px; /* Space for arrow */
+    padding-right: 40px; /* Increased padding for arrow */
     border-radius: 6px; 
     border: 1px solid var(--border-color-light); 
     cursor: pointer; 
@@ -463,7 +467,7 @@ body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline
 }
 .glossary-list dt::after { 
     content: '▼';
-    font-size: 0.7em;
+    font-size: 0.8em; /* Adjusted size */
     position: absolute;
     right: 15px;
     top: 50%;
@@ -471,18 +475,18 @@ body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline
     transition: transform 0.3s ease-out;
 }
 body[dir="rtl"] .glossary-list dt {
-    padding-right: 15px; /* Reset LTR padding */
-    padding-left: 35px; /* Space for arrow in RTL */
+    padding-right: 15px; 
+    padding-left: 40px; 
 }
 body[dir="rtl"] .glossary-list dt::after {
     right: auto;
     left: 15px;
-    /* content: '◀'; /* Using rotation instead of different char for consistency */
+    /* content: '◀'; /* No, keep ▼ and rotate for consistency */
 }
 .glossary-list dt[aria-expanded="true"]::after {
     transform: translateY(-50%) rotate(-180deg);
 }
-/* No specific RTL rotation needed if using ▼/▲ concept from single char rotation */
+/* No specific RTL rotation needed for arrow if using ▼/▲ concept from single char rotation */
 
 .glossary-list dt:hover, .glossary-list dt:focus-visible { 
     background-color: var(--primary-accent-light);
@@ -502,7 +506,7 @@ body.dark-mode .glossary-list dt:hover, body.dark-mode .glossary-list dt:focus-v
     border-color: var(--primary-accent-dark);
     outline-color: var(--focus-ring-color-dark); 
 }
-.glossary-list dt[aria-expanded="true"] { /* Style for when definition is shown */
+.glossary-list dt[aria-expanded="true"] { 
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
@@ -530,15 +534,15 @@ body.dark-mode .glossary-list dt:hover, body.dark-mode .glossary-list dt:focus-v
     padding-top: 15px;
     padding-bottom: 15px;
     opacity: 1;
-    /* border-top: 1px dashed var(--glossary-dd-border-light); /* Removed, dt has bottom border */
+    border-top: 1px dashed var(--glossary-dd-border-light); 
 }
 body.dark-mode .glossary-list dd { 
     border-color: var(--border-color-dark); 
     background-color: var(--glossary-dd-bg-dark);
 }
-/* body.dark-mode .glossary-list dd.expanded {
+body.dark-mode .glossary-list dd.expanded {
     border-top-color: var(--glossary-dd-border-dark);
-} */
+}
 
 
 #string-animation-placeholder .string-mode1 { animation: vibrate1 2s infinite ease-in-out; }
@@ -671,9 +675,10 @@ body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; }
 body[dir="rtl"] .timeline-date { 
     left: auto; 
     right: -26px; /* Adjusted from -20px */
-    transform: translateX(0); /* No transform needed if positioning by right */
-    text-align: right; /* Ensure text aligns to its natural start in RTL */
+    transform: translateX(0); /* No transform needed if text-align handles it */
+    text-align: right; 
 }
+body[dir="rtl"] .glossary-list dt { padding-right: 15px; padding-left: 40px; }
 body[dir="rtl"] .glossary-list dt::after { right: auto; left: 15px; /* content: '◀'; /* Using rotation for consistency */ }
 /* body[dir="rtl"] .glossary-list dt[aria-expanded="true"]::after { transform: translateY(-50%) rotate(180deg); } */
 body[dir="rtl"] .glossary-list dd { border-left:none; border-right: 2px solid var(--glossary-dd-border-light); } 
