@@ -1,20 +1,21 @@
 // js/script.js
-// Version: v22_advanced_content
+// Version: v23_final_fixes
 
 // Main application namespace
 window.stringTheoryApp = {};
 
-// console.log("DEBUG: script.js: File execution started (v22_advanced_content).");
+console.log("DEBUG: script.js: File execution started (v23_final_fixes).");
 
 document.addEventListener('DOMContentLoaded', () => {
-    // console.log("DEBUG: DOMContentLoaded event fired.");
+    console.log("DEBUG: DOMContentLoaded event fired.");
 
     // --- DOM Element Selection ---
     let sectionsContainer, sections = [], prevBtn, nextBtn, langEnBtn, langFaBtn, mainTitleElement, bodyElement, htmlElement, skipLink;
 
     try {
+        // console.log("DEBUG: Attempting to select DOM elements...");
         sectionsContainer = document.getElementById('interactive-content');
-        sections = Array.from(document.querySelectorAll('.content-section')); // Ensure this captures the new section too
+        sections = Array.from(document.querySelectorAll('.content-section'));
         prevBtn = document.getElementById('prev-btn');
         nextBtn = document.getElementById('next-btn');
         langEnBtn = document.getElementById('lang-en');
@@ -26,10 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!sectionsContainer || sections.length === 0 || !prevBtn || !nextBtn || !langEnBtn || !langFaBtn || !mainTitleElement) {
             let missing = [];
-            // ... (element check as before)
+            if (!sectionsContainer) missing.push("interactive-content");
+            if (sections.length === 0) missing.push(".content-section (any)");
+            if (!prevBtn) missing.push("prev-btn");
+            if (!nextBtn) missing.push("next-btn");
+            if (!langEnBtn) missing.push("lang-en");
+            if (!langFaBtn) missing.push("lang-fa");
+            if (!mainTitleElement) missing.push("main-title");
             console.error(`CRITICAL DEBUG: Essential DOM elements missing: ${missing.join(', ')}. Check HTML IDs and structure.`);
             throw new Error(`Essential DOM elements missing: ${missing.join(', ')}.`);
         }
+        // console.log("DEBUG: DOM elements selected successfully.");
     } catch (e) {
         console.error("CRITICAL DEBUG: Error selecting DOM elements:", e);
         document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details. Error: ${e.message}</p>`;
@@ -46,7 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.stringTheoryApp.getTranslation = (key, fallbackText = '') => {
         const translated = translations[key];
-        if (translated === undefined) { return fallbackText || key; }
+        if (translated === undefined) {
+            return fallbackText || key;
+        }
         return translated;
     };
     
@@ -61,19 +71,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const textElements = svgElement.querySelectorAll('text[data-translation-key]');
         textElements.forEach(textEl => {
             const key = textEl.getAttribute('data-translation-key');
-            if (translations[key] !== undefined) { textEl.textContent = translations[key]; }
+            if (translations[key] !== undefined) {
+                textEl.textContent = translations[key];
+            }
         });
     }
     
     function updateSvgColors() { 
         const isDarkMode = bodyElement.classList.contains('dark-mode');
         document.querySelectorAll('.svg-placeholder-container svg').forEach(svg => {
-            if (svg) { applyDynamicSvgStyles(svg, isDarkMode); }
+            if (svg) { 
+                applyDynamicSvgStyles(svg, isDarkMode);
+            }
         });
     }
 
     async function loadSvg(placeholderElement, filePath) {
-        if (!placeholderElement) { return { status: 'placeholder_not_found', path: filePath }; }
+        if (!placeholderElement) {
+            return { status: 'placeholder_not_found', path: filePath };
+        }
         try {
             const response = await fetch(filePath + `?v=${new Date().getTime()}`);
             if (!response.ok) {
@@ -183,18 +199,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function manageBigIdeaAnimation(isActive) {
-        const svgPlaceholder = document.getElementById('bigidea-svg'); // ID of the SVG placeholder
+        const svgPlaceholder = document.getElementById('bigidea-svg');
         if (!svgPlaceholder) return;
 
-        // Ensure SVG is loaded before trying to access its content
         const checkSVGAndAnimate = () => {
             const stringMode1 = svgPlaceholder.querySelector('.string-mode1');
             const stringMode2 = svgPlaceholder.querySelector('.string-mode2');
 
             if (!stringMode1 || !stringMode2) {
-                // SVG might not be loaded yet, retry shortly if section is still active
                 if (isActive && document.getElementById('big-idea').classList.contains('active')) {
-                    // setTimeout(checkSVGAndAnimate, 100); // Retry if SVG not loaded
+                    // setTimeout(checkSVGAndAnimate, 100); 
                 } else {
                     if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
                     bigIdeaAnimationInterval = null;
@@ -207,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     stringMode1.style.display = 'block';
                     stringMode2.style.display = 'none';
                     bigIdeaAnimationInterval = setInterval(() => {
-                        // Double check if still active, paths might be gone if SVG reloaded
                         const currentStringMode1 = svgPlaceholder.querySelector('.string-mode1');
                         const currentStringMode2 = svgPlaceholder.querySelector('.string-mode2');
                         if(currentStringMode1 && currentStringMode2){
@@ -218,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 currentStringMode1.style.display = 'block';
                                 currentStringMode2.style.display = 'none';
                             }
-                        } else { // SVG content might have been cleared/reloaded
+                        } else { 
                              clearInterval(bigIdeaAnimationInterval);
                              bigIdeaAnimationInterval = null;
                         }
@@ -231,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         };
-        checkSVGAndAnimate(); // Initial check
+        checkSVGAndAnimate(); 
     }
 
 
@@ -323,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!term || !definition) { return; }
             const ddId = definition.id;
             if (ddId) { term.setAttribute('aria-controls', ddId); } 
-            else { console.warn("Glossary: Definition (dd) missing an ID for term:", term.textContent); }
             
             if (!term.hasAttribute('aria-expanded')) term.setAttribute('aria-expanded', 'false');
             if (!definition.hasAttribute('aria-hidden')) definition.setAttribute('aria-hidden', 'true');
@@ -390,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'types-svg': 'svg/types-visual.svg',
             'mtheory-svg': 'svg/mtheory-visual.svg',
             'branes-svg': 'svg/branes-visual.svg',
-            'exotic-svg': 'svg/exotic-spacetime-visual.svg', // Added new SVG placeholder
+            'exotic-svg': 'svg/exotic-spacetime-visual.svg', 
             'landscape-svg': 'svg/landscape-visual.svg',
             'philosophy-svg': 'svg/philosophy-visual-v2.svg', 
             'about-svg': 'svg/about-visual.svg',
