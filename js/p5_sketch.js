@@ -1,7 +1,6 @@
 // js/p5_sketch.js
-// Version: v22_freeze_fix
+// Version: v23_scope_fix
 
-// This function will be called by the main script.js to create the p5 instance.
 const stringLabSketch = (p) => {
     let currentVibrationMode = 1;
     let currentAmplitude = 50;
@@ -25,7 +24,6 @@ const stringLabSketch = (p) => {
     const openStringEndCapRadius = 4;
 
     p.updateP5Controls = (mode, amplitude, freqFactor, isOpen) => {
-        // console.log(`DEBUG p5_sketch: updateP5Controls called - mode: ${mode}, amp: ${amplitude}, freq: ${freqFactor}, isOpen: ${isOpen}`);
         let modeChanged = (currentVibrationMode !== mode);
         let amplitudeChanged = (currentAmplitude !== amplitude);
         let typeChanged = (isStringTypeOpen !== isOpen);
@@ -40,11 +38,9 @@ const stringLabSketch = (p) => {
             tempStringColor = document.body.classList.contains('dark-mode') ? p.color(255, 255, 255, 230) : p.color(0, 0, 0, 230);
         }
         if (!p.isLooping()) {
-            // console.log("DEBUG p5_sketch: Controls updated, calling p.loop()");
             p.loop();
         }
         if (typeChanged) {
-            // console.log("DEBUG p5_sketch: String type changed, resetting pluckPoints.");
             for (let i = 0; i <= numStringSegments; i++) {
                 pluckPoints[i] = { y: 0, vy: 0 };
             }
@@ -52,26 +48,22 @@ const stringLabSketch = (p) => {
     };
 
     p.onSectionActive = () => {
-        // console.log("DEBUG p5_sketch: onSectionActive called.");
         if (p5CanvasContainer) {
             let canvasWidth = p5CanvasContainer.offsetWidth > 20 ? p5CanvasContainer.offsetWidth - 20 : 300;
             canvasWidth = Math.min(canvasWidth, 600);
-            // p.resizeCanvas(canvasWidth, 300); // Resize only if necessary
+            // p.resizeCanvas(canvasWidth, 300); 
         }
         if (!hasPluckedOnce) instructionOpacity = 255;
         if (!p.isLooping()) {
-            // console.log("DEBUG p5_sketch: Section active, calling p.loop()");
             p.loop();
         }
     };
     
     p.onSectionInactive = () => {
-        // console.log("DEBUG p5_sketch: onSectionInactive called, calling p.noLoop()");
         if (p.isLooping()) p.noLoop();
     };
 
     p.setup = () => {
-        // console.log("DEBUG p5_sketch: p.setup() called.");
         p5CanvasContainer = document.getElementById('p5-canvas-container');
         if (!p5CanvasContainer) {
             console.error("CRITICAL p5_sketch: p5 canvas container not found!");
@@ -83,26 +75,25 @@ const stringLabSketch = (p) => {
         let canvasHeight = 300;
         const canvas = p.createCanvas(canvasWidth, canvasHeight);
         canvas.parent('p5-canvas-container');
-        p.pixelDensity(p.displayDensity());
+        p.pixelDensity(p.displayDensity()); 
 
         for (let i = 0; i <= numStringSegments; i++) pluckPoints[i] = { y: 0, vy: 0 };
 
         const initiatePluck = (mouseX, mouseY) => {
             if (mouseY > p.height * 0.1 && mouseY < p.height * 0.9) {
                 const pluckPosNormalized = p.constrain(mouseX / p.width, 0.01, 0.99);
-                const pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 2.2, currentAmplitude * 2.2);
+                const pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 2.2, currentAmplitude * 2.2); 
                 for (let i = 0; i <= numStringSegments; i++) {
-                    const xNorm = i / numStringSegments;
-                    const dist = p.abs(xNorm - pluckPosNormalized);
-                    const influenceWidth = isStringTypeOpen ? 0.08 : 0.12;
-                    const influence = p.exp(-dist * dist / (2 * influenceWidth * influenceWidth));
-                    pluckPoints[i].y += pluckStrengthVal * influence;
-                    pluckPoints[i].vy = 0;
+                    const xNorm = i / numStringSegments; const dist = p.abs(xNorm - pluckPosNormalized);
+                    const influenceWidth = isStringTypeOpen ? 0.08 : 0.12; 
+                    const influence = p.exp(-dist * dist / (2 * influenceWidth * influenceWidth) ); 
+                    pluckPoints[i].y += pluckStrengthVal * influence; 
+                    pluckPoints[i].vy = 0; 
                 }
                 p5CanvasContainer.classList.add('grabbing');
-                flashDuration = Math.floor(flashMaxDuration / 1.5);
-                tempStringColor = document.body.classList.contains('dark-mode') ? p.color(200, 220, 255, 210) : p.color(100, 50, 0, 210);
-                if (!hasPluckedOnce) hasPluckedOnce = true;
+                flashDuration = Math.floor(flashMaxDuration / 1.5); 
+                tempStringColor = document.body.classList.contains('dark-mode') ? p.color(200, 220, 255, 210) : p.color(100, 50, 0, 210); 
+                if(!hasPluckedOnce) hasPluckedOnce = true;
                 if (!p.isLooping()) p.loop();
             }
         };
@@ -111,12 +102,11 @@ const stringLabSketch = (p) => {
         canvas.touchStarted(() => { if (p.touches.length > 0) { initiatePluck(p.touches[0].x, p.touches[0].y); return false; } });
         canvas.touchEnded(() => { p5CanvasContainer.classList.remove('grabbing'); return false; });
         
-        // Initial values are set by main script calling updateP5Controls after p5 instance creation
-        p.noLoop(); // Start paused
+        p.noLoop(); 
     };
 
     p.draw = () => {
-        try { // Added try...catch for debugging draw loop errors
+        try { 
             p.clear();
             const isDarkMode = document.body.classList.contains('dark-mode');
             const rootStyles = getComputedStyle(document.documentElement);
@@ -125,7 +115,7 @@ const stringLabSketch = (p) => {
             if (flashDuration > 0) {
                 const flashProgress = 1 - (flashDuration / flashMaxDuration);
                 const baseColorHex = isDarkMode ? rootStyles.getPropertyValue('--primary-accent-dark').trim() : rootStyles.getPropertyValue('--primary-accent-light').trim();
-                const baseColor = p.color(baseColorHex); // Ensure p.color() is used
+                const baseColor = p.color(baseColorHex); 
                 finalStringColor = p.lerpColor(tempStringColor || baseColor, baseColor, flashProgress);
                 flashDuration--;
             } else {
@@ -138,7 +128,7 @@ const stringLabSketch = (p) => {
 
             // Update pluck wave physics
             let newPluckPoints = pluckPoints.map(pt => ({ y: pt.y, vy: pt.vy }));
-            for (let iter = 0; iter < 3; iter++) {
+            for (let iter = 0; iter < 3; iter++) { 
                 for (let i = 1; i < numStringSegments; i++) {
                     let prevY = pluckPoints[i - 1].y;
                     let currentY = pluckPoints[i].y;
@@ -146,7 +136,7 @@ const stringLabSketch = (p) => {
                     let acceleration = (prevY + nextY - 2 * currentY) * pluckWaveSpeed * pluckWaveSpeed;
                     newPluckPoints[i].vy += acceleration;
                 }
-                for (let i = 0; i <= numStringSegments; i++) { // Apply damping and update y for all points
+                for (let i = 0; i <= numStringSegments; i++) { 
                     newPluckPoints[i].vy *= pluckDecay;
                     newPluckPoints[i].y += newPluckPoints[i].vy;
                 }
@@ -154,12 +144,9 @@ const stringLabSketch = (p) => {
                     newPluckPoints[0].y = 0; newPluckPoints[0].vy = 0;
                     newPluckPoints[numStringSegments].y = 0; newPluckPoints[numStringSegments].vy = 0;
                 } else {
-                    // Ensure continuity for closed loop pluck wave
                     let accFirst = (pluckPoints[numStringSegments - 1].y + pluckPoints[1].y - 2 * pluckPoints[0].y) * pluckWaveSpeed * pluckWaveSpeed;
                     newPluckPoints[0].vy += accFirst;
-                    // newPluckPoints[0].vy *= pluckDecay; // Damping already applied above
-                    // newPluckPoints[0].y += newPluckPoints[0].vy; // Position update already applied above
-                    newPluckPoints[numStringSegments].y = newPluckPoints[0].y; // Enforce loop
+                    newPluckPoints[numStringSegments].y = newPluckPoints[0].y; 
                     newPluckPoints[numStringSegments].vy = newPluckPoints[0].vy;
                 }
                 pluckPoints = newPluckPoints.map(pt => ({ ...pt }));
@@ -177,18 +164,18 @@ const stringLabSketch = (p) => {
             let endX = isStringTypeOpen ? p.width * 0.95 : p.width;
             let effectiveWidth = endX - startX;
 
+            // SCOPE FIX: Define effectiveAmplitude for modal part here, before the loop
+            let modalEffectiveAmplitude = currentAmplitude;
+            if (currentVibrationMode > 2) modalEffectiveAmplitude *= (1 - (currentVibrationMode - 2) * 0.15);
+            modalEffectiveAmplitude = Math.max(5, modalEffectiveAmplitude);
+
             for (let i = 0; i <= numStringSegments; i++) {
                 let x_norm_segment = i / numStringSegments;
                 let x_abs = startX + x_norm_segment * effectiveWidth;
                 let yOffset_mode = 0;
-                let effectiveAmplitude = currentAmplitude;
-                if (currentVibrationMode > 2) effectiveAmplitude *= (1 - (currentVibrationMode - 2) * 0.15);
-                effectiveAmplitude = Math.max(5, effectiveAmplitude);
-                let boundaryFactor = 1.0;
-                if (isStringTypeOpen) {
-                    boundaryFactor = p.sin(x_norm_segment * p.PI); 
-                }
-                yOffset_mode = (effectiveAmplitude * boundaryFactor) * p.sin(phase + currentVibrationMode * p.PI * x_norm_segment);
+                
+                let boundaryFactor = isStringTypeOpen ? p.sin(x_norm_segment * p.PI) : 1.0;
+                yOffset_mode = (modalEffectiveAmplitude * boundaryFactor) * p.sin(phase + currentVibrationMode * p.PI * x_norm_segment);
                 let yOffset_pluck = pluckPoints[i].y;
                 p.vertex(x_abs, p.height / 2 + yOffset_mode + yOffset_pluck);
             }
@@ -197,10 +184,13 @@ const stringLabSketch = (p) => {
             if (isStringTypeOpen) {
                 p.noStroke();
                 p.fill(openEndCapColor);
-                // For open strings, modal displacement at ends (i=0, i=numStringSegments) is 0 due to boundaryFactor.
-                // So y positions are determined by pluckPoints only at the ends.
-                let firstPointY = p.height / 2 + pluckPoints[0].y; 
-                let lastPointY = p.height / 2 + pluckPoints[numStringSegments].y;
+                // SCOPE FIX: Use modalEffectiveAmplitude which is defined in the correct scope
+                // The modal displacement at the ends (x_norm_segment = 0 or 1) for an open string with sin(x*PI) boundary factor is 0.
+                let firstPointModeY = 0; // (modalEffectiveAmplitude * p.sin(0 * p.PI) * p.sin(phase + currentVibrationMode * p.PI * 0));
+                let lastPointModeY = 0;  // (modalEffectiveAmplitude * p.sin(1 * p.PI) * p.sin(phase + currentVibrationMode * p.PI * 1));
+                
+                let firstPointY = p.height / 2 + pluckPoints[0].y + firstPointModeY; 
+                let lastPointY = p.height / 2 + pluckPoints[numStringSegments].y + lastPointModeY;
                 
                 p.ellipse(startX, firstPointY, openStringEndCapRadius * 2, openStringEndCapRadius * 2);
                 p.ellipse(endX, lastPointY, openStringEndCapRadius * 2, openStringEndCapRadius * 2);
@@ -225,22 +215,9 @@ const stringLabSketch = (p) => {
                 p.text(instructionText, p.width / 2, p.height - 20);
             }
 
-            // Auto-stop logic (optional, can be too aggressive)
-            // let canStopLoop = true;
-            // for(let pt of pluckPoints) {
-            //     if (p.abs(pt.y) > 0.01 || p.abs(pt.vy) > 0.01) {
-            //         canStopLoop = false;
-            //         break;
-            //     }
-            // }
-            // if (flashDuration <= 0 && canStopLoop && !document.querySelector('#string-controls-lab input[type="range"]:active')) {
-            //     if(p.isLooping()) p.noLoop();
-            // }
-
         } catch (err) {
             console.error("Error in p5.js draw loop:", err);
-            p.noLoop(); // Stop the loop to prevent further errors
-            // Optionally, display an error message on the canvas itself
+            p.noLoop(); 
             p.fill(255,0,0);
             p.textAlign(p.CENTER, p.CENTER);
             p.textSize(16);
