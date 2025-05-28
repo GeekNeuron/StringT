@@ -149,6 +149,26 @@
   "furtherReadingPlaceholder1": "Placeholder for another resource...",
   "furtherReadingPlaceholder2": "Placeholder for another resource...",
   "furtherReadingVisualText": "Read More",
+
+// ... (previous keys) ...
+  "exoticHeading": "String Theory & The Fabric of Reality",
+  "exoticP1": "Beyond describing particles and forces, string theory offers a new lens through which to view spacetime itself. Its framework might allow for exotic spacetime geometries and phenomena that are hard to reconcile with classical physics alone.",
+  "exoticSub1Title": "Singularities & Quantum Gravity",
+  "exoticSub1P1": "String theory, by positing that fundamental entities are not points but extended strings, naturally 'smears out' interactions at very small distances. This offers a potential way to resolve the singularities predicted by General Relativity at the center of black holes or at the Big Bang, where spacetime curvature becomes infinite. (Expand on how string interactions are 'softer'...)",
+  "exoticSub2Title": "Extra Dimensions & Spacetime Topology",
+  "exoticSub2P1": "The existence of extra, compactified dimensions in string theory opens up possibilities for complex spacetime topologies. The shape and size of these extra dimensions (Calabi-Yau manifolds, for example) could influence the physics we observe. While concepts like traversable wormholes are highly speculative and not direct predictions, the richer geometric framework of string theory could potentially accommodate such structures if specific conditions are met. (Discuss topology change, non-trivial geometries...)",
+  "exoticSub3Title": "The Holographic Principle",
+  "exoticSub3P1": "A profound idea emerging from string theory research (notably through the AdS/CFT correspondence) is the holographic principle. It suggests that the description of a volume of space can be thought of as encoded on a lower-dimensional boundary to that region—much like a three-dimensional image on a two-dimensional hologram. This implies that our universe might be a projection from a surface with fewer dimensions. (Expand on information content, black hole entropy connection...)",
+  "exoticDeeperStudyTitle": "For Deeper Study:",
+  "exoticDeeperStudyP1": "Explore the AdS/CFT correspondence in more detail, concepts of spacetime foam, and research on black hole microstates in string theory. (Add specific references or explanations here...)",
+  "exoticVisualHolography": "Holography?",
+  "exoticVisualTitle": "Fabric of Reality",
+
+  "glossaryTermAdSCFT": "AdS/CFT Correspondence",
+  "glossaryDefAdSCFT": "(Placeholder: A conjectured relationship between two kinds of physical theories: Anti-de Sitter spaces (AdS) used in theories of quantum gravity, and Conformal Field Theories (CFT) which are quantum field theories that are scale-invariant.)",
+  "glossaryTermHolographic": "Holographic Principle",
+  "glossaryDefHolographic": "(Placeholder: A principle in quantum gravity, suggesting that the description of a volume of space can be thought of as encoded on a lower-dimensional boundary to that region, like a hologram.)"
+  // ... (rest of your JSON) ...
   
   "footerText": "Created by GeekNeuron."
 }
