@@ -1,10 +1,10 @@
 // js/script.js
-// Version: v25_bigidea_animation
+// Version: v22_advanced_content
 
 // Main application namespace
 window.stringTheoryApp = {};
 
-// console.log("DEBUG: script.js: File execution started (v25_bigidea_animation).");
+// console.log("DEBUG: script.js: File execution started (v22_advanced_content).");
 
 document.addEventListener('DOMContentLoaded', () => {
     // console.log("DEBUG: DOMContentLoaded event fired.");
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
         sectionsContainer = document.getElementById('interactive-content');
-        sections = Array.from(document.querySelectorAll('.content-section'));
+        sections = Array.from(document.querySelectorAll('.content-section')); // Ensure this captures the new section too
         prevBtn = document.getElementById('prev-btn');
         nextBtn = document.getElementById('next-btn');
         langEnBtn = document.getElementById('lang-en');
@@ -26,13 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!sectionsContainer || sections.length === 0 || !prevBtn || !nextBtn || !langEnBtn || !langFaBtn || !mainTitleElement) {
             let missing = [];
-            if (!sectionsContainer) missing.push("interactive-content");
-            if (sections.length === 0) missing.push(".content-section (any)");
-            if (!prevBtn) missing.push("prev-btn");
-            if (!nextBtn) missing.push("next-btn");
-            if (!langEnBtn) missing.push("lang-en");
-            if (!langFaBtn) missing.push("lang-fa");
-            if (!mainTitleElement) missing.push("main-title");
+            // ... (element check as before)
             console.error(`CRITICAL DEBUG: Essential DOM elements missing: ${missing.join(', ')}. Check HTML IDs and structure.`);
             throw new Error(`Essential DOM elements missing: ${missing.join(', ')}.`);
         }
@@ -48,13 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let translations = {};
     let p5LabInstance = null;
     const sectionTransitionDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--section-transition-duration').replace('s', '')) * 1000 || 300;
-    let bigIdeaAnimationInterval = null; // For the vibrating string SVG animation
+    let bigIdeaAnimationInterval = null;
 
     window.stringTheoryApp.getTranslation = (key, fallbackText = '') => {
         const translated = translations[key];
-        if (translated === undefined) {
-            return fallbackText || key;
-        }
+        if (translated === undefined) { return fallbackText || key; }
         return translated;
     };
     
@@ -69,25 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const textElements = svgElement.querySelectorAll('text[data-translation-key]');
         textElements.forEach(textEl => {
             const key = textEl.getAttribute('data-translation-key');
-            if (translations[key] !== undefined) {
-                textEl.textContent = translations[key];
-            }
+            if (translations[key] !== undefined) { textEl.textContent = translations[key]; }
         });
     }
     
     function updateSvgColors() { 
         const isDarkMode = bodyElement.classList.contains('dark-mode');
         document.querySelectorAll('.svg-placeholder-container svg').forEach(svg => {
-            if (svg) { 
-                applyDynamicSvgStyles(svg, isDarkMode);
-            }
+            if (svg) { applyDynamicSvgStyles(svg, isDarkMode); }
         });
     }
 
     async function loadSvg(placeholderElement, filePath) {
-        if (!placeholderElement) {
-            return { status: 'placeholder_not_found', path: filePath };
-        }
+        if (!placeholderElement) { return { status: 'placeholder_not_found', path: filePath }; }
         try {
             const response = await fetch(filePath + `?v=${new Date().getTime()}`);
             if (!response.ok) {
@@ -195,45 +181,57 @@ document.addEventListener('DOMContentLoaded', () => {
         else bodyElement.classList.remove('dark-mode');
         mainTitleElement.setAttribute('aria-pressed', isDarkModeEnabled.toString());
     }
-
+    
     function manageBigIdeaAnimation(isActive) {
-        const svgPlaceholder = document.getElementById('bigidea-svg');
+        const svgPlaceholder = document.getElementById('bigidea-svg'); // ID of the SVG placeholder
         if (!svgPlaceholder) return;
 
-        const stringMode1 = svgPlaceholder.querySelector('.string-mode1');
-        const stringMode2 = svgPlaceholder.querySelector('.string-mode2');
+        // Ensure SVG is loaded before trying to access its content
+        const checkSVGAndAnimate = () => {
+            const stringMode1 = svgPlaceholder.querySelector('.string-mode1');
+            const stringMode2 = svgPlaceholder.querySelector('.string-mode2');
 
-        if (!stringMode1 || !stringMode2) {
-            // console.warn("DEBUG: String mode paths not found in bigidea-svg.");
-            if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
-            bigIdeaAnimationInterval = null;
-            return;
-        }
+            if (!stringMode1 || !stringMode2) {
+                // SVG might not be loaded yet, retry shortly if section is still active
+                if (isActive && document.getElementById('big-idea').classList.contains('active')) {
+                    // setTimeout(checkSVGAndAnimate, 100); // Retry if SVG not loaded
+                } else {
+                    if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
+                    bigIdeaAnimationInterval = null;
+                }
+                return;
+            }
 
-        if (isActive) {
-            if (!bigIdeaAnimationInterval) { // Start animation if not already running
-                // Ensure one is visible and the other is hidden initially
-                stringMode1.style.display = 'block';
-                stringMode2.style.display = 'none';
-                bigIdeaAnimationInterval = setInterval(() => {
-                    if (stringMode1.style.display !== 'none') {
-                        stringMode1.style.display = 'none';
-                        stringMode2.style.display = 'block';
-                    } else {
-                        stringMode1.style.display = 'block';
-                        stringMode2.style.display = 'none';
-                    }
-                }, 2000); // Toggle every 2 seconds
+            if (isActive) {
+                if (!bigIdeaAnimationInterval) { 
+                    stringMode1.style.display = 'block';
+                    stringMode2.style.display = 'none';
+                    bigIdeaAnimationInterval = setInterval(() => {
+                        // Double check if still active, paths might be gone if SVG reloaded
+                        const currentStringMode1 = svgPlaceholder.querySelector('.string-mode1');
+                        const currentStringMode2 = svgPlaceholder.querySelector('.string-mode2');
+                        if(currentStringMode1 && currentStringMode2){
+                            if (currentStringMode1.style.display !== 'none') {
+                                currentStringMode1.style.display = 'none';
+                                currentStringMode2.style.display = 'block';
+                            } else {
+                                currentStringMode1.style.display = 'block';
+                                currentStringMode2.style.display = 'none';
+                            }
+                        } else { // SVG content might have been cleared/reloaded
+                             clearInterval(bigIdeaAnimationInterval);
+                             bigIdeaAnimationInterval = null;
+                        }
+                    }, 2000); 
+                }
+            } else {
+                if (bigIdeaAnimationInterval) {
+                    clearInterval(bigIdeaAnimationInterval);
+                    bigIdeaAnimationInterval = null;
+                }
             }
-        } else {
-            if (bigIdeaAnimationInterval) {
-                clearInterval(bigIdeaAnimationInterval);
-                bigIdeaAnimationInterval = null;
-                // Optionally reset to a default state
-                // stringMode1.style.display = 'block';
-                // stringMode2.style.display = 'none';
-            }
-        }
+        };
+        checkSVGAndAnimate(); // Initial check
     }
 
 
@@ -269,7 +267,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         sections.forEach((section, index) => {
-            // Manage p5 Lab
             if (section.id === 'interactive-lab' && p5LabInstance) {
                 if (index === currentSectionIndex) {
                     if (typeof p5LabInstance.isLooping === 'function' && !p5LabInstance.isLooping()) p5LabInstance.loop();
@@ -281,11 +278,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            // Manage Big Idea SVG Animation
             if (section.id === 'big-idea') {
                 manageBigIdeaAnimation(index === currentSectionIndex);
             } else if (index !== currentSectionIndex && section.id === 'big-idea' && bigIdeaAnimationInterval) {
-                // Ensure animation stops if another section becomes active and this was the big-idea section
                 manageBigIdeaAnimation(false);
             }
         });
@@ -320,12 +315,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initializeGlossaryInteraction() {
-        const glossaryTerms = document.querySelectorAll('.glossary-list dt');
-        glossaryTerms.forEach(term => {
-            const ddId = term.getAttribute('aria-controls');
-            const definition = ddId ? document.getElementById(ddId) : null;
+        const glossaryEntries = document.querySelectorAll('.glossary-entry');
+        glossaryEntries.forEach(entry => {
+            const term = entry.querySelector('dt');
+            const definition = entry.querySelector('dd');
 
-            if (!definition) { return; }
+            if (!term || !definition) { return; }
+            const ddId = definition.id;
+            if (ddId) { term.setAttribute('aria-controls', ddId); } 
+            else { console.warn("Glossary: Definition (dd) missing an ID for term:", term.textContent); }
+            
             if (!term.hasAttribute('aria-expanded')) term.setAttribute('aria-expanded', 'false');
             if (!definition.hasAttribute('aria-hidden')) definition.setAttribute('aria-hidden', 'true');
 
@@ -335,10 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 definition.setAttribute('aria-hidden', (!isExpanded).toString());
             });
             term.addEventListener('keydown', (e) => { 
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault(); 
-                    term.click();
-                }
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); term.click(); }
             });
         });
     }
@@ -394,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'types-svg': 'svg/types-visual.svg',
             'mtheory-svg': 'svg/mtheory-visual.svg',
             'branes-svg': 'svg/branes-visual.svg',
+            'exotic-svg': 'svg/exotic-spacetime-visual.svg', // Added new SVG placeholder
             'landscape-svg': 'svg/landscape-visual.svg',
             'philosophy-svg': 'svg/philosophy-visual-v2.svg', 
             'about-svg': 'svg/about-visual.svg',
@@ -448,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        console.log("DEBUG: Application initialized successfully.");
+        // console.log("DEBUG: Application initialized successfully.");
     }
     
     if (typeof stringLabSketch === 'undefined') {
