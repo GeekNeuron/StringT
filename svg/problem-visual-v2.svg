@@ -1,43 +1,49 @@
 <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <linearGradient id="grGradientV2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="var(--secondary-accent-light)" stop-opacity="0.8"/>
-            <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0.4"/>
+        <linearGradient id="grGradientLightV2fix" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="var(--secondary-accent-light, #0056b3)" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="var(--primary-accent-light, #007bff)" stop-opacity="0.4"/>
         </linearGradient>
-        <linearGradient id="grGradientDarkV2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="var(--secondary-accent-dark)" stop-opacity="0.8"/>
-            <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0.4"/>
+        <linearGradient id="grGradientDarkV2fix" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="var(--secondary-accent-dark, #007acc)" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="var(--primary-accent-dark, #00a1ff)" stop-opacity="0.4"/>
         </linearGradient>
-        <radialGradient id="qmGradientLightV2" cx="50%" cy="50%" r="70%" fx="30%" fy="30%">
-            <stop offset="0%" stop-color="var(--primary-accent-light)" stop-opacity="0.9"/>
-            <stop offset="60%" stop-color="var(--primary-accent-light)" stop-opacity="0.2"/>
-            <stop offset="100%" stop-color="var(--primary-accent-light)" stop-opacity="0"/>
+        <radialGradient id="qmGradientLightV2fix" cx="50%" cy="50%" r="70%" fx="30%" fy="30%">
+            <stop offset="0%" stop-color="var(--primary-accent-light, #007bff)" stop-opacity="0.9"/>
+            <stop offset="60%" stop-color="var(--primary-accent-light, #007bff)" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="var(--primary-accent-light, #007bff)" stop-opacity="0"/>
         </radialGradient>
-         <radialGradient id="qmGradientDarkV2" cx="50%" cy="50%" r="70%" fx="30%" fy="30%">
-            <stop offset="0%" stop-color="var(--primary-accent-dark)" stop-opacity="0.9"/>
-            <stop offset="60%" stop-color="var(--primary-accent-dark)" stop-opacity="0.2"/>
-            <stop offset="100%" stop-color="var(--primary-accent-dark)" stop-opacity="0"/>
+         <radialGradient id="qmGradientDarkV2fix" cx="50%" cy="50%" r="70%" fx="30%" fy="30%">
+            <stop offset="0%" stop-color="var(--primary-accent-dark, #00a1ff)" stop-opacity="0.9"/>
+            <stop offset="60%" stop-color="var(--primary-accent-dark, #00a1ff)" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="var(--primary-accent-dark, #00a1ff)" stop-opacity="0"/>
         </radialGradient>
-        <filter id="grBlurV2"> <feGaussianBlur stdDeviation="1.5"/> </filter>
-        <filter id="qmParticleBlurV2"> <feGaussianBlur stdDeviation="0.7"/> </filter>
-        <clipPath id="leftClip"><rect x="0" y="0" width="138" height="150"/></clipPath>
-        <clipPath id="rightClip"><rect x="142" y="0" width="138" height="150"/></clipPath>
+        <filter id="grBlurV2fix"> <feGaussianBlur stdDeviation="1.5"/> </filter>
+        <filter id="qmParticleBlurV2fix"> <feGaussianBlur stdDeviation="0.7"/> </filter>
+        <clipPath id="leftClipV2fix"><rect x="0" y="0" width="138" height="150"/></clipPath>
+        <clipPath id="rightClipV2fix"><rect x="142" y="0" width="138" height="150"/></clipPath>
     </defs>
 
-    <g clip-path="url(#leftClip)">
-        <rect x="0" y="0" width="140" height="150" class="svg-dynamic-fill" data-light-fill="url(#grGradientLightV2)" data-dark-fill="url(#grGradientDarkV2)" />
-        <circle cx="70" cy="75" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#grBlurV2)"/>
+    <g clip-path="url(#leftClipV2fix)">
+        <rect x="0" y="0" width="140" height="150" 
+              fill="#e0e0e0" /* Fallback fill, JS should override this */
+              data-light-fill="url(#grGradientLightV2fix)" 
+              data-dark-fill="url(#grGradientDarkV2fix)" />
+        <circle cx="70" cy="75" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#grBlurV2fix)"/>
         <circle cx="70" cy="75" r="20" class="svg-dynamic-fill" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" opacity="0.6"/>
         <path d="M20,75 Q70,45 120,75" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" fill="none"/>
         <path d="M20,75 Q70,105 120,75" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" fill="none"/>
         <text x="70" y="130" class="svg-text svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="10px" data-translation-key="problemGR">GR (Cosmos)</text>
     </g>
 
-    <g clip-path="url(#rightClip)" transform="translate(140, 0)">
-        <rect x="0" y="0" width="140" height="150" class="svg-dynamic-fill" data-light-fill="url(#qmGradientLightV2)" data-dark-fill="url(#qmGradientDarkV2)" />
-        <circle cx="30" cy="40" r="4" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV2)"/>
-        <circle cx="100" cy="60" r="5" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV2)"/>
-        <circle cx="60" cy="100" r="3" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV2)"/>
+    <g clip-path="url(#rightClipV2fix)" transform="translate(140, 0)">
+        <rect x="0" y="0" width="140" height="150" 
+              fill="#e0e0e0" /* Fallback fill, JS should override this */
+              data-light-fill="url(#qmGradientLightV2fix)" 
+              data-dark-fill="url(#qmGradientDarkV2fix)" />
+        <circle cx="30" cy="40" r="4" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV2fix)"/>
+        <circle cx="100" cy="60" r="5" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV2fix)"/>
+        <circle cx="60" cy="100" r="3" class="svg-dynamic-fill" data-light-fill="var(--primary-accent-light)" data-dark-fill="var(--primary-accent-dark)" filter="url(#qmParticleBlurV2fix)"/>
         <path d="M20 20 Q70 90 120 30" stroke="var(--svg-stroke-light)" stroke-width="0.7" fill="none" opacity="0.7" class="svg-dynamic-stroke"/>
         <path d="M30 110 Q70 30 110 100" stroke="var(--svg-stroke-light)" stroke-width="0.7" fill="none" opacity="0.7" class="svg-dynamic-stroke"/>
         <text x="70" y="130" class="svg-text svg-dynamic-text" data-light-fill="var(--text-color-light)" data-dark-fill="var(--text-color-dark)" font-size="10px" data-translation-key="problemQM">QM (Particles)</text>
