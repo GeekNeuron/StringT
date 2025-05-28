@@ -239,14 +239,13 @@ main#interactive-content {
     position: absolute; 
     top: 0;
     left: 0;
-    /* JS will set display:none after transition */
 }
 
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
-#interactive-content > .content-section:last-of-type {
-    /* border-bottom: none; /* Rely on nav's top border */
+#interactive-content > .content-section:last-of-type.active { /* Only remove border if it's the last AND active */
+    border-bottom: none;
 }
 
 
@@ -379,39 +378,45 @@ body.dark-mode .svg-dynamic-fill { fill: var(--primary-accent-dark); }
 .timeline-container::before { content: ''; position: absolute; left: 18px; top: 0; bottom: 0; width: 2px; background-color: var(--timeline-line-color-light); border-radius: 1px; }
 body.dark-mode .timeline-container::before { background-color: var(--timeline-line-color-dark); }
 body[dir="rtl"] .timeline-container::before { left: auto; right: 18px; }
+
 .timeline-event { position: relative; margin-left: 45px; margin-bottom: 18px; padding: 12px 15px; background-color: var(--container-bg-light); border-radius: 6px; border: 1px solid var(--border-color-light); cursor: pointer; transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; }
 .timeline-event:hover, .timeline-event:focus-visible { transform: translateY(-2px) scale(1.005); box-shadow: 0 3px 12px rgba(0,0,0,0.06); outline: 2px solid var(--focus-ring-color-light); outline-offset: 2px; }
 body.dark-mode .timeline-event { background-color: var(--container-bg-dark); border: 1px solid var(--border-color-dark); }
 body.dark-mode .timeline-event:hover, body.dark-mode .timeline-event:focus-visible { box-shadow: 0 3px 12px rgba(0,0,0,0.12); outline-color: var(--focus-ring-color-dark); }
 body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
+
 .timeline-milestone-dot { position: absolute; left: -28px; top: 18px; width: 14px; height: 14px; background-color: var(--timeline-dot-bg-light); border: 2px solid var(--timeline-dot-border-light); border-radius: 50%; z-index: 1; }
 body.dark-mode .timeline-milestone-dot { background-color: var(--timeline-dot-bg-dark); border: 2px solid var(--timeline-dot-border-dark); }
 body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; }
 
-/* LAYOUT_FIX: Timeline Date Positioning (Desktop) */
+/* LAYOUT_FIX: Timeline Date Positioning for LTR and RTL */
 .timeline-date {
     position: absolute;
-    left: -20px; /* Adjusted from -25px to bring it 5px more "inside" */
-    transform: translateX(-100%); /* Aligns right edge of date text to the 'left' value */
-    top: -8px; 
+    top: 16px; /* Align with dot vertically */
     font-size: 0.8rem; 
     font-weight: bold; 
     color: var(--secondary-accent-light); 
     background-color: var(--bg-color-light); 
-    padding: 2px 5px; 
+    padding: 2px 6px; 
     border-radius: 4px; 
     white-space: nowrap; 
     z-index: 2; 
+}
+body:not([dir="rtl"]) .timeline-date { /* LTR: Date text to the right of the line, left edge slightly crossing */
+    left: -26px; /* Dot center is at -28px from event edge. Line is ~1px wide next to it. This puts left edge of date near line */
+    /* transform: translateX(0); Default, no transform needed if positioning by left */
+    text-align: left;
+}
+body[dir="rtl"] .timeline-date { /* RTL: Date text to the right of the line (visually left), right edge slightly crossing */
+    right: -26px; 
+    /* transform: translateX(0); Default, no transform needed if positioning by right */
+    text-align: right;
 }
 body.dark-mode .timeline-date { 
     color: var(--secondary-accent-dark); 
     background-color: var(--bg-color-dark); 
 }
-body[dir="rtl"] .timeline-date { 
-    left: auto; 
-    right: -20px; /* Adjusted for RTL */
-    transform: translateX(100%); /* Aligns left edge of date text to the 'right' value */
-}
+
 
 .timeline-content h3 { margin-top: 0; font-size: 1.15rem; margin-bottom: 6px; }
 .timeline-content p { font-size: 0.9rem; margin-bottom: 6px; }
@@ -424,10 +429,10 @@ body[dir="rtl"] .timeline-date {
     border-radius: 4px; 
     font-size: 0.85rem; 
     border-left: 2px solid var(--timeline-dot-border-light); 
-    transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                padding-top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                padding-bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                opacity 0.3s ease-out 0.1s; 
+    transition: max-height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                padding-top 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                padding-bottom 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                opacity 0.3s ease-out 0.05s; /* Slightly delay opacity for smoother feel */
     opacity: 0; 
 }
 .timeline-details.expanded { 
@@ -449,9 +454,9 @@ body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline
     color: var(--secondary-accent-light); 
     background-color: var(--glossary-dt-bg-light); 
     padding: 10px 15px; 
-    border-radius: 6px; /* Rounded all corners for clickable feel */
+    padding-right: 35px; /* Space for arrow */
+    border-radius: 6px; 
     border: 1px solid var(--border-color-light); 
-    /* border-bottom: none; /* Removed, will be handled by expanded state */
     cursor: pointer; 
     position: relative; 
     transition: background-color 0.2s ease;
@@ -465,21 +470,19 @@ body[dir="rtl"].dark-mode .timeline-details { border-right-color: var(--timeline
     transform: translateY(-50%) rotate(0deg);
     transition: transform 0.3s ease-out;
 }
+body[dir="rtl"] .glossary-list dt {
+    padding-right: 15px; /* Reset LTR padding */
+    padding-left: 35px; /* Space for arrow in RTL */
+}
 body[dir="rtl"] .glossary-list dt::after {
     right: auto;
     left: 15px;
-    content: '◀'; 
+    /* content: '◀'; /* Using rotation instead of different char for consistency */
 }
 .glossary-list dt[aria-expanded="true"]::after {
     transform: translateY(-50%) rotate(-180deg);
 }
-body[dir="rtl"] .glossary-list dt[aria-expanded="true"]::after {
-    transform: translateY(-50%) rotate(180deg); 
-}
-.glossary-list dt[aria-expanded="true"] {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
+/* No specific RTL rotation needed if using ▼/▲ concept from single char rotation */
 
 .glossary-list dt:hover, .glossary-list dt:focus-visible { 
     background-color: var(--primary-accent-light);
@@ -499,6 +502,11 @@ body.dark-mode .glossary-list dt:hover, body.dark-mode .glossary-list dt:focus-v
     border-color: var(--primary-accent-dark);
     outline-color: var(--focus-ring-color-dark); 
 }
+.glossary-list dt[aria-expanded="true"] { /* Style for when definition is shown */
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 .glossary-list dd { 
     margin-left: 0; 
     padding: 0 15px; 
@@ -515,22 +523,22 @@ body.dark-mode .glossary-list dt:hover, body.dark-mode .glossary-list dt:focus-v
     transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 padding-top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
                 padding-bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                opacity 0.3s ease-out 0.1s;
+                opacity 0.3s ease-out 0.05s;
 }
 .glossary-list dd.expanded {
     max-height: 500px; 
     padding-top: 15px;
     padding-bottom: 15px;
     opacity: 1;
-    border-top: 1px dashed var(--glossary-dd-border-light); 
+    /* border-top: 1px dashed var(--glossary-dd-border-light); /* Removed, dt has bottom border */
 }
 body.dark-mode .glossary-list dd { 
     border-color: var(--border-color-dark); 
     background-color: var(--glossary-dd-bg-dark);
 }
-body.dark-mode .glossary-list dd.expanded {
+/* body.dark-mode .glossary-list dd.expanded {
     border-top-color: var(--glossary-dd-border-dark);
-}
+} */
 
 
 #string-animation-placeholder .string-mode1 { animation: vibrate1 2s infinite ease-in-out; }
@@ -662,11 +670,12 @@ body[dir="rtl"] .timeline-event { margin-left: 0; margin-right: 45px; }
 body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -28px; } 
 body[dir="rtl"] .timeline-date { 
     left: auto; 
-    right: -20px; /* Adjusted from -25px */
-    transform: translateX(100%); 
+    right: -26px; /* Adjusted from -20px */
+    transform: translateX(0); /* No transform needed if positioning by right */
+    text-align: right; /* Ensure text aligns to its natural start in RTL */
 }
-body[dir="rtl"] .glossary-list dt::after { right: auto; left: 15px; content: '◀'; }
-body[dir="rtl"] .glossary-list dt[aria-expanded="true"]::after { transform: translateY(-50%) rotate(180deg); }
+body[dir="rtl"] .glossary-list dt::after { right: auto; left: 15px; /* content: '◀'; /* Using rotation for consistency */ }
+/* body[dir="rtl"] .glossary-list dt[aria-expanded="true"]::after { transform: translateY(-50%) rotate(180deg); } */
 body[dir="rtl"] .glossary-list dd { border-left:none; border-right: 2px solid var(--glossary-dd-border-light); } 
 body[dir="rtl"].dark-mode .glossary-list dd { border-right-color: var(--glossary-dd-border-dark); }
 
@@ -694,7 +703,7 @@ body[dir="rtl"].dark-mode .glossary-list dd { border-right-color: var(--glossary
     .timeline-milestone-dot { left: -22px; width: 12px; height: 12px; border-width: 2px;} 
     body[dir="rtl"] .timeline-milestone-dot { left: auto; right: -22px; }
     .timeline-date { 
-        left: -20px; /* Consistent with desktop adjustment if needed, or specific for tablet */
+        left: -20px; 
         transform: translateX(-100%); 
         font-size: 0.75rem; 
         top: -20px; 
