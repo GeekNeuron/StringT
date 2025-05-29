@@ -1,3 +1,4 @@
+/* --- Global Styles & Resets --- */
 :root {
     /* Light Mode Colors */
     --bg-color-light: #f4f7f9;
@@ -213,6 +214,7 @@ body.dark-mode .dark-mode-hint {
 main#interactive-content { 
     position: relative; 
     width: 100%; 
+    /* min-height: auto; /* Let content dictate */
 }
 
 .content-section { 
@@ -221,7 +223,7 @@ main#interactive-content {
     transform: translateY(15px); 
     transition: opacity var(--section-transition-duration) ease-in-out, 
                 transform var(--section-transition-duration) ease-in-out;
-    padding-bottom: 15px; 
+    padding-bottom: 20px; /* Consistent padding */
     border-bottom: 1px solid var(--border-color-light); 
     display: none; 
 }
@@ -238,13 +240,15 @@ main#interactive-content {
     position: absolute; 
     top: 0;
     left: 0;
+    width: 100%;
 }
 
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
-#interactive-content > .content-section:last-of-type.active {
-    border-bottom: none;
+/* Remove border from the last section in the HTML that is also active */
+#interactive-content > .content-section.active:last-of-type {
+    border-bottom: none; 
 }
 
 
@@ -281,7 +285,7 @@ body.dark-mode .content-section h3 {
     font-size: 1rem; 
     text-align: justify; 
 }
-.content-section p:last-child {
+.content-section > *:last-child { /* Ensure last element in section has no bottom margin if it's a p or div */
     margin-bottom: 0; 
 }
 
@@ -453,11 +457,11 @@ body[dir="rtl"] .timeline-milestone-dot {
     z-index: 2; 
 }
 body:not([dir="rtl"]) .timeline-date { 
-    left: 25px; 
+    left: 25px; /* Date text to the right of the line */
     text-align: left; 
 }
 body[dir="rtl"] .timeline-date { 
-    right: 25px; 
+    right: 25px; /* Date text to the right of the line (visually left in RTL) */
     text-align: right; 
 }
 body.dark-mode .timeline-date { 
