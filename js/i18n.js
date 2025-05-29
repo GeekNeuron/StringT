@@ -7,33 +7,22 @@ window.stringTheoryApp = window.stringTheoryApp || {};
 window.stringTheoryApp.i18n = (function() {
     'use strict';
 
-    // This will be populated by fetchTranslations
     let currentTranslations = {}; 
-    // currentLang will be managed by the main script and passed or set here
-    // For now, we assume it's accessible or passed to functions that need it.
 
-    /**
-     * Fetches the translation file for the given language.
-     * @param {string} lang - The language code (e.g., 'en', 'fa').
-     * @returns {Promise<Object>} A promise that resolves to the translation object.
-     */
     async function fetchTranslations(lang) {
-        // console.log(`DEBUG i18n: Fetching translations for: ${lang} from lang/${lang}.json`);
         try {
-            const response = await fetch(`lang/${lang}.json?v=${new Date().getTime()}`); // Cache busting
+            const response = await fetch(`lang/${lang}.json?v=${new Date().getTime()}`); 
             if (!response.ok) {
                 console.error(`DEBUG i18n: Could not load ${lang}.json. Status: ${response.status} ${response.statusText}`);
-                // Fallback to English if the current language file fails, but not if English itself fails
                 if (lang !== 'en') {
                     console.warn(`DEBUG i18n: Falling back to English translations.`);
                     return fetchTranslations('en');
                 }
-                currentTranslations = {}; // Clear current translations on critical failure
-                return {}; // Return empty if English also fails
+                currentTranslations = {}; 
+                return {}; 
             }
             const data = await response.json();
-            // console.log(`DEBUG i18n: Successfully fetched and parsed translations for ${lang}.`);
-            currentTranslations = data; // Store the loaded translations
+            currentTranslations = data; 
             return data;
         } catch (error) {
             console.error(`DEBUG i18n: Error fetching or parsing translations for ${lang}:`, error);
@@ -41,28 +30,22 @@ window.stringTheoryApp.i18n = (function() {
                 console.warn(`DEBUG i18n: Falling back to English translations due to error.`);
                 return fetchTranslations('en');
             }
-            currentTranslations = {}; // Clear current translations on critical failure
+            currentTranslations = {}; 
             return {};
         }
     }
 
-    /**
-     * Applies the loaded translations to the page elements.
-     */
     function applyTranslationsToPage() {
         if (!currentTranslations || Object.keys(currentTranslations).length === 0) {
             console.warn("DEBUG i18n: Translations not loaded or empty. Page text might not update correctly.");
             return;
         }
-        // console.log("DEBUG i18n: Applying translations to page...");
 
-        // Translate document title
         const docTitleKey = "docTitle";
         if (currentTranslations[docTitleKey] !== undefined) {
             document.title = currentTranslations[docTitleKey];
         }
 
-        // Translate all elements with data-translation-key
         const elements = document.querySelectorAll('[data-translation-key]');
         elements.forEach(el => {
             const key = el.getAttribute('data-translation-key');
@@ -72,53 +55,69 @@ window.stringTheoryApp.i18n = (function() {
                 } else {
                     el.textContent = currentTranslations[key];
                 }
-            } else {
-                // console.warn(`DEBUG i18n: Translation key not found in JSON: ${key} for element:`, el);
             }
         });
 
-        // Translate SVG text elements (assuming SVGs are already loaded and in DOM)
         document.querySelectorAll('.svg-placeholder-container svg').forEach(svgElement => {
-            const textElements = svgElement.querySelectorAll('text[data-translation-key]');
-            textElements.forEach(textEl => {
-                const key = textEl.getAttribute('data-translation-key');
-                if (currentTranslations[key] !== undefined) {
-                    textEl.textContent = currentTranslations[key];
-                }
-            });
+            if (window.stringTheoryApp.svgLoader && typeof window.stringTheoryApp.svgLoader.applySvgTextTranslations === 'function') {
+                 window.stringTheoryApp.svgLoader.applySvgTextTranslations(svgElement, currentTranslations);
+            }
         });
         
-        // Update p5 sketch instruction text if it's visible and p5 instance exists
-        // This relies on p5LabInstance being accessible, perhaps via window.stringTheoryApp
         if (window.stringTheoryApp.p5LabInstance && 
             typeof window.stringTheoryApp.p5LabInstance.redraw === 'function' && 
             window.stringTheoryApp.p5LabInstance.isLooping()) {
-             window.stringTheoryApp.p5LabInstance.redraw(); // Redraw to update text
+             window.stringTheoryApp.p5LabInstance.redraw(); 
         }
-        // console.log("DEBUG i18n: Translations applied.");
+    }
+    
+    async function switchLanguage(lang, langButtons, htmlElement, bodyElement) {
+        window.stringTheoryApp.currentLang = lang; // Update global currentLang
+        localStorage.setItem('preferredLang', lang);
+        currentTranslations = await fetchTranslations(lang); // Update module's currentTranslations
+
+        htmlElement.lang = lang;
+        htmlElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+        bodyElement.style.fontFamily = lang === 'fa' ? "'Vazirmatn', 'Roboto', sans-serif" : "'Roboto', 'Vazirmatn', sans-serif";
+        
+        if (langButtons.en && langButtons.fa) {
+            langButtons.en.classList.toggle('active-lang', lang === 'en');
+            langButtons.fa.classList.toggle('active-lang', lang === 'fa');
+            langButtons.en.setAttribute('aria-pressed', (lang === 'en').toString());
+            langButtons.fa.setAttribute('aria-pressed', (lang === 'fa').toString());
+        }
+        
+        applyTranslationsToPage(); 
+        
+        if (window.stringTheoryApp.svgLoader && typeof window.stringTheoryApp.svgLoader.updateAllSvgColors === 'function') { 
+            window.stringTheoryApp.svgLoader.updateAllSvgColors(); 
+        }
+        
+        const stringTypeToggleBtn = document.getElementById('string-type-toggle');
+        if (stringTypeToggleBtn) {
+            const isOpen = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true';
+            const openKey = stringTypeToggleBtn.getAttribute('data-translation-key-open') || "labToggleOpenActive";
+            const closedKey = stringTypeToggleBtn.getAttribute('data-translation-key-closed') || "labToggleOpenDefault";
+            stringTypeToggleBtn.textContent = isOpen ? (currentTranslations[openKey] || (lang === 'fa' ? "تغییر به حلقه بسته" : "Switch to Closed Loop")) 
+                                                  : (currentTranslations[closedKey] || (lang === 'fa' ? "تغییر به ریسمان باز" : "Switch to Open String"));
+        }
     }
 
-    /**
-     * Gets a specific translation string.
-     * @param {string} key - The translation key.
-     * @param {string} [fallbackText=''] - Text to return if key is not found.
-     * @returns {string} The translated string or fallback.
-     */
+
     function getTranslation(key, fallbackText = '') {
         const translated = currentTranslations[key];
         if (translated === undefined) {
-            // console.warn(`DEBUG i18n: Translation key '${key}' not found, using fallback.`);
-            return fallbackText || key; // Return key itself if no fallback
+            return fallbackText || key; 
         }
         return translated;
     }
     
     // Expose public functions
     return {
-        fetchTranslations,
-        applyTranslationsToPage,
+        // fetchTranslations, // Not needed to be public if switchLanguage handles it
+        // applyTranslationsToPage, // Called by switchLanguage
+        switchLanguage,
         getTranslation,
-        // Getter for current translations if needed by other modules directly
         getCurrentTranslations: () => currentTranslations 
     };
 
