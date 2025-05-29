@@ -11,20 +11,21 @@ const stringLabSketch = (p) => {
 
     let stringColor, glowColor, openEndCapColor;
     let flashDuration = 0;
-    const flashMaxDuration = 15; // Shorter flash
+    const flashMaxDuration = 15; 
     let tempStringColor = null;
 
     let pluckPoints = [];
     const numStringSegments = 100;
-    let pluckDecay = 0.96; // Slightly stronger damping
-    let pluckWaveSpeed = 0.25; // Slightly reduced speed
+    let pluckDecay = 0.96; 
+    let pluckWaveSpeed = 0.25; 
     let p5CanvasContainer;
     let instructionOpacity = 255;
     let hasPluckedOnce = false;
     const openStringEndCapRadius = 4;
-    const maxPluckDisplacement = 150; // Max displacement to prevent going too far
+    const maxPluckDisplacement = 150; 
 
     p.updateP5Controls = (mode, amplitude, freqFactor, isOpen) => {
+        // console.log(`DEBUG p5_sketch: updateP5Controls called - mode: ${mode}, amp: ${amplitude}, freq: ${freqFactor}, isOpen: ${isOpen}`);
         let modeChanged = (currentVibrationMode !== mode);
         let amplitudeChanged = (currentAmplitude !== amplitude);
         let typeChanged = (isStringTypeOpen !== isOpen);
@@ -36,35 +37,41 @@ const stringLabSketch = (p) => {
 
         if (modeChanged || amplitudeChanged || typeChanged) {
             flashDuration = flashMaxDuration;
-            tempStringColor = document.body.classList.contains('dark-mode') ? p.color(255, 255, 255, 200) : p.color(50, 50, 50, 200); // Darker flash for light mode
+            tempStringColor = document.body.classList.contains('dark-mode') ? p.color(255, 255, 255, 200) : p.color(50, 50, 50, 200); 
         }
         if (!p.isLooping()) {
+            // console.log("DEBUG p5_sketch: Controls updated, calling p.loop()");
             p.loop();
         }
         if (typeChanged) {
+            // console.log("DEBUG p5_sketch: String type changed, resetting pluckPoints.");
             for (let i = 0; i <= numStringSegments; i++) {
-                pluckPoints[i] = { y: 0, vy: 0 }; // Reset pluck on type change
+                pluckPoints[i] = { y: 0, vy: 0 }; 
             }
         }
     };
 
     p.onSectionActive = () => {
+        // console.log("DEBUG p5_sketch: onSectionActive called.");
         if (p5CanvasContainer) {
             let canvasWidth = p5CanvasContainer.offsetWidth > 20 ? p5CanvasContainer.offsetWidth - 20 : 300;
             canvasWidth = Math.min(canvasWidth, 600);
-            // p.resizeCanvas(canvasWidth, 300); 
+            // p.resizeCanvas(canvasWidth, 300); // Resize only if necessary
         }
         if (!hasPluckedOnce) instructionOpacity = 255;
         if (!p.isLooping()) {
+            // console.log("DEBUG p5_sketch: Section active, calling p.loop()");
             p.loop();
         }
     };
     
     p.onSectionInactive = () => {
+        // console.log("DEBUG p5_sketch: onSectionInactive called, calling p.noLoop()");
         if (p.isLooping()) p.noLoop();
     };
 
     p.setup = () => {
+        // console.log("DEBUG p5_sketch: p.setup() called.");
         p5CanvasContainer = document.getElementById('p5-canvas-container');
         if (!p5CanvasContainer) {
             console.error("CRITICAL p5_sketch: p5 canvas container not found!");
@@ -83,17 +90,15 @@ const stringLabSketch = (p) => {
         const initiatePluck = (mouseX, mouseY) => {
             if (mouseY > p.height * 0.1 && mouseY < p.height * 0.9) {
                 const pluckPosNormalized = p.constrain(mouseX / p.width, 0.01, 0.99);
-                // FIX: Set displacement instead of adding, to prevent accumulation from rapid clicks
                 let pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 1.5, currentAmplitude * 1.5); 
                 
                 for (let i = 0; i <= numStringSegments; i++) {
                     const xNorm = i / numStringSegments; 
                     const dist = p.abs(xNorm - pluckPosNormalized);
-                    const influenceWidth = isStringTypeOpen ? 0.08 : 0.1; // Slightly wider for closed
+                    const influenceWidth = isStringTypeOpen ? 0.08 : 0.1; 
                     const influence = p.exp(-dist * dist / (2 * influenceWidth * influenceWidth) ); 
-                    // Set y directly, don't add. This is a major change for stability.
                     pluckPoints[i].y = pluckStrengthVal * influence; 
-                    pluckPoints[i].vy = 0; // Reset velocity on new pluck
+                    pluckPoints[i].vy = 0; 
                 }
                 p5CanvasContainer.classList.add('grabbing');
                 flashDuration = Math.floor(flashMaxDuration / 1.2); 
@@ -107,6 +112,8 @@ const stringLabSketch = (p) => {
         canvas.touchStarted(() => { if (p.touches.length > 0) { initiatePluck(p.touches[0].x, p.touches[0].y); return false; } });
         canvas.touchEnded(() => { p5CanvasContainer.classList.remove('grabbing'); return false; });
         
+        // Initial values are set by main script calling updateP5Controls after p5 instance creation
+        // console.log("DEBUG p5_sketch: p.setup() finished, calling p.noLoop() initially.");
         p.noLoop(); 
     };
 
@@ -129,47 +136,42 @@ const stringLabSketch = (p) => {
             glowColor = p.color(isDarkMode ? hexToRgba(rootStyles.getPropertyValue('--primary-accent-dark').trim(), 0.3) : hexToRgba(rootStyles.getPropertyValue('--primary-accent-light').trim(), 0.3));
             openEndCapColor = p.color(isDarkMode ? hexToRgba(rootStyles.getPropertyValue('--secondary-accent-dark').trim(), 0.8) : hexToRgba(rootStyles.getPropertyValue('--secondary-accent-light').trim(), 0.8));
             
-            let currentStrokeWeight = 3 + (flashDuration > 0 ? 2.0 * (flashDuration / flashMaxDuration) : 0) ; // Slightly less flash stroke
+            let currentStrokeWeight = 3 + (flashDuration > 0 ? 2.0 * (flashDuration / flashMaxDuration) : 0) ;
 
             // Update pluck wave physics
             let newPluckPoints = pluckPoints.map(pt => ({ y: pt.y, vy: pt.vy }));
-            for (let iter = 0; iter < 2; iter++) { // Fewer iterations might be more stable
-                // Calculate accelerations first for all points based on current displacements
+            for (let iter = 0; iter < 2; iter++) { 
                 let accelerations = new Array(numStringSegments + 1).fill(0);
-                for (let i = 0; i <= numStringSegments; i++) { // Iterate all points for acceleration
+                for (let i = 0; i <= numStringSegments; i++) { 
                     let prevY, currentY, nextY;
                     currentY = pluckPoints[i].y;
                     if (isStringTypeOpen) {
-                        prevY = (i === 0) ? 0 : pluckPoints[i - 1].y; // Fixed end
-                        nextY = (i === numStringSegments) ? 0 : pluckPoints[i + 1].y; // Fixed end
-                    } else { // Closed loop
-                        prevY = pluckPoints[(i - 1 + numStringSegments + 1) % (numStringSegments + 1)].y; // Wrap around (point before 0 is N)
-                        nextY = pluckPoints[(i + 1) % (numStringSegments + 1)].y; // Wrap around (point after N is 0, effectively)
-                                                                                // For closed loop, point 0 and N are the same.
-                                                                                // So for point 0, prev is N-1. For point N-1, next is 0.
-                        if (i === 0) prevY = pluckPoints[numStringSegments -1].y; // Point before 0 is N-1
-                        if (i === numStringSegments) { // Point N is same as 0
+                        prevY = (i === 0) ? 0 : pluckPoints[i - 1].y; 
+                        nextY = (i === numStringSegments) ? 0 : pluckPoints[i + 1].y; 
+                    } else { 
+                        prevY = pluckPoints[(i - 1 + numStringSegments + 1) % (numStringSegments + 1)].y; 
+                        nextY = pluckPoints[(i + 1) % (numStringSegments + 1)].y; 
+                        if (i === 0) prevY = pluckPoints[numStringSegments -1].y; 
+                        if (i === numStringSegments) { 
                             prevY = pluckPoints[numStringSegments - 1].y;
-                            nextY = pluckPoints[1].y; // Which is same as point 0's right neighbor
-                            currentY = pluckPoints[0].y; // Ensure consistency
+                            nextY = pluckPoints[1].y; 
+                            currentY = pluckPoints[0].y; 
                         }
                     }
                     accelerations[i] = (prevY + nextY - 2 * currentY) * pluckWaveSpeed * pluckWaveSpeed;
                 }
 
-                // Update velocities and positions
                 for (let i = 0; i <= numStringSegments; i++) {
                     newPluckPoints[i].vy += accelerations[i];
                     newPluckPoints[i].vy *= pluckDecay;
                     newPluckPoints[i].y += newPluckPoints[i].vy;
-                    // Clamp displacement
                     newPluckPoints[i].y = p.constrain(newPluckPoints[i].y, -maxPluckDisplacement, maxPluckDisplacement);
                 }
 
                 if (isStringTypeOpen) {
                     newPluckPoints[0].y = 0; newPluckPoints[0].vy = 0;
                     newPluckPoints[numStringSegments].y = 0; newPluckPoints[numStringSegments].vy = 0;
-                } else { // Ensure closed loop continuity after updates
+                } else { 
                     newPluckPoints[numStringSegments].y = newPluckPoints[0].y;
                     newPluckPoints[numStringSegments].vy = newPluckPoints[0].vy;
                 }
@@ -195,22 +197,16 @@ const stringLabSketch = (p) => {
                 let modalEffectiveAmplitude = currentAmplitude;
                 if (currentVibrationMode > 2) modalEffectiveAmplitude *= (1 - (currentVibrationMode - 2) * 0.15);
                 modalEffectiveAmplitude = Math.max(5, modalEffectiveAmplitude);
-                let boundaryFactor = 1.0;
-                if (isStringTypeOpen) {
-                    boundaryFactor = p.sin(x_norm_segment * p.PI); 
-                }
+                let boundaryFactor = isStringTypeOpen ? p.sin(x_norm_segment * p.PI) : 1.0;
                 yOffset_mode = (modalEffectiveAmplitude * boundaryFactor) * p.sin(phase + currentVibrationMode * p.PI * x_norm_segment);
                 let yOffset_pluck = pluckPoints[i].y;
                 p.vertex(x_abs, p.height / 2 + yOffset_mode + yOffset_pluck);
             }
-            // For closed string, p5 automatically connects last point to first if p.CLOSE is used.
-            // If not using p.CLOSE, we'd need to draw the last segment to the first point.
-            p.endShape(isStringTypeOpen ? undefined : p.CLOSE); 
+            p.endShape(isStringTypeOpen ? undefined : p.CLOSE);
 
             if (isStringTypeOpen) {
                 p.noStroke();
                 p.fill(openEndCapColor);
-                // Ends of an open string (mode displacement is 0 due to boundaryFactor)
                 let firstPointY = p.height / 2 + pluckPoints[0].y; 
                 let lastPointY = p.height / 2 + pluckPoints[numStringSegments].y;
                 
@@ -228,7 +224,7 @@ const stringLabSketch = (p) => {
                 p.textSize(12);
                 const instructionTextKey = "labPluckInstruction";
                 const mainScript = window.stringTheoryApp;
-                let instructionText = instructionTextKey; // Fallback
+                let instructionText = instructionTextKey; 
                 if (mainScript && mainScript.getTranslation) {
                     instructionText = mainScript.getTranslation(instructionTextKey, "Click & Drag to 'Pluck'");
                 } else {
