@@ -1,3 +1,4 @@
+
 // js/ui_interactions.js
 // Module for UI related interactions like timeline, glossary, etc.
 
@@ -7,11 +8,11 @@ window.stringTheoryApp = window.stringTheoryApp || {};
 window.stringTheoryApp.uiInteractions = (function() {
     'use strict';
 
-    // Dependencies: Needs access to translations for skip link, etc.
-    // Assumes window.stringTheoryApp.i18n.getTranslation() is available.
-
-    const sectionTransitionDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--section-transition-duration').replace('s', '')) * 1000 || 300;
+    // This variable will be managed by the main script (main.js)
+    // and passed to manageBigIdeaAnimation if needed, or the function
+    // can directly query the DOM. For simplicity, let's assume direct DOM query for now.
     let bigIdeaAnimationInterval = null;
+    const sectionTransitionDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--section-transition-duration').replace('s', '')) * 1000 || 300;
 
 
     /**
@@ -61,13 +62,13 @@ window.stringTheoryApp.uiInteractions = (function() {
 
             if (!term || !definition) {
                 console.warn("DEBUG ui_interactions: Glossary entry missing dt or dd:", entry);
-                return;
+                return; 
             }
             const ddId = definition.id;
-            if (ddId) {
+            if (ddId) { // Ensure dd has an ID to be controlled
                 term.setAttribute('aria-controls', ddId);
             } else {
-                console.warn("DEBUG ui_interactions: Glossary definition (dd) missing an ID for term:", term.textContent);
+                console.warn("DEBUG ui_interactions: Glossary definition (dd) missing an ID for term:", term.textContent.trim());
             }
             
             // Set initial ARIA states
@@ -80,9 +81,9 @@ window.stringTheoryApp.uiInteractions = (function() {
                 term.setAttribute('aria-expanded', isExpanded.toString());
                 definition.setAttribute('aria-hidden', (!isExpanded).toString());
             });
-            term.addEventListener('keydown', (e) => {
+            term.addEventListener('keydown', (e) => { 
                 if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
+                    e.preventDefault(); 
                     term.click();
                 }
             });
@@ -93,11 +94,13 @@ window.stringTheoryApp.uiInteractions = (function() {
     /**
      * Manages the animation of the "Big Idea" SVG.
      * @param {boolean} isActive - Whether the "Big Idea" section is currently active.
-     * @param {HTMLElement} svgPlaceholder - The placeholder div where the SVG is loaded.
      */
-    function manageBigIdeaAnimation(isActive, svgPlaceholder) {
+    function manageBigIdeaAnimation(isActive) {
+        const svgPlaceholder = document.getElementById('bigidea-svg'); 
         if (!svgPlaceholder) {
-            // console.warn("DEBUG ui_interactions: Big Idea SVG placeholder not provided for animation.");
+            // console.warn("DEBUG ui_interactions: Big Idea SVG placeholder not found for animation.");
+            if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
+            bigIdeaAnimationInterval = null;
             return;
         }
 
@@ -106,12 +109,11 @@ window.stringTheoryApp.uiInteractions = (function() {
             const stringMode2 = svgPlaceholder.querySelector('.string-mode2');
 
             if (!stringMode1 || !stringMode2) {
-                if (isActive && document.getElementById('big-idea') && document.getElementById('big-idea').classList.contains('active')) {
-                    // setTimeout(checkSVGAndAnimate, 100); // Retry if SVG not loaded
-                } else {
-                    if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
-                    bigIdeaAnimationInterval = null;
-                }
+                // SVG content might not be loaded yet.
+                // If the section is still meant to be active, we could retry,
+                // but for now, just clear any existing interval if paths are gone.
+                if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
+                bigIdeaAnimationInterval = null;
                 return;
             }
 
@@ -120,9 +122,10 @@ window.stringTheoryApp.uiInteractions = (function() {
                     stringMode1.style.display = 'block';
                     stringMode2.style.display = 'none';
                     bigIdeaAnimationInterval = setInterval(() => {
+                        // Check again inside interval in case SVG is removed/reloaded by other means
                         const currentStringMode1 = svgPlaceholder.querySelector('.string-mode1');
                         const currentStringMode2 = svgPlaceholder.querySelector('.string-mode2');
-                        if(currentStringMode1 && currentStringMode2){ // Check again in case SVG was reloaded
+                        if(currentStringMode1 && currentStringMode2){
                             if (currentStringMode1.style.display !== 'none') {
                                 currentStringMode1.style.display = 'none';
                                 currentStringMode2.style.display = 'block';
@@ -140,10 +143,24 @@ window.stringTheoryApp.uiInteractions = (function() {
                 if (bigIdeaAnimationInterval) {
                     clearInterval(bigIdeaAnimationInterval);
                     bigIdeaAnimationInterval = null;
+                    // Reset to a default state when not active
+                    if (stringMode1) stringMode1.style.display = 'block';
+                    if (stringMode2) stringMode2.style.display = 'none';
                 }
             }
         };
-        checkSVGAndAnimate(); 
+        
+        // If the SVG placeholder is already populated, run immediately.
+        // Otherwise, the main script's SVG loading mechanism will eventually populate it.
+        // This function will be called again when the section becomes active.
+        if (svgPlaceholder.querySelector('svg')) {
+            checkSVGAndAnimate();
+        } else {
+            // If SVG not loaded yet, clear any existing interval.
+            // The animation will start when the section becomes active and SVG is loaded.
+            if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
+            bigIdeaAnimationInterval = null;
+        }
     }
     
     /**
@@ -166,8 +183,8 @@ window.stringTheoryApp.uiInteractions = (function() {
                     } else if (activeSection) { 
                         activeSection.setAttribute('tabindex', '-1'); 
                         activeSection.focus();
-                    } else { // Fallback to main content container itself
-                         mainContent.setAttribute('tabindex', '-1'); // Make it focusable
+                    } else { 
+                         mainContent.setAttribute('tabindex', '-1'); 
                          mainContent.focus();
                     }
                 }
