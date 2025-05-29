@@ -28,16 +28,47 @@ The experience covers the following key areas of String Theory at an introductor
 6.  **A Family of Theories**: The five initial Superstring Theories.
 7.  **M-Theory: A Unification**: The search for a unified "theory of everything" in 11 dimensions.
 8.  **Branes and Beyond**: Introducing higher-dimensional objects (p-branes).
-9.  **Interactive String Lab**: Experiment with a virtual string.
-10. **The Landscape & Challenges**: Current status, the "cosmic landscape," and open questions.
-11. **Philosophical Implications**: Broader questions raised by the theory.
-12. **Glossary of Terms**: Definitions of key terminology.
-13. **About This Project**: Information about the project's creation and purpose.
-14. **Further Reading & Resources**: Suggestions for deeper exploration.
+9.  **String Theory & The Fabric of Reality**: Exploring singularities, exotic spacetimes, and the holographic principle.
+10. **Interactive String Lab**: Experiment with a virtual string.
+11. **The Landscape & Challenges**: Current status, the "cosmic landscape," and open questions.
+12. **Philosophical Implications**: Broader questions raised by the theory.
+13. **Glossary of Terms**: Definitions of key terminology.
+14. **About This Project**: Information about the project's creation and purpose.
+15. **Further Reading & Resources**: Suggestions for deeper exploration.
 
 ## Project Structure
 
-StringT/├── lang/│   ├── en.json         # English translations│   └── fa.json         # Persian translations├── svg/│   ├── intro-visual.svg│   ├── problem-visual.svg│   └── ... (other svg files)├── js/│   ├── script.js       # Main application logic, navigation, i18n, SVG loading│   └── p5_sketch.js    # Code for the Interactive String Lab├── style.css           # Main stylesheet├── index.html          # Main HTML structure (lightweight)├── LICENSE.md          # Project License (MIT)└── README.md           # This file
+```
+StringT/
+├── lang/
+│   ├── en.json         # English translations
+│   └── fa.json         # Persian translations
+├── svg/
+│   ├── intro-visual.svg
+│   ├── problem-visual-v2.svg
+│   ├── bigidea-visual.svg
+│   ├── dimensions-visual.svg
+│   ├── types-visual.svg
+│   ├── mtheory-visual.svg
+│   ├── branes-visual.svg
+│   ├── exotic-spacetime-visual.svg
+│   ├── landscape-visual.svg
+│   ├── philosophy-visual-v2.svg
+│   ├── about-visual.svg
+│   ├── conclusion-visual.svg
+│   └── furtherreading-visual.svg
+├── js/
+│   ├── i18n.js                 # Internationalization module
+│   ├── svg_loader.js           # SVG loading module
+│   ├── ui_interactions.js      # UI interactions module (timeline, glossary, etc.)
+│   ├── p5_setup.js             # p5.js sketch and setup
+│   └── main.js                 # Main application script (orchestrator)
+├── style.css           # Main stylesheet
+├── index.html          # Main HTML structure (lightweight)
+├── LICENSE.md          # Project License (MIT)
+└── README.md           # This file
+```
+
 ## How to Use / Navigate
 
 * Open the [live demo link](https://GeekNeuron.github.io/StringT/) (once deployed).
@@ -45,6 +76,7 @@ StringT/├── lang/│   ├── en.json         # English translations│
 * Click the main title ("String Theory") to toggle dark mode.
 * Navigate through the sections using the "Previous" and "Next" buttons.
 * Click on events in the "History" section timeline to expand for more details.
+* Click on terms in the "Glossary" to expand their definitions.
 * Interact with the controls in the "Interactive String Lab" to change the string's behavior.
 
 ## Development
@@ -61,7 +93,7 @@ StringT/├── lang/│   ├── en.json         # English translations│
 
 ### Local Development
 
-* Due to the use of `fetch` API for loading JSON and SVG files, running `index.html` directly from the local file system (`file:///...`) might lead to CORS errors or fail to load these external resources.
+* Due to the use of `fetch` API for loading JSON and SVG files, running `index.html` directly from the local file system (`file:///...`) **will not work correctly**.
 * **Recommended:** Use a simple local HTTP server.
     * If you have Python installed, navigate to the project's root directory in your terminal and run:
         * Python 3: `python -m http.server`
@@ -76,14 +108,14 @@ StringT/├── lang/│   ├── en.json         # English translations│
 * To add or edit translations:
     1.  Identify or add a unique `data-translation-key` to the HTML element in `index.html`.
     2.  Add the corresponding key and translated string to both `en.json` and `fa.json`.
-    3.  The `js/script.js` file handles fetching and applying these translations.
+    3.  The `js/i18n.js` module handles fetching and applying these translations.
 
 ### Managing SVGs
 
 * SVG graphics are stored as individual `.svg` files in the `svg/` folder.
-* In `index.html`, placeholders (e.g., `<div id="intro-svg-placeholder" class="svg-placeholder-container"></div>`) are used.
-* The `js/script.js` file dynamically fetches the content of these SVG files and injects them into their respective placeholders. This keeps `index.html` cleaner and improves initial load time.
-* Ensure SVG filenames match the identifiers used in the loading script (e.g., `svg/intro-visual.svg` for `intro-svg-placeholder`).
+* In `index.html`, placeholders (e.g., `<div id="intro-svg" class="svg-placeholder-container"></div>`) are used.
+* The `js/svg_loader.js` module dynamically fetches the content of these SVG files and injects them into their respective placeholders.
+* Ensure SVG filenames match the identifiers used in the `svgPlaceholdersMap` in `js/main.js`.
 
 ## Technologies Used
 
@@ -104,7 +136,7 @@ Contributions are welcome! Please follow these steps:
 3.  **Make your changes.**
     * **Content/Translations:** Edit the relevant `.json` files in the `lang/` folder or the text content within `index.html` (if it's a structural change).
     * **Styling:** Modify `style.css`.
-    * **Functionality:** Update `js/script.js` or `js/p5_sketch.js`.
+    * **Functionality:** Update files in the `js/` folder.
     * **SVGs:** Add or modify files in the `svg/` folder and ensure they are loaded correctly.
 4.  **Test your changes thoroughly,** especially across different browsers and devices.
 5.  **Commit your changes** (`git commit -am 'Add some feature'`).
