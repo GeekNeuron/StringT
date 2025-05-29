@@ -1,4 +1,3 @@
-/* --- Global Styles & Resets --- */
 :root {
     /* Light Mode Colors */
     --bg-color-light: #f4f7f9;
@@ -214,7 +213,6 @@ body.dark-mode .dark-mode-hint {
 main#interactive-content { 
     position: relative; 
     width: 100%; 
-    /* LAYOUT_FIX: No min-height, height determined by active section */
 }
 
 .content-section { 
@@ -223,34 +221,30 @@ main#interactive-content {
     transform: translateY(15px); 
     transition: opacity var(--section-transition-duration) ease-in-out, 
                 transform var(--section-transition-duration) ease-in-out;
-    padding-bottom: 20px; /* LAYOUT_FIX: Consistent padding at the bottom */
+    padding-bottom: 15px; 
     border-bottom: 1px solid var(--border-color-light); 
-    display: none; /* LAYOUT_FIX: Hidden by default, takes no space */
+    display: none; 
 }
 
 .content-section.active { 
     opacity: 1; 
     transform: translateY(0); 
-    display: block; /* LAYOUT_FIX: Show active section, it will define the height */
+    display: block; 
 }
 
 .content-section.exiting { 
     opacity: 0;
     transform: translateY(-15px);
-    position: absolute; /* Take out of flow only when exiting */
+    position: absolute; 
     top: 0;
     left: 0;
-    width: 100%; /* Ensure it maintains width during exit */
-    /* JS will set display:none after transition */
 }
 
 body.dark-mode .content-section { 
     border-bottom: 1px solid var(--border-color-dark); 
 }
-/* Remove border from the truly last section *visible* in the flow */
-/* This relies on JS adding/removing 'active' and the :last-of-type selector */
-#interactive-content > .content-section.active:last-of-type {
-    border-bottom: none; 
+#interactive-content > .content-section:last-of-type.active {
+    border-bottom: none;
 }
 
 
@@ -287,8 +281,7 @@ body.dark-mode .content-section h3 {
     font-size: 1rem; 
     text-align: justify; 
 }
-/* Ensure last element in a section has a bit more space before the section ends */
-.content-section > *:last-child {
+.content-section p:last-child {
     margin-bottom: 0; 
 }
 
