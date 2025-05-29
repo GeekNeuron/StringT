@@ -1,20 +1,20 @@
-
-// js/script.js (Previously main.js - Main Application Orchestrator)
-// Version: v1_refactor
+// js/main.js
+// Main Application Orchestrator
+// Version: v1_refactor_final
 
 // Ensure the main app namespace exists
 window.stringTheoryApp = window.stringTheoryApp || {};
 
-console.log("DEBUG main: script.js (main orchestrator) execution started.");
+console.log("DEBUG main.js: File execution started.");
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DEBUG main: DOMContentLoaded event fired.");
+    console.log("DEBUG main.js: DOMContentLoaded event fired.");
 
     // --- DOM Element Selection ---
     let sectionsContainer, sections = [], prevBtn, nextBtn, langEnBtn, langFaBtn, mainTitleElement, bodyElement, htmlElement, skipLink;
 
     try {
-        // console.log("DEBUG main: Attempting to select DOM elements...");
+        // console.log("DEBUG main.js: Attempting to select DOM elements...");
         sectionsContainer = document.getElementById('interactive-content');
         sections = Array.from(document.querySelectorAll('.content-section'));
         prevBtn = document.getElementById('prev-btn');
@@ -35,21 +35,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!langEnBtn) missing.push("lang-en");
             if (!langFaBtn) missing.push("lang-fa");
             if (!mainTitleElement) missing.push("main-title");
-            console.error(`CRITICAL DEBUG main: Essential DOM elements missing: ${missing.join(', ')}. Check HTML IDs and structure.`);
+            console.error(`CRITICAL DEBUG main.js: Essential DOM elements missing: ${missing.join(', ')}. Check HTML IDs and structure.`);
             throw new Error(`Essential DOM elements missing: ${missing.join(', ')}.`);
         }
-        // console.log("DEBUG main: DOM elements selected successfully.");
+        // console.log("DEBUG main.js: DOM elements selected successfully.");
     } catch (e) {
-        console.error("CRITICAL DEBUG main: Error selecting DOM elements:", e);
+        console.error("CRITICAL DEBUG main.js: Error selecting DOM elements:", e);
         document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details. Error: ${e.message}</p>`;
         return; 
     }
 
-    // --- State Variables (managed by main.js) ---
+    // --- State Variables (managed by main.js, accessible via namespace) ---
     window.stringTheoryApp.currentSectionIndex = 0;
     window.stringTheoryApp.currentLang = localStorage.getItem('preferredLang') || (navigator.language.startsWith('fa') ? 'fa' : 'en');
-    // translations will be populated by i18n module
-    // p5LabInstance will be populated by p5_setup module
+    // translations will be populated by i18n module and stored in window.stringTheoryApp.i18n.currentTranslations
+    // p5LabInstance will be populated by p5_setup module and stored in window.stringTheoryApp.p5LabInstance
 
     const sectionTransitionDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--section-transition-duration').replace('s', '')) * 1000 || 300;
 
@@ -57,14 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSectionDisplay() {
         if (sections.length === 0) { 
-            // console.warn("DEBUG main: No sections found to display.");
+            console.warn("DEBUG main.js: No sections found to display.");
             return; 
         }
         const currentActiveSection = sectionsContainer.querySelector('.content-section.active');
         const newActiveSection = sections[window.stringTheoryApp.currentSectionIndex];
 
         if (!newActiveSection) {
-            console.error(`DEBUG main: New active section at index ${window.stringTheoryApp.currentSectionIndex} is undefined.`);
+            console.error(`DEBUG main.js: New active section at index ${window.stringTheoryApp.currentSectionIndex} is undefined.`);
             return;
         }
 
@@ -76,10 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.classList.remove('exiting');
                     this.style.display = 'none'; 
                 }
-                // It's safer to remove the listener if it's truly a one-shot for this specific transition.
-                // However, if multiple properties transition, 'once:false' and checking propertyName is better.
-                this.removeEventListener('transitionend', handler); 
-            }, { once: true }); // Changed to once: true, assuming opacity is the last/key transition.
+                this.removeEventListener('transitionend', handler);
+            }, { once: false }); 
         }
         
         sections.forEach(s => { 
@@ -94,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         void newActiveSection.offsetWidth; // Force reflow for transition
         newActiveSection.classList.add('active');
 
-        // Manage p5.js lab and Big Idea animation based on active section
+
         sections.forEach((section, index) => {
             if (section.id === 'interactive-lab' && window.stringTheoryApp.p5LabInstance) {
                 if (index === window.stringTheoryApp.currentSectionIndex) {
@@ -135,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.stringTheoryApp.svgLoader && typeof window.stringTheoryApp.svgLoader.updateAllSvgColors === 'function') {
             window.stringTheoryApp.svgLoader.updateAllSvgColors(); 
         } else {
-            console.error("CRITICAL DEBUG main: svgLoader.updateAllSvgColors function is NOT DEFINED!");
+            console.error("CRITICAL DEBUG main.js: svgLoader.updateAllSvgColors function is NOT DEFINED!");
         }
 
         if (window.stringTheoryApp.p5LabInstance && typeof window.stringTheoryApp.p5LabInstance.redraw === 'function' && window.stringTheoryApp.p5LabInstance.isLooping()) {
@@ -153,25 +151,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     async function initializeApp() {
-        console.log("DEBUG main: Starting application initialization (initializeApp)...");
+        console.log("DEBUG main.js: Starting application initialization (initializeApp)...");
         
-        // Check if all modules are loaded
-        if (typeof window.stringTheoryApp.i18n === 'undefined') {
-            console.error("CRITICAL DEBUG main: i18n.js module not loaded!"); throw new Error("i18n module missing.");
+        // Check if all modules are loaded and their expected functions exist
+        if (!window.stringTheoryApp.i18n || typeof window.stringTheoryApp.i18n.switchLanguage !== 'function') {
+            console.error("CRITICAL DEBUG main.js: i18n.js module or switchLanguage function not loaded!"); throw new Error("i18n module/function missing.");
         }
-        if (typeof window.stringTheoryApp.svgLoader === 'undefined') {
-            console.error("CRITICAL DEBUG main: svg_loader.js module not loaded!"); throw new Error("svgLoader module missing.");
+        if (!window.stringTheoryApp.svgLoader || typeof window.stringTheoryApp.svgLoader.loadAllSvgs !== 'function') {
+            console.error("CRITICAL DEBUG main.js: svg_loader.js module or loadAllSvgs function not loaded!"); throw new Error("svgLoader module/function missing.");
         }
-        if (typeof window.stringTheoryApp.uiInteractions === 'undefined') {
-            console.error("CRITICAL DEBUG main: ui_interactions.js module not loaded!"); throw new Error("uiInteractions module missing.");
+        if (!window.stringTheoryApp.uiInteractions || typeof window.stringTheoryApp.uiInteractions.initializeTimelineInteraction !== 'function') {
+            console.error("CRITICAL DEBUG main.js: ui_interactions.js module or initializeTimelineInteraction function not loaded!"); throw new Error("uiInteractions module/function missing.");
         }
-        if (typeof window.stringTheoryApp.initializeP5Lab === 'undefined') { // p5_setup.js should define this on window.stringTheoryApp
-            console.error("CRITICAL DEBUG main: p5_setup.js module or initializeP5Lab function not loaded!"); throw new Error("p5_setup module/function missing.");
+        if (!window.stringTheoryApp.initializeP5Lab || typeof window.stringTheoryApp.initializeP5Lab !== 'function') { 
+            console.error("CRITICAL DEBUG main.js: p5_setup.js module or initializeP5Lab function not loaded!"); throw new Error("p5_setup module/function missing.");
         }
 
         applySavedDarkMode(); 
         
-        console.log("DEBUG main: Loading SVGs...");
+        // console.log("DEBUG main.js: Loading SVGs...");
         const svgPlaceholdersMap = {
             'intro-svg': 'svg/intro-visual.svg',
             'problem-svg': 'svg/problem-visual-v2.svg', 
@@ -189,42 +187,42 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         await window.stringTheoryApp.svgLoader.loadAllSvgs(svgPlaceholdersMap);
         
-        console.log("DEBUG main: Loading initial language:", window.stringTheoryApp.currentLang);
-        // switchLanguage is now part of i18n module, it will also call applyTranslationsToPage and updateSvgColors
-        await window.stringTheoryApp.i18n.switchLanguage(window.stringTheoryApp.currentLang); 
+        // console.log("DEBUG main.js: Loading initial language:", window.stringTheoryApp.currentLang);
+        await window.stringTheoryApp.i18n.switchLanguage(window.stringTheoryApp.currentLang, {en: langEnBtn, fa: langFaBtn}, htmlElement, bodyElement); 
         
-        console.log("DEBUG main: Initializing UI components...");
+        // console.log("DEBUG main.js: Initializing UI components...");
         updateSectionDisplay(); 
         window.stringTheoryApp.uiInteractions.initializeTimelineInteraction();
         window.stringTheoryApp.uiInteractions.initializeGlossaryInteraction(); 
-        window.stringTheoryApp.p5LabInstance = window.stringTheoryApp.initializeP5Lab(); // Initialize p5 lab
+        window.stringTheoryApp.p5LabInstance = window.stringTheoryApp.initializeP5Lab(); 
+        if(window.stringTheoryApp.uiInteractions.initializeSkipLink) window.stringTheoryApp.uiInteractions.initializeSkipLink();
+
 
         // Event Listeners
         if(prevBtn) prevBtn.addEventListener('click', () => { if (window.stringTheoryApp.currentSectionIndex > 0) { window.stringTheoryApp.currentSectionIndex--; updateSectionDisplay(); }});
         if(nextBtn) nextBtn.addEventListener('click', () => { if (window.stringTheoryApp.currentSectionIndex < sections.length - 1) { window.stringTheoryApp.currentSectionIndex++; updateSectionDisplay(); }});
         
         if(langEnBtn) langEnBtn.addEventListener('click', () => { 
-            if (window.stringTheoryApp.currentLang !== 'en') window.stringTheoryApp.i18n.switchLanguage('en').then(() => {
-                window.stringTheoryApp.currentLang = 'en'; // Update global state after switch
-            }); 
+            if (window.stringTheoryApp.currentLang !== 'en') {
+                window.stringTheoryApp.i18n.switchLanguage('en', {en: langEnBtn, fa: langFaBtn}, htmlElement, bodyElement);
+                // window.stringTheoryApp.currentLang = 'en'; // Already set inside i18n.switchLanguage
+            }
         });
         if(langFaBtn) langFaBtn.addEventListener('click', () => { 
-            if (window.stringTheoryApp.currentLang !== 'fa') window.stringTheoryApp.i18n.switchLanguage('fa').then(() => {
-                window.stringTheoryApp.currentLang = 'fa'; // Update global state after switch
-            });
+            if (window.stringTheoryApp.currentLang !== 'fa') {
+                window.stringTheoryApp.i18n.switchLanguage('fa', {en: langEnBtn, fa: langFaBtn}, htmlElement, bodyElement);
+                // window.stringTheoryApp.currentLang = 'fa'; // Already set inside i18n.switchLanguage
+            }
         });
 
         if(mainTitleElement) mainTitleElement.addEventListener('click', toggleDarkMode);
         if(mainTitleElement) mainTitleElement.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDarkMode(); }});
 
-        if(skipLink && window.stringTheoryApp.uiInteractions.initializeSkipLink) {
-            window.stringTheoryApp.uiInteractions.initializeSkipLink();
-        }
-        console.log("DEBUG main: Application initialized successfully.");
+        console.log("DEBUG main.js: Application initialized successfully.");
     }
     
     initializeApp().catch(err => {
-        console.error("CRITICAL DEBUG main: Unhandled error during initializeApp:", err);
+        console.error("CRITICAL DEBUG main.js: Unhandled error during initializeApp:", err);
         if (!document.querySelector('body > p.critical-error-message')) {
             const errorMsgElement = document.createElement('p');
             errorMsgElement.className = 'critical-error-message';
