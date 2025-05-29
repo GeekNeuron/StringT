@@ -1,5 +1,6 @@
 // js/svg_loader.js
 // Module for loading and managing SVG graphics
+// Version: v2_refactor
 
 // Ensure the main app namespace exists
 window.stringTheoryApp = window.stringTheoryApp || {};
@@ -7,12 +8,7 @@ window.stringTheoryApp = window.stringTheoryApp || {};
 window.stringTheoryApp.svgLoader = (function() {
     'use strict';
 
-    // Dependencies: Needs access to translations from i18n module
-    // and potentially the current dark mode state.
-    // We'll assume window.stringTheoryApp.i18n.getCurrentTranslations() is available.
-    // And bodyElement.classList.contains('dark-mode') can be checked directly.
-
-    const bodyElement = document.body; // Assuming body element is available
+    const bodyElement = document.body; // Cache body element
 
     /**
      * Applies dynamic fill/stroke styles to SVG elements based on dark/light mode.
@@ -24,21 +20,21 @@ window.stringTheoryApp.svgLoader = (function() {
         // console.log(`DEBUG svg_loader: Applying dynamic styles to SVG. Dark mode: ${isDarkMode}`);
         const dynamicFills = svgElement.querySelectorAll('[data-light-fill][data-dark-fill]');
         dynamicFills.forEach(el => {
-            el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill);
+            try {
+                el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill);
+            } catch (e) {
+                console.warn("Error setting fill on SVG element:", el, e);
+            }
         });
 
         const dynamicTextFills = svgElement.querySelectorAll('text[data-light-fill][data-dark-fill]');
         dynamicTextFills.forEach(el => {
-            el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill);
+            try {
+                el.setAttribute('fill', isDarkMode ? el.dataset.darkFill : el.dataset.lightFill);
+            } catch (e) {
+                console.warn("Error setting fill on SVG text element:", el, e);
+            }
         });
-        
-        // For elements that might change stroke based on CSS variables,
-        // the CSS variables themselves should handle the dark/light mode.
-        // If direct manipulation is needed for strokes:
-        // const dynamicStrokes = svgElement.querySelectorAll('[data-light-stroke][data-dark-stroke]');
-        // dynamicStrokes.forEach(el => {
-        //     el.setAttribute('stroke', isDarkMode ? el.dataset.darkStroke : el.dataset.lightStroke);
-        // });
     }
     
     /**
@@ -46,7 +42,10 @@ window.stringTheoryApp.svgLoader = (function() {
      * @param {SVGElement} svgElement - The root SVG element.
      */
     function applySvgTextTranslations(svgElement) {
-        if (!svgElement || !window.stringTheoryApp.i18n) return;
+        if (!svgElement || !window.stringTheoryApp.i18n) {
+            // console.warn("DEBUG svg_loader: SVG element or i18n module not available for text translation.");
+            return;
+        }
         // console.log("DEBUG svg_loader: Applying SVG text translations.");
         const translations = window.stringTheoryApp.i18n.getCurrentTranslations();
         if (!translations || Object.keys(translations).length === 0) {
@@ -60,7 +59,7 @@ window.stringTheoryApp.svgLoader = (function() {
             if (translations[key] !== undefined) {
                 textEl.textContent = translations[key];
             } else {
-                // console.warn(`DEBUG svg_loader: SVG Text translation key not found: ${key}`);
+                // console.warn(`DEBUG svg_loader: SVG Text translation key not found: ${key} for element:`, textEl);
             }
         });
     }
@@ -156,7 +155,7 @@ window.stringTheoryApp.svgLoader = (function() {
         loadAllSvgs,
         updateAllSvgColors,
         // Expose individual loaders if needed, though loadAllSvgs is primary
-        loadSingleSvg: loadSvg 
+        // loadSingleSvg: loadSvg // Uncomment if direct single load is needed from main.js
     };
 
 })();
