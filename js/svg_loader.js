@@ -1,3 +1,4 @@
+
 // js/svg_loader.js
 // Module for loading and managing SVG graphics
 // Version: v2_refactor
@@ -8,16 +9,10 @@ window.stringTheoryApp = window.stringTheoryApp || {};
 window.stringTheoryApp.svgLoader = (function() {
     'use strict';
 
-    const bodyElement = document.body; // Cache body element
+    const bodyElement = document.body; 
 
-    /**
-     * Applies dynamic fill/stroke styles to SVG elements based on dark/light mode.
-     * @param {SVGElement} svgElement - The root SVG element.
-     * @param {boolean} isDarkMode - True if dark mode is active.
-     */
     function applyDynamicSvgStyles(svgElement, isDarkMode) {
         if (!svgElement) return;
-        // console.log(`DEBUG svg_loader: Applying dynamic styles to SVG. Dark mode: ${isDarkMode}`);
         const dynamicFills = svgElement.querySelectorAll('[data-light-fill][data-dark-fill]');
         dynamicFills.forEach(el => {
             try {
@@ -37,39 +32,21 @@ window.stringTheoryApp.svgLoader = (function() {
         });
     }
     
-    /**
-     * Applies translations to text elements within an SVG.
-     * @param {SVGElement} svgElement - The root SVG element.
-     */
-    function applySvgTextTranslations(svgElement) {
-        if (!svgElement || !window.stringTheoryApp.i18n) {
-            // console.warn("DEBUG svg_loader: SVG element or i18n module not available for text translation.");
+    function applySvgTextTranslations(svgElement, translations) { // Added translations parameter
+        if (!svgElement || !translations || Object.keys(translations).length === 0) {
+            // console.warn("DEBUG svg_loader: SVG element or translations not available for text translation.");
             return;
         }
-        // console.log("DEBUG svg_loader: Applying SVG text translations.");
-        const translations = window.stringTheoryApp.i18n.getCurrentTranslations();
-        if (!translations || Object.keys(translations).length === 0) {
-            // console.warn("DEBUG svg_loader: Translations not available for SVG text.");
-            return;
-        }
-
         const textElements = svgElement.querySelectorAll('text[data-translation-key]');
         textElements.forEach(textEl => {
             const key = textEl.getAttribute('data-translation-key');
             if (translations[key] !== undefined) {
                 textEl.textContent = translations[key];
-            } else {
-                // console.warn(`DEBUG svg_loader: SVG Text translation key not found: ${key} for element:`, textEl);
             }
         });
     }
     
-    /**
-     * Updates colors for all currently loaded SVGs.
-     * Typically called on dark mode toggle or initial load after SVGs are present.
-     */
     function updateAllSvgColors() {
-        // console.log("DEBUG svg_loader: updateAllSvgColors() called.");
         const isDarkMode = bodyElement.classList.contains('dark-mode');
         document.querySelectorAll('.svg-placeholder-container svg').forEach(svg => {
             if (svg) { 
@@ -78,22 +55,13 @@ window.stringTheoryApp.svgLoader = (function() {
         });
     }
 
-    /**
-     * Loads an SVG file and injects it into a placeholder element.
-     * @param {HTMLElement} placeholderElement - The div element to inject SVG into.
-     * @param {string} filePath - The path to the SVG file.
-     * @returns {Promise<Object>} A promise that resolves with a status object.
-     */
     async function loadSvg(placeholderElement, filePath) {
         if (!placeholderElement) {
-            console.warn(`DEBUG svg_loader: SVG placeholder element not found for path: ${filePath}`);
             return { status: 'placeholder_not_found', path: filePath };
         }
-        // console.log(`DEBUG svg_loader: Attempting to load SVG: ${filePath} into placeholder:`, placeholderElement.id);
         try {
-            const response = await fetch(filePath + `?v=${new Date().getTime()}`); // Cache busting
+            const response = await fetch(filePath + `?v=${new Date().getTime()}`); 
             if (!response.ok) {
-                console.error(`DEBUG svg_loader: Failed to load SVG: ${filePath}, Status: ${response.status} ${response.statusText}`);
                 const errorMsgKey = "errorLoadingSVG";
                 const errorDetails = `${filePath.split('/').pop()} (${response.status})`;
                 const errorText = window.stringTheoryApp.i18n ? window.stringTheoryApp.i18n.getTranslation(errorMsgKey, "Error loading illustration") : "Error loading illustration";
@@ -104,14 +72,15 @@ window.stringTheoryApp.svgLoader = (function() {
             placeholderElement.innerHTML = svgText; 
             const svgElement = placeholderElement.querySelector('svg');
             if (svgElement) {
-                // Apply styles and translations immediately after loading
                 applyDynamicSvgStyles(svgElement, bodyElement.classList.contains('dark-mode'));
-                applySvgTextTranslations(svgElement); 
+                // Translations will be applied globally by i18n.applyTranslationsToPage or by switchLanguage
+                // Or, if i18n module is guaranteed to be loaded:
+                if (window.stringTheoryApp.i18n) {
+                    applySvgTextTranslations(svgElement, window.stringTheoryApp.i18n.getCurrentTranslations());
+                }
             }
-            // console.log(`DEBUG svg_loader: Successfully loaded SVG: ${filePath}`);
             return { status: 'success', path: filePath };
         } catch (error) {
-            console.error(`DEBUG svg_loader: Network error fetching SVG ${filePath}:`, error);
             const errorMsgKey = "errorNetworkSVG";
             const errorDetails = `${filePath.split('/').pop()}`;
             const errorText = window.stringTheoryApp.i18n ? window.stringTheoryApp.i18n.getTranslation(errorMsgKey, "Network error loading illustration") : "Network error loading illustration";
@@ -120,13 +89,7 @@ window.stringTheoryApp.svgLoader = (function() {
         }
     }
 
-    /**
-     * Loads all SVGs defined in a map.
-     * @param {Object} svgMap - An object mapping placeholder IDs to SVG file paths.
-     * @returns {Promise<void>}
-     */
     async function loadAllSvgs(svgMap) {
-        // console.log("DEBUG svg_loader: Loading all SVGs...");
         const svgLoadPromises = [];
         for (const id in svgMap) {
             const element = document.getElementById(id); 
@@ -144,7 +107,6 @@ window.stringTheoryApp.svgLoader = (function() {
                     console.warn(`DEBUG svg_loader: SVG loading issue: ${result.status} for ${result.path}${result.code ? ' (Code: ' + result.code + ')' : ''}${result.error ? ' Error: ' + result.error : ''}`);
                 }
             });
-            // console.log("DEBUG svg_loader: SVG loading process completed (or attempted).");
         } catch (e) {
             console.error("DEBUG svg_loader: Error during Promise.all for SVG loading:", e);
         }
@@ -154,8 +116,7 @@ window.stringTheoryApp.svgLoader = (function() {
     return {
         loadAllSvgs,
         updateAllSvgColors,
-        // Expose individual loaders if needed, though loadAllSvgs is primary
-        // loadSingleSvg: loadSvg // Uncomment if direct single load is needed from main.js
+        applySvgTextTranslations // Make this available if i18n needs to call it
     };
 
 })();
