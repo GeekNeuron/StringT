@@ -1,10 +1,15 @@
 // js/p5_setup.js
-// Module for the p5.js interactive string lab
+// Contains the p5.js sketch for the interactive string lab and its initialization function.
+// Version: v1_refactor
 
 // Ensure the main app namespace exists
 window.stringTheoryApp = window.stringTheoryApp || {};
 
-// The p5.js sketch function
+/**
+ * The p5.js sketch function.
+ * This will be passed to the p5 constructor.
+ * @param {p5} p - The p5 instance.
+ */
 const stringLabSketch = (p) => {
     let currentVibrationMode = 1;
     let currentAmplitude = 50;
@@ -22,13 +27,14 @@ const stringLabSketch = (p) => {
     const numStringSegments = 100;
     let pluckDecay = 0.96; 
     let pluckWaveSpeed = 0.25; 
-    let p5CanvasContainerElement; // Renamed to avoid conflict with p5 'canvas'
+    let p5CanvasContainerElement;
     let instructionOpacity = 255;
     let hasPluckedOnce = false;
     const openStringEndCapRadius = 4;
     const maxPluckDisplacement = 150; 
 
     // This function will be called by the main script (via p5LabInstance.updateP5Controls)
+    // or by the controls initialized within initializeP5Lab.
     p.updateP5Controls = (mode, amplitude, freqFactor, isOpen) => {
         let modeChanged = (currentVibrationMode !== mode);
         let amplitudeChanged = (currentAmplitude !== amplitude);
@@ -54,13 +60,13 @@ const stringLabSketch = (p) => {
     };
 
     p.onSectionActive = () => {
-        if (p5CanvasContainerElement) { // Check if the container element is already cached
-            // Optional: Recalculate canvas size if needed, though usually fixed after setup
+        if (p5CanvasContainerElement) {
+            // Optional: Recalculate canvas size if needed
             // let canvasWidth = p5CanvasContainerElement.offsetWidth > 20 ? p5CanvasContainerElement.offsetWidth - 20 : 300;
             // canvasWidth = Math.min(canvasWidth, 600);
             // p.resizeCanvas(canvasWidth, 300); 
         }
-        if (!hasPluckedOnce) instructionOpacity = 255;
+        if (!hasPluckedOnce) instructionOpacity = 255; // Reset instruction visibility
         if (!p.isLooping()) {
             p.loop();
         }
@@ -78,40 +84,44 @@ const stringLabSketch = (p) => {
             return;
         }
         let canvasWidth = p5CanvasContainerElement.offsetWidth > 20 ? p5CanvasContainerElement.offsetWidth - 20 : 300;
-        canvasWidth = Math.min(canvasWidth, 600);
-        let canvasHeight = 300;
-        const p5Canvas = p.createCanvas(canvasWidth, canvasHeight); // Renamed to p5Canvas
+        canvasWidth = Math.min(canvasWidth, 600); // Max width for the canvas
+        let canvasHeight = 300; // Fixed height
+        const p5Canvas = p.createCanvas(canvasWidth, canvasHeight);
         p5Canvas.parent('p5-canvas-container');
         p.pixelDensity(p.displayDensity()); 
 
         for (let i = 0; i <= numStringSegments; i++) pluckPoints[i] = { y: 0, vy: 0 };
 
         const initiatePluck = (mouseX, mouseY) => {
-            if (mouseY > p.height * 0.1 && mouseY < p.height * 0.9) {
-                const pluckPosNormalized = p.constrain(mouseX / p.width, 0.01, 0.99);
-                let pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 1.5, currentAmplitude * 1.5); 
-                
-                for (let i = 0; i <= numStringSegments; i++) {
-                    const xNorm = i / numStringSegments; 
-                    const dist = p.abs(xNorm - pluckPosNormalized);
-                    const influenceWidth = isStringTypeOpen ? 0.08 : 0.1; 
-                    const influence = p.exp(-dist * dist / (2 * influenceWidth * influenceWidth) ); 
-                    pluckPoints[i].y = pluckStrengthVal * influence; 
-                    pluckPoints[i].vy = 0; 
+            // Ensure mouse is within canvas bounds before plucking
+            if (mouseX >= 0 && mouseX <= p.width && mouseY >= 0 && mouseY <= p.height) {
+                if (mouseY > p.height * 0.1 && mouseY < p.height * 0.9) { // Pluck sensitive area
+                    const pluckPosNormalized = p.constrain(mouseX / p.width, 0.01, 0.99);
+                    let pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 1.5, currentAmplitude * 1.5); 
+                    
+                    for (let i = 0; i <= numStringSegments; i++) {
+                        const xNorm = i / numStringSegments; 
+                        const dist = p.abs(xNorm - pluckPosNormalized);
+                        const influenceWidth = isStringTypeOpen ? 0.08 : 0.1; 
+                        const influence = p.exp(-dist * dist / (2 * influenceWidth * influenceWidth) ); 
+                        pluckPoints[i].y = pluckStrengthVal * influence; 
+                        pluckPoints[i].vy = 0; 
+                    }
+                    if (p5CanvasContainerElement) p5CanvasContainerElement.classList.add('grabbing');
+                    flashDuration = Math.floor(flashMaxDuration / 1.2); 
+                    tempStringColor = document.body.classList.contains('dark-mode') ? p.color(200,220,255, 180) : p.color(80,30,0, 180); 
+                    if(!hasPluckedOnce) hasPluckedOnce = true;
+                    if (!p.isLooping()) p.loop();
                 }
-                if (p5CanvasContainerElement) p5CanvasContainerElement.classList.add('grabbing');
-                flashDuration = Math.floor(flashMaxDuration / 1.2); 
-                tempStringColor = document.body.classList.contains('dark-mode') ? p.color(200,220,255, 180) : p.color(80,30,0, 180); 
-                if(!hasPluckedOnce) hasPluckedOnce = true;
-                if (!p.isLooping()) p.loop();
             }
         };
         p5Canvas.mousePressed(() => initiatePluck(p.mouseX, p.mouseY));
         p5Canvas.mouseReleased(() => { if (p5CanvasContainerElement) p5CanvasContainerElement.classList.remove('grabbing'); });
+        // Use p.touches[0] for touch events
         p5Canvas.touchStarted(() => { if (p.touches.length > 0) { initiatePluck(p.touches[0].x, p.touches[0].y); return false; } });
         p5Canvas.touchEnded(() => { if (p5CanvasContainerElement) p5CanvasContainerElement.classList.remove('grabbing'); return false; });
         
-        p.noLoop(); 
+        p.noLoop(); // Start paused, main script will call loop() when section is active
     };
 
     p.draw = () => {
@@ -222,9 +232,9 @@ const stringLabSketch = (p) => {
                 const instructionTextKey = "labPluckInstruction";
                 const mainScript = window.stringTheoryApp;
                 let instructionText = instructionTextKey; 
-                if (mainScript && mainScript.i18n && typeof mainScript.i18n.getTranslation === 'function') { // Check if i18n module and function exist
+                if (mainScript && mainScript.i18n && typeof mainScript.i18n.getTranslation === 'function') { 
                     instructionText = mainScript.i18n.getTranslation(instructionTextKey, "Click & Drag to 'Pluck'");
-                } else { // Fallback if main script or getTranslation is not available yet
+                } else { 
                     const htmlEl = document.documentElement;
                     instructionText = htmlEl.lang === 'fa' ? "برای «کندن» کلیک و درگ کنید" : "Click & Drag to 'Pluck'";
                 }
@@ -256,7 +266,7 @@ const stringLabSketch = (p) => {
 
 /**
  * Initializes the p5.js lab sketch and sets up its controls.
- * This function will be called by main.js.
+ * This function will be called by main.js (script.js).
  * @returns {Object|null} The p5 instance or null if initialization fails.
  */
 window.stringTheoryApp.initializeP5Lab = function() {
@@ -264,14 +274,15 @@ window.stringTheoryApp.initializeP5Lab = function() {
     if (typeof stringLabSketch === 'function' && document.getElementById('interactive-lab')) {
         // console.log("DEBUG p5_setup: stringLabSketch function found and interactive-lab element exists.");
         try {
-            const p5Instance = new p5(stringLabSketch); 
+            const p5Instance = new p5(stringLabSketch); // Create the p5 instance
             // console.log("DEBUG p5_setup: p5 instance created.");
 
+            // Select controls (these should exist in index.html)
             const modeSlider = document.getElementById('mode-slider');
             const amplitudeSlider = document.getElementById('amplitude-slider');
             const frequencySlider = document.getElementById('frequency-slider');
             const stringTypeToggleBtn = document.getElementById('string-type-toggle');
-            const htmlEl = document.documentElement; // For language check
+            // const htmlEl = document.documentElement; // For language check on toggle button
 
             function updateP5SketchFromControls() {
                 if (p5Instance && typeof p5Instance.updateP5Controls === 'function') {
@@ -291,12 +302,15 @@ window.stringTheoryApp.initializeP5Lab = function() {
             
             if (stringTypeToggleBtn) {
                 stringTypeToggleBtn.addEventListener('click', () => {
+                    // Toggle aria-pressed state
                     const currentPressedState = stringTypeToggleBtn.getAttribute('aria-pressed') === 'true';
                     const newPressedState = !currentPressedState;
                     stringTypeToggleBtn.setAttribute('aria-pressed', newPressedState.toString());
                     
-                    const lang = htmlEl.lang || 'en';
+                    // Update button text based on new state and current language (using i18n module)
+                    const lang = window.stringTheoryApp.currentLang || 'en'; // Get current lang from main app state
                     const translations = window.stringTheoryApp.i18n ? window.stringTheoryApp.i18n.getCurrentTranslations() : {};
+                    
                     const openKey = stringTypeToggleBtn.getAttribute('data-translation-key-open') || "labToggleOpenActive";
                     const closedKey = stringTypeToggleBtn.getAttribute('data-translation-key-closed') || "labToggleOpenDefault";
                     
@@ -308,14 +322,14 @@ window.stringTheoryApp.initializeP5Lab = function() {
                 });
             }
             // console.log("DEBUG p5_setup: p5 Lab controls initialized.");
-            return p5Instance; // Return the instance
+            return p5Instance; // Return the instance so main.js can store it
         } catch (e) {
             console.error("DEBUG p5_setup: Error initializing p5 sketch instance:", e);
             return null;
         }
     } else {
         if (typeof stringLabSketch !== 'function') {
-            console.error("CRITICAL DEBUG p5_setup: stringLabSketch is not defined globally.");
+            console.error("CRITICAL DEBUG p5_setup: stringLabSketch is not defined globally. Ensure this file is loaded.");
         }
         if(!document.getElementById('interactive-lab')){
             console.warn("DEBUG p5_setup: Interactive lab section ('interactive-lab') not found in HTML.");
