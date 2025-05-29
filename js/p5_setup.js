@@ -33,8 +33,6 @@ const stringLabSketch = (p) => {
     const openStringEndCapRadius = 4;
     const maxPluckDisplacement = 150; 
 
-    // This function will be called by the main script (via p5LabInstance.updateP5Controls)
-    // or by the controls initialized within initializeP5Lab.
     p.updateP5Controls = (mode, amplitude, freqFactor, isOpen) => {
         let modeChanged = (currentVibrationMode !== mode);
         let amplitudeChanged = (currentAmplitude !== amplitude);
@@ -66,7 +64,7 @@ const stringLabSketch = (p) => {
             // canvasWidth = Math.min(canvasWidth, 600);
             // p.resizeCanvas(canvasWidth, 300); 
         }
-        if (!hasPluckedOnce) instructionOpacity = 255; // Reset instruction visibility
+        if (!hasPluckedOnce) instructionOpacity = 255; 
         if (!p.isLooping()) {
             p.loop();
         }
@@ -84,18 +82,17 @@ const stringLabSketch = (p) => {
             return;
         }
         let canvasWidth = p5CanvasContainerElement.offsetWidth > 20 ? p5CanvasContainerElement.offsetWidth - 20 : 300;
-        canvasWidth = Math.min(canvasWidth, 600); // Max width for the canvas
-        let canvasHeight = 300; // Fixed height
-        const p5Canvas = p.createCanvas(canvasWidth, canvasHeight);
+        canvasWidth = Math.min(canvasWidth, 600); 
+        let canvasHeight = 300; 
+        const p5Canvas = p.createCanvas(canvasWidth, canvasHeight); 
         p5Canvas.parent('p5-canvas-container');
         p.pixelDensity(p.displayDensity()); 
 
         for (let i = 0; i <= numStringSegments; i++) pluckPoints[i] = { y: 0, vy: 0 };
 
         const initiatePluck = (mouseX, mouseY) => {
-            // Ensure mouse is within canvas bounds before plucking
             if (mouseX >= 0 && mouseX <= p.width && mouseY >= 0 && mouseY <= p.height) {
-                if (mouseY > p.height * 0.1 && mouseY < p.height * 0.9) { // Pluck sensitive area
+                if (mouseY > p.height * 0.1 && mouseY < p.height * 0.9) { 
                     const pluckPosNormalized = p.constrain(mouseX / p.width, 0.01, 0.99);
                     let pluckStrengthVal = p.constrain(mouseY - p.height / 2, -currentAmplitude * 1.5, currentAmplitude * 1.5); 
                     
@@ -117,11 +114,10 @@ const stringLabSketch = (p) => {
         };
         p5Canvas.mousePressed(() => initiatePluck(p.mouseX, p.mouseY));
         p5Canvas.mouseReleased(() => { if (p5CanvasContainerElement) p5CanvasContainerElement.classList.remove('grabbing'); });
-        // Use p.touches[0] for touch events
         p5Canvas.touchStarted(() => { if (p.touches.length > 0) { initiatePluck(p.touches[0].x, p.touches[0].y); return false; } });
         p5Canvas.touchEnded(() => { if (p5CanvasContainerElement) p5CanvasContainerElement.classList.remove('grabbing'); return false; });
         
-        p.noLoop(); // Start paused, main script will call loop() when section is active
+        p.noLoop(); 
     };
 
     p.draw = () => {
@@ -274,10 +270,9 @@ window.stringTheoryApp.initializeP5Lab = function() {
     if (typeof stringLabSketch === 'function' && document.getElementById('interactive-lab')) {
         // console.log("DEBUG p5_setup: stringLabSketch function found and interactive-lab element exists.");
         try {
-            const p5Instance = new p5(stringLabSketch); // Create the p5 instance
+            const p5Instance = new p5(stringLabSketch); 
             // console.log("DEBUG p5_setup: p5 instance created.");
 
-            // Select controls (these should exist in index.html)
             const modeSlider = document.getElementById('mode-slider');
             const amplitudeSlider = document.getElementById('amplitude-slider');
             const frequencySlider = document.getElementById('frequency-slider');
