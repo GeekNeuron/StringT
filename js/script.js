@@ -1,19 +1,13 @@
-// js/script.js
-// Version: v23_final_fixes
-
 // Main application namespace
 window.stringTheoryApp = {};
 
-console.log("DEBUG: script.js: File execution started (v23_final_fixes).");
-
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DEBUG: DOMContentLoaded event fired.");
+    // console.log("DEBUG: DOMContentLoaded event fired.");
 
     // --- DOM Element Selection ---
     let sectionsContainer, sections = [], prevBtn, nextBtn, langEnBtn, langFaBtn, mainTitleElement, bodyElement, htmlElement, skipLink;
 
     try {
-        // console.log("DEBUG: Attempting to select DOM elements...");
         sectionsContainer = document.getElementById('interactive-content');
         sections = Array.from(document.querySelectorAll('.content-section'));
         prevBtn = document.getElementById('prev-btn');
@@ -37,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(`CRITICAL DEBUG: Essential DOM elements missing: ${missing.join(', ')}. Check HTML IDs and structure.`);
             throw new Error(`Essential DOM elements missing: ${missing.join(', ')}.`);
         }
-        // console.log("DEBUG: DOM elements selected successfully.");
     } catch (e) {
         console.error("CRITICAL DEBUG: Error selecting DOM elements:", e);
         document.body.innerHTML = `<p class="critical-error-message" style="color:red; text-align:center; padding: 50px; font-size: 1.2em;">Error initializing page (DOM elements missing). Please check console (F12) for details. Error: ${e.message}</p>`;
@@ -199,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function manageBigIdeaAnimation(isActive) {
-        const svgPlaceholder = document.getElementById('bigidea-svg');
+        const svgPlaceholder = document.getElementById('bigidea-svg'); 
         if (!svgPlaceholder) return;
 
         const checkSVGAndAnimate = () => {
@@ -207,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const stringMode2 = svgPlaceholder.querySelector('.string-mode2');
 
             if (!stringMode1 || !stringMode2) {
-                if (isActive && document.getElementById('big-idea').classList.contains('active')) {
+                if (isActive && sections[currentSectionIndex] && sections[currentSectionIndex].id === 'big-idea') {
                     // setTimeout(checkSVGAndAnimate, 100); 
                 } else {
                     if (bigIdeaAnimationInterval) clearInterval(bigIdeaAnimationInterval);
@@ -291,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            if (section.id === 'big-idea') {
+            if (section.id === 'big-idea') { 
                 manageBigIdeaAnimation(index === currentSectionIndex);
             } else if (index !== currentSectionIndex && section.id === 'big-idea' && bigIdeaAnimationInterval) {
                 manageBigIdeaAnimation(false);
@@ -392,8 +385,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function initializeApp() {
+        // console.log("DEBUG: Starting application initialization (initializeApp)...");
         applySavedDarkMode(); 
         
+        // console.log("DEBUG: Loading SVGs...");
         const svgPlaceholdersMap = {
             'intro-svg': 'svg/intro-visual.svg',
             'problem-svg': 'svg/problem-visual-v2.svg', 
@@ -424,6 +419,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("DEBUG: Error during Promise.all for SVG loading:", e);
         }
         
+        // Ensure updateSvgColors is defined before it's called by switchLanguage
+        if (typeof updateSvgColors !== 'function') {
+            console.error("CRITICAL DEBUG: updateSvgColors is not defined before first call in switchLanguage during init!");
+        }
         await switchLanguage(currentLang); 
         
         updateSectionDisplay(); 
